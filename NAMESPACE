@@ -1,0 +1,21 @@
+useDynLib(SemiCompRisks) 
+
+export(BayesSurv)
+export(BayesID)
+export(simID)
+export(simSurv)
+export(ehr)
+
+
+S3method(print, BayesSurv)
+S3method(print, BayesID)
+S3method(summary, BayesSurv)
+S3method(summary, BayesID)
+S3method(plot, BayesSurv)
+S3method(plot, BayesID)
+S3method(plot, ehr)
+
+
+
+
+
