@@ -86,8 +86,6 @@ void BpeSur_updateRP2(gsl_vector *beta,
     
     temp_prop = rnorm(beta_prop_me, sqrt(beta_prop_var));
     
-    /* temp_prop = -0.2; */
-    
     gsl_vector_memcpy(beta_prop, beta);
     gsl_vector_set(beta_prop, m, temp_prop);
     
@@ -132,8 +130,6 @@ void BpeSur_updateRP2(gsl_vector *beta,
     
     u = log(runif(0, 1)) < logR;
     
-    /* u = 0; */
-    
     if(u == 1)
     {
         gsl_vector_set(beta, m, temp_prop);
@@ -144,18 +140,7 @@ void BpeSur_updateRP2(gsl_vector *beta,
     gsl_vector_free(beta_prop);
     gsl_vector_free(xbeta_prop);
     
-    
-    
-    /*
-    printf("D1 = %.3f\n", D1);
-    printf("D2 = %.3f\n", D2);
-    printf("logLH = %.3f\n", logLH);
-    printf("D1_prop = %.3f\n", D1_prop);
-    printf("D2_prop = %.3f\n", D2_prop);
-    printf("logLH_prop = %.3f\n", logLH_prop);
-    printf("logR = %.3f\n", logR);
-    */
-    
+      
     return;
 }
 
@@ -197,9 +182,6 @@ void BpeSur_updateRP1(gsl_vector *beta,
     
     m = (int) runif(0, p);
     
-    /* m = 3; */
-    
-    
     logLH = 0; D1 = 0; D2 = 0;
     logLH_prop = 0; D1_prop = 0; D2_prop = 0;
     
@@ -226,8 +208,6 @@ void BpeSur_updateRP1(gsl_vector *beta,
     beta_prop_var   = - pow(2.4, 2)/D2;
     
     temp_prop = rnorm(beta_prop_me, sqrt(beta_prop_var));
-    
-    /* temp_prop = -0.2; */
     
     gsl_vector_memcpy(beta_prop, beta);
     gsl_vector_set(beta_prop, m, temp_prop);
@@ -264,8 +244,6 @@ void BpeSur_updateRP1(gsl_vector *beta,
     
     u = log(runif(0, 1)) < logR;
     
-    /* u = 0; */
-    
     if(u == 1)
     {
         gsl_vector_set(beta, m, temp_prop);
@@ -277,16 +255,6 @@ void BpeSur_updateRP1(gsl_vector *beta,
     gsl_vector_free(xbeta_prop);
     
     
-    /*
-    printf("D1 = %.3f\n", D1);
-    printf("D2 = %.3f\n", D2);
-    printf("logLH = %.3f\n", logLH);
-    printf("D1_prop = %.3f\n", D1_prop);
-    printf("D2_prop = %.3f\n", D2_prop);
-    printf("logLH_prop = %.3f\n", logLH_prop);
-    printf("logR = %.3f\n", logR);
-     
-     */
     
     return;
 }
@@ -505,21 +473,7 @@ void BpeSur_updateBH2(gsl_vector *lambda,
     gsl_vector_free(lambda_prop);
  
     
-    
-    
-    
-    /*
-    printf("D1 = %.3f\n", D1);
-    printf("D2 = %.3f\n", D2);
-    printf("logLH = %.3f\n", logLH);
-    printf("D1_prop = %.3f\n", D1_prop);
-    printf("D2_prop = %.3f\n", D2_prop);
-    printf("logLH_prop = %.3f\n", logLH_prop);
-    printf("logR = %.3f\n", logR);
-    */
-    
-
-    
+      
     
     return;
 }
@@ -668,16 +622,7 @@ void BpeSur_updateBH1(gsl_vector *lambda,
 
     gsl_vector_free(lambda_prop);
     
-    /*
-    printf("D1 = %.3f\n", D1);
-    printf("D2 = %.3f\n", D2);
-    printf("logLH = %.3f\n", logLH);
-    printf("D1_prop = %.3f\n", D1_prop);
-    printf("D2_prop = %.3f\n", D2_prop);
-    printf("logLH_prop = %.3f\n", logLH_prop);
-    printf("logR = %.3f\n", logR);
-    */
-    
+      
     return;
 }
 
@@ -823,16 +768,7 @@ void BpeSur_updateBI2(gsl_vector *s,
     
     star_inx = (int) runif(0, num_s_propBI_fin);
     s_star = gsl_vector_get(s_propBI_fin, star_inx);
-    
-    /*
-     s_star = 370;
-     */
-    
-    
-    /*
-     printf("s_star = %.3f\n", s_star);
-     */
-    
+        
     j_old = -1;
     i = 0;
     
@@ -842,10 +778,6 @@ void BpeSur_updateBI2(gsl_vector *s,
         else i += 1;
     }
     
-    /*
-     printf("j_old = %d\n", j_old);
-     */
-    
     gsl_vector *s_new = gsl_vector_calloc(*J+2);
     for(i = 0; i < *J+1; i++)
     {
@@ -854,31 +786,9 @@ void BpeSur_updateBI2(gsl_vector *s,
     gsl_vector_set(s_new, *J+1, s_star);
     gsl_sort_vector(s_new);
     
-    
-    /*
-     for(j = 0; j < (J+1); j++)
-     {
-     printf("s%d = %.3f\n", j+1, gsl_vector_get(s, j));
-     }
-     
-     for(i = 0; i < J+2; i++)
-     {
-     printf("s_new%d = %.1f\n", i+1, gsl_vector_get(s_new, i));
-     }
-     */
-    
     J_new = *J+1;
     
     Upert = runif(0.5 - delPert, 0.5 + delPert);
-    
-    
-    /*
-     Upert = 0.3;
-     */
-    
-    /*
-     printf("Upert = %.2f\n", Upert);
-     */
     
     if(j_old != 0)
     {
@@ -909,19 +819,6 @@ void BpeSur_updateBI2(gsl_vector *s,
         else gsl_vector_set(lambda_new, i, gsl_vector_get(lambda, i-skip));
     }
     
-    /*
-     for(j = 0; j < (*J+1); j++)
-     {
-     printf("lambda%d = %.3f\n", j+1, gsl_vector_get(lambda, j));
-     }
-     
-     for(i = 0; i < *J+2; i++)
-     {
-     printf("lambda_new%d = %.3f\n", i+1, gsl_vector_get(lambda_new, i));
-     }
-     */
-
-
     
     gsl_matrix *Sigma_lam_new       = gsl_matrix_calloc(J_new+1, J_new+1);
     gsl_matrix *invSigma_lam_new    = gsl_matrix_calloc(J_new+1, J_new+1);
@@ -1024,29 +921,11 @@ void BpeSur_updateBI2(gsl_vector *s,
     
     logPriorR = log((double) alpha/((*J) + 1)) + logPrior_prop - logPrior;
     
-    /*
-     printf("logPrior_prop = %.3f\n", logPrior_prop);
-     printf("logPrior_ini = %.3f\n", logPrior);
-     printf("logPriorR = %.3f\n", logPriorR);
-     */
-    
     logPropR = log(num_s_propBI_fin/alpha) - dunif(Upert, 0.5-delPert, 0.5+delPert, 1);
-    
-    /*
-     printf("logPropR = %.3f\n", logPropR);
-     */
     
     logJacob = log(1/(1-Upert)/Upert);
     
-    /*
-     printf("logJacob = %.3f\n", logJacob);
-     */
-    
     logR = logLH_prop - logLH + logPriorR + logPropR + logJacob;
-    
-    /*
-     printf("logR = %.3f\n", logR);
-     */
     
     u = log(runif(0, 1)) < logR;
     
@@ -1080,14 +959,7 @@ void BpeSur_updateBI2(gsl_vector *s,
     gsl_matrix_free(W_new);
     gsl_matrix_free(Q_new);
     
-    
-    /*
-     for(j = 0; j < (*J+1); j++)
-     {
-     printf("s%d = %.3f\n", j+1, gsl_vector_get(s, j));
-     }
-     */
-    
+        
     return;
 }
 
@@ -1179,39 +1051,8 @@ void BpeSur_updateBI1(gsl_vector *s,
     }
     if(count == 0) gsl_vector_memcpy(s_propBI_fin, s_propBI);
     
-    /*
-     printf("count = %d\n", count);
-     
-     if(count >0)
-     {
-     for(i = 0; i < count; i++)
-     {
-     printf("interInx_%d = %.2f\n", i+1, gsl_vector_get(interInx, i));
-     printf("s_prop_BI%d = %.2f\n", (int) gsl_vector_get(interInx, i)+1, gsl_vector_get(s_propBI, gsl_vector_get(interInx, i)));
-     }
-     }
-     
-     for(i = 0; i < num_s_propBI; i++)
-     {
-     printf("s_propBI%d = %.2f\n", i+1, gsl_vector_get(s_propBI, i));
-     }
-     for(i = 0; i < num_s_propBI_fin; i++)
-     {
-     printf("s_propBI_fin%d = %.2f\n", i+1, gsl_vector_get(s_propBI_fin, i));
-     }
-     */
-    
     star_inx = (int) runif(0, num_s_propBI_fin);
     s_star = gsl_vector_get(s_propBI_fin, star_inx);
-    
-    /*    
-    s_star = 370;
-     */
-    
-    
-    /*      
-     printf("s_star = %.3f\n", s_star);
-     */
     
     j_old = -1;
     i = 0;
@@ -1222,10 +1063,6 @@ void BpeSur_updateBI1(gsl_vector *s,
         else i += 1;
     }
     
-    /*      
-     printf("j_old = %d\n", j_old);
-     */
-    
     gsl_vector *s_new = gsl_vector_calloc(*J+2);
     for(i = 0; i < *J+1; i++)
     {
@@ -1234,31 +1071,9 @@ void BpeSur_updateBI1(gsl_vector *s,
     gsl_vector_set(s_new, *J+1, s_star);
     gsl_sort_vector(s_new);
     
-    
-    /*
-     for(j = 0; j < (J+1); j++)
-     {
-     printf("s%d = %.3f\n", j+1, gsl_vector_get(s, j));
-     }
-     
-     for(i = 0; i < J+2; i++)
-     {
-     printf("s_new%d = %.1f\n", i+1, gsl_vector_get(s_new, i));
-     }
-     */
-    
     J_new = *J+1;
     
     Upert = runif(0.5 - delPert, 0.5 + delPert);
-    
-    
-    /*
-    Upert = 0.3;
-     */
-    
-    /*      
-     printf("Upert = %.2f\n", Upert);
-     */
     
     if(j_old != 0)
     {
@@ -1288,19 +1103,6 @@ void BpeSur_updateBI1(gsl_vector *s,
         }
         else gsl_vector_set(lambda_new, i, gsl_vector_get(lambda, i-skip));
     }
-    
-    /*      
-     for(j = 0; j < (*J+1); j++)
-     {
-     printf("lambda%d = %.3f\n", j+1, gsl_vector_get(lambda, j));
-     }
-     
-     for(i = 0; i < *J+2; i++)
-     {
-     printf("lambda_new%d = %.3f\n", i+1, gsl_vector_get(lambda_new, i));
-     }
-     */
-
     
     gsl_matrix *ind_d_new   = gsl_matrix_calloc(n, J_new+1);
     gsl_matrix *ind_r_new   = gsl_matrix_calloc(n, J_new+1);
@@ -1384,29 +1186,11 @@ void BpeSur_updateBI1(gsl_vector *s,
     
     logPriorR = log((double) alpha/((*J) + 1)) + logPrior_prop - logPrior;
      
-    /*      
-     printf("logPrior_prop = %.3f\n", logPrior_prop);
-     printf("logPrior_ini = %.3f\n", logPrior);
-     printf("logPriorR = %.3f\n", logPriorR);
-     */
-    
     logPropR = log(num_s_propBI_fin/alpha) - dunif(Upert, 0.5-delPert, 0.5+delPert, 1);
-    
-    /*      
-     printf("logPropR = %.3f\n", logPropR);
-     */
     
     logJacob = log(1/(1-Upert)/Upert);
     
-    /*      
-     printf("logJacob = %.3f\n", logJacob);
-     */
-    
     logR = logLH_prop - logLH + logPriorR + logPropR + logJacob;
-    
-    /*
-    printf("logR = %.3f\n", logR);
-     */
     
     u = log(runif(0, 1)) < logR;
     
@@ -1451,14 +1235,6 @@ void BpeSur_updateBI1(gsl_vector *s,
     gsl_matrix_free(invSigma_lam_new);
     gsl_matrix_free(W_new);
     gsl_matrix_free(Q_new);
-    
-  
-    /*
-    for(j = 0; j < (*J+1); j++)
-    {
-        printf("s%d = %.3f\n", j+1, gsl_vector_get(s, j));
-    }
-     */
     
     return;
 }
@@ -1512,12 +1288,6 @@ void BpeSur_updateDI2(gsl_vector *s,
     
     j_old = (int) runif(0, *J);
     
-    /*  j_old = 2; */
-    
-    /*
-     printf("j_old = %d\n", j_old+1);
-     */
-    
     gsl_vector *s_new = gsl_vector_calloc(*J);
     
     skip = 0;
@@ -1527,26 +1297,9 @@ void BpeSur_updateDI2(gsl_vector *s,
         else gsl_vector_set(s_new, i-skip, gsl_vector_get(s, i));
     }
     
-    /*
-     for(j = 0; j < (*J+1); j++)
-     {
-     printf("s%d = %.3f\n", j+1, gsl_vector_get(s, j));
-     }
-     
-     for(i = 0; i < *J; i++)
-     {
-     printf("s_new%d = %.1f\n", i+1, gsl_vector_get(s_new, i));
-     }
-     */
-    
-    
     J_new = *J-1;
     
     Upert = 1/(exp(gsl_vector_get(lambda, j_old+1) - gsl_vector_get(lambda, j_old)) + 1);
-    
-    /*
-     printf("Upert = %.3f\n", Upert);
-     */
     
     if(j_old != 0)
     {
@@ -1569,15 +1322,6 @@ void BpeSur_updateDI2(gsl_vector *s,
         }
         else gsl_vector_set(lambda_new, i, gsl_vector_get(lambda, i+skip));
     }
-    
-    /*
-     for(i = 0; i < J_new+1; i++)
-     {
-     printf("lambda_new%d = %.3f\n", i+1, gsl_vector_get(lambda_new, i));
-     }
-     */
-    
-
     
     gsl_matrix *Sigma_lam_new       = gsl_matrix_calloc(J_new+1, J_new+1);
     gsl_matrix *invSigma_lam_new    = gsl_matrix_calloc(J_new+1, J_new+1);
@@ -1650,12 +1394,6 @@ void BpeSur_updateDI2(gsl_vector *s,
     }
     
     
-      
-    /*     
-     printf("logLH_ini = %.3f\n", logLH);
-     printf("logLH_prop = %.3f\n", logLH_prop);
-     */
-    
     gsl_vector_view lambda_sub  = gsl_vector_subvector(lambda, 0, *J+1);
     gsl_matrix_view invS_sub    = gsl_matrix_submatrix(invSigma_lam, 0, 0, *J+1, *J+1);
     
@@ -1687,31 +1425,11 @@ void BpeSur_updateDI2(gsl_vector *s,
     
     logPriorR = log((double) *J/alpha) + logPrior_prop - logPrior;
     
-    
-    /*
-     printf("logPrior_prop = %.3f\n", logPrior_prop);
-     printf("logPrior_ini = %.3f\n", logPrior);
-     printf("logPriorR = %.3f\n", logPriorR);
-     */
-    
     logPropR = log((double) alpha/num_s_propBI) - dunif(Upert, 0.5-delPert, 0.5+delPert, 1);
-    
-    
-    /*
-     printf("logPropR = %.3f\n", logPropR);
-     */
     
     logJacob = log((1-Upert)*Upert);
     
-    /*
-     printf("logJacob = %.3f\n", logJacob);
-     */
-    
     logR = logLH_prop - logLH + logPriorR + logPropR + logJacob;
-    
-    /*
-     printf("logR = %.3f\n", logR);
-     */
     
     u = log(runif(0, 1)) < logR;
     
@@ -1865,12 +1583,6 @@ void BpeSur_updateDI1(gsl_vector *s,
     
     j_old = (int) runif(0, *J);
     
-    /* j_old = 2; */
-    
-    /*
-    printf("j_old = %d\n", j_old+1);
-    */
-    
     gsl_vector *s_new = gsl_vector_calloc(*J);
     
     skip = 0;
@@ -1880,26 +1592,9 @@ void BpeSur_updateDI1(gsl_vector *s,
         else gsl_vector_set(s_new, i-skip, gsl_vector_get(s, i));
     }
     
-    /*
-    for(j = 0; j < (*J+1); j++)
-    {
-        printf("s%d = %.3f\n", j+1, gsl_vector_get(s, j));
-    }
-    
-    for(i = 0; i < *J; i++)
-    {
-        printf("s_new%d = %.1f\n", i+1, gsl_vector_get(s_new, i));
-    }
-     */
-
-    
     J_new = *J-1;
     
     Upert = 1/(exp(gsl_vector_get(lambda, j_old+1) - gsl_vector_get(lambda, j_old)) + 1);
-    
-    /*
-    printf("Upert = %.3f\n", Upert);
-     */
     
     if(j_old != 0)
     {
@@ -1922,14 +1617,6 @@ void BpeSur_updateDI1(gsl_vector *s,
         }
         else gsl_vector_set(lambda_new, i, gsl_vector_get(lambda, i+skip));
     }
-    
-    /*
-    for(i = 0; i < J_new+1; i++)
-    {
-        printf("lambda_new%d = %.3f\n", i+1, gsl_vector_get(lambda_new, i));
-    }
-     */
-    
     
     gsl_matrix *ind_d_new   = gsl_matrix_calloc(n, J_new+1);
     gsl_matrix *ind_r_new   = gsl_matrix_calloc(n, J_new+1);
@@ -1979,11 +1666,6 @@ void BpeSur_updateDI1(gsl_vector *s,
         }
     }
     
-    /*     
-    printf("logLH_ini = %.3f\n", logLH);
-    printf("logLH_prop = %.3f\n", logLH_prop);
-     */
-    
     gsl_vector_view lambda_sub  = gsl_vector_subvector(lambda, 0, *J+1);
     gsl_matrix_view invS_sub    = gsl_matrix_submatrix(invSigma_lam, 0, 0, *J+1, *J+1);
     
@@ -2015,31 +1697,11 @@ void BpeSur_updateDI1(gsl_vector *s,
     
     logPriorR = log((double) *J/alpha) + logPrior_prop - logPrior;
     
-    
-    /*
-    printf("logPrior_prop = %.3f\n", logPrior_prop);
-    printf("logPrior_ini = %.3f\n", logPrior);
-    printf("logPriorR = %.3f\n", logPriorR);
-     */
-    
     logPropR = log((double) alpha/num_s_propBI) - dunif(Upert, 0.5-delPert, 0.5+delPert, 1);
-    
-    
-    /*
-    printf("logPropR = %.3f\n", logPropR);
-     */
     
     logJacob = log((1-Upert)*Upert);
     
-    /*
-    printf("logJacob = %.3f\n", logJacob);
-     */
-    
     logR = logLH_prop - logLH + logPriorR + logPropR + logJacob;
-    
-    /*
-    printf("logR = %.3f\n", logR);
-     */
     
     u = log(runif(0, 1)) < logR;
     

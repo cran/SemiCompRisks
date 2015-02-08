@@ -6,7 +6,7 @@
 		
 		LP	<- as.vector(beta.true %*% t(x)) 
 
-		T	<- rweibull(n, shape = alpha.true, 							scale = exp(-(log(kappa.true) + LP)/alpha.true))
+		T	<- rweibull(n, shape = alpha.true, scale = exp(-(log(kappa.true) + LP)/alpha.true))
 
 		delta <- rep(NA, n)
 		y		<- T

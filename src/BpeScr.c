@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #include "gsl/gsl_matrix.h"
 #include "gsl/gsl_linalg.h"
@@ -56,6 +57,8 @@ void BpeScrmcmc(double survData[],
                     double lambda3_fin[])
 {
     GetRNGstate();
+    
+    time_t now;    
     
     int i, j, M;
 
@@ -385,10 +388,6 @@ void BpeScrmcmc(double survData[],
             pBI3 = 0;
             pDI3 = rho_lam3 * 2;
         }
-        
-        /* pBI1 = 0;  pBI2 = 0;   pBI3 = 0;*/
-        /*/ pDI1 = 0;  pDI2 = 0;    pDI3 = 0; */ 
-        
         
         
         pDP = 0.2;
@@ -767,147 +766,24 @@ void BpeScrmcmc(double survData[],
             samples_misc[*p1 + *p2 + *p3 + 6] = accept_theta;
         }
         
-        
-        /*
-        printf("move = %d\n", move);
-        */
-
+        if( ( (M+1) % 10000 ) == 0)
+        {
+            time(&now);
+            
+            Rprintf("iteration: %d: %s\n", M+1, ctime(&now));
+            
+            
+            R_FlushConsole();
+            R_ProcessEvents();
+            
+            
+        }
+ 
    
     }    
    
     
   
-    
-
-    
-    
-    
-    /*
-     for(i = 0; i < 10; i++)
-     {
-     printf("xbeta1%d = %.3f\n", i+1, gsl_vector_get(xbeta1, i));
-     }
-     */
-    
-    
-    
-  
-    /*
-  
-    
-    for(i = 0; i < 10; i++)
-    {
-        printf("case01 %d = %.f\n", i+1, gsl_vector_get(case01, i));
-        printf("case11 %d = %.f\n\n", i+1, gsl_vector_get(case11, i));
-    }
-    
-    
-    */
-
-    
-  
-    
-        /*
-    
-     for(i = 0; i < J+1; i++){
-     for(j = 0; j < J+1; j++)
-     {
-     printf("Q%d,%d =, %.6f\n", i+1, j+1, gsl_matrix_get(Q, i, j));
-     }
-     
-     }
-     
-     
-     for(i = 0; i < J+1; i++){
-     for(j = 0; j < J+1; j++)
-     {
-     printf("W%d,%d =, %.6f\n", i+1, j+1, gsl_matrix_get(W, i, j));
-     }
-     
-     }
-     
-     
-     for(i = 0; i < J+1; i++){
-     for(j = 0; j < J+1; j++)
-     {
-     printf("Sigma_lam%d,%d =, %.6f\n", i+1, j+1, gsl_matrix_get(Sigma_lam, i, j));
-     }
-     
-     }
-     
-     for(i = 0; i < J+1; i++){
-     for(j = 0; j < J+1; j++)
-     {
-     printf("invSigma_lam%d,%d =, %.20f\n", i+1, j+1, gsl_matrix_get(invSigma_lam, i, j));
-     }
-     
-     }
-          */
-     
-
-        /*
-    printf("a1 = %.3f\n", a1);
-    printf("a2 = %.3f\n", a2);
-    printf("a3 = %.3f\n", a3);
-    printf("b1 = %.3f\n", b1);
-    printf("b2 = %.3f\n", b2);
-    printf("b3 = %.3f\n", b3);
-    
-    printf("alpha1 = %.3f\n", alpha1);
-    printf("alpha2 = %.3f\n", alpha2);
-    printf("alpha3 = %.3f\n", alpha3);
-    printf("c_lam1 = %.3f\n\n", c_lam1);
-    printf("c_lam2 = %.3f\n\n", c_lam2);
-    printf("c_lam3 = %.3f\n\n", c_lam3);
-    
-    for(j = 0; j < *p1; j++) printf("beta1%d = %.3f\n", j+1, gsl_vector_get(beta1, j));
-    for(j = 0; j < *p2; j++) printf("beta2%d = %.3f\n", j+1, gsl_vector_get(beta2, j));
-    for(j = 0; j < *p3; j++) printf("beta3%d = %.3f\n", j+1, gsl_vector_get(beta3, j));
-
-    printf("J1 = %d\n", J1);
-    printf("J2 = %d\n", J2);
-    printf("J3 = %d\n", J3);
-    printf("mu_lam1 = %.3f\n", mu_lam1);
-    printf("mu_lam2 = %.3f\n", mu_lam2);
-    printf("mu_lam3 = %.3f\n", mu_lam3);
-    printf("sigSq_lam1 = %.3f\n\n", sigSq_lam1);
-    printf("sigSq_lam2 = %.3f\n\n", sigSq_lam2);
-    printf("sigSq_lam3 = %.3f\n\n", sigSq_lam3);
-    
-    for(j = 0; j < (J1+1); j++) printf("lambda1_%d = %.3f\n", j+1, gsl_vector_get(lambda1, j));
-    for(j = 0; j < (J2+1); j++) printf("lambda2_%d = %.3f\n", j+1, gsl_vector_get(lambda2, j));
-    for(j = 0; j < (J3+1); j++) printf("lambda3_%d = %.3f\n", j+1, gsl_vector_get(lambda3, j));
-
-    for(j = 0; j < (J1+1); j++) printf("s1_%d = %.3f\n", j+1, gsl_vector_get(s1, j));
-    for(j = 0; j < (J2+1); j++) printf("s2_%d = %.3f\n", j+1, gsl_vector_get(s2, j));
-    for(j = 0; j < (J3+1); j++) printf("s3_%d = %.3f\n", j+1, gsl_vector_get(s3, j));
-
-    printf("C1 = %.3f\n", C1);
-    printf("C2 = %.3f\n", C2);
-    printf("C3 = %.3f\n", C3);
-    printf("delPert1 = %.3f\n", delPert1);
-    printf("delPert2 = %.3f\n", delPert2);
-    printf("delPert3 = %.3f\n", delPert3);
- 
-    printf("J1_max = %d\n", J1_max);
-    printf("s1_max = %.3f\n", s1_max);
-    printf("J2_max = %d\n", J2_max);
-    printf("s2_max = %.3f\n", s2_max);
-    printf("J3_max = %d\n", J3_max);
-    printf("s3_max = %.3f\n", s3_max);
-         */
-    
-    /*    
-    for(j = 0; j < nTime_lambda1; j++) printf("time_lambda1_%d = %.3f\n", j+1, gsl_vector_get(time_lambda1, j));
-
-
-    for(j = 0; j < num_s_propBI1; j++) printf("s_propBI1_%d = %.3f\n", j+1, gsl_vector_get(s_propBI1, j));
-    for(j = 0; j < num_s_propBI2; j++) printf("s_propBI2_%d = %.3f\n", j+1, gsl_vector_get(s_propBI2, j));
-    for(j = 0; j < num_s_propBI3; j++) printf("s_propBI3_%d = %.3f\n", j+1, gsl_vector_get(s_propBI3, j));
-    */
-
-
-
     PutRNGstate();
     return;
     

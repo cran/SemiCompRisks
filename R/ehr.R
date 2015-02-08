@@ -8,7 +8,7 @@ if(class(x) == "BayesID"){
 		
 		nChain = x$setup$nChain
 			
-		if(x$setup$type == "semi-parametric"){
+		if(x$setup$hz.type == "PEM"){
 				
 			nStore <- length(x$chain1$J1.p)
 			numSpl <- nStore * nChain			
@@ -150,7 +150,7 @@ if(class(x) == "BayesID"){
 				}
 				
 		}
-		ret <- list(ehr = ehrSubj, time = time, type = x$setup$type)	
+		ret <- list(ehr = ehrSubj, time = time, hz.type = x$setup$hz.type)
 		class(ret) <- "ehr"
 		return(ret)					
 	}

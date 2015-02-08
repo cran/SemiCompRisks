@@ -367,9 +367,6 @@ void BweibScr_updateSC1(gsl_vector *beta1,
     
     logR = logLH_prop - logLH + logPrior_prop - logPrior + logProp_PropToIni - logProp_IniToProp;
     
-    
-    /* logR = logLH_prop - logLH + logPrior_prop; */
-    
     u = log(runif(0, 1)) <logR;
     
     if(u == 1)
@@ -446,9 +443,6 @@ void BweibScr_updateSC2(gsl_vector *beta2,
     
     logR = logLH_prop - logLH + logPrior_prop - logPrior + logProp_PropToIni - logProp_IniToProp;
     
-    
-    /* logR = logLH_prop - logLH + logPrior_prop; */
-    
     u = log(runif(0, 1)) <logR;
     
     if(u == 1)
@@ -522,9 +516,6 @@ void BweibScr_updateSC3(gsl_vector *beta3,
     logProp_IniToProp = dgamma(temp_prop, pow(*alpha3, 2)/mhProp_alpha3_var, mhProp_alpha3_var/(*alpha3), 1);
     
     logR = logLH_prop - logLH + logPrior_prop - logPrior + logProp_PropToIni - logProp_IniToProp;
-    
-    
-    /* logR = logLH_prop - logLH + logPrior_prop; */
     
     u = log(runif(0, 1)) <logR;
     

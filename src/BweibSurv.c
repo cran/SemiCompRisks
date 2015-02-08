@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #include "gsl/gsl_matrix.h"
 #include "gsl/gsl_linalg.h"
@@ -36,6 +37,9 @@ void BweibSurvmcmc(double survData[],
                     double samples_misc[])
 {
     GetRNGstate();
+    
+    time_t now;    
+    
     
     int i, j, M;
     
@@ -148,6 +152,22 @@ void BweibSurvmcmc(double survData[],
             }
             samples_misc[*p] = accept_alpha;
         }
+        
+        if( ( (M+1) % 10000 ) == 0)
+        {
+            time(&now);
+            
+            Rprintf("iteration: %d: %s\n", M+1, ctime(&now));
+            
+            
+            R_FlushConsole();
+            R_ProcessEvents();
+            
+            
+        }
+        
+        
+        
     }
 
     PutRNGstate();

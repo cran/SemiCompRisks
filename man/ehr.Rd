@@ -13,10 +13,10 @@ ehr(Cov2 = NULL, Cov3 = NULL, x, xlim = c(0, 10))
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{Cov2}{
-	a covariate vector of length \code{p2} that corresponds to transition "no event-> terminal event"
+	a covariate vector of length \code{p2} that corresponds to transition "from no event to terminal event"
 }
   \item{Cov3}{
-	a covariate vector of length \code{p3} that corresponds to transition "non-terminal event-> terminal event"
+	a covariate vector of length \code{p3} that corresponds to transition "from non-terminal event to terminal event"
 }
   \item{x}{
 	an object of class \code{BayesID}
@@ -34,9 +34,9 @@ ehr(Cov2 = NULL, Cov3 = NULL, x, xlim = c(0, 10))
 \item{time}{time points at which EHR is estimated}
 }
 \references{
-Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2013). 
-Bayesian Semi-parametric Analysis of Semi-competing Risks Data: 
-Estimating Readmission Rates among Pancreatic Cancer Patients, submitted.
+Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2014), 
+Bayesian semiparametric analysis of semicompeting risks data: 
+investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, \emph{in press}.
 }
 \author{
 Kyu Ha Lee and Sebastien Haneuse \cr

@@ -1,5 +1,8 @@
 useDynLib(SemiCompRisks) 
 
+
+export(BayesSurvcor)
+export(BayesIDcor)
 export(BayesSurv)
 export(BayesID)
 export(simID)
@@ -8,11 +11,17 @@ export(ehr)
 
 
 S3method(print, BayesSurv)
+S3method(print, BayesSurvcor)
 S3method(print, BayesID)
+S3method(print, BayesIDcor)
 S3method(summary, BayesSurv)
+S3method(summary, BayesSurvcor)
 S3method(summary, BayesID)
+S3method(summary, BayesIDcor)
 S3method(plot, BayesSurv)
+S3method(plot, BayesSurvcor)
 S3method(plot, BayesID)
+S3method(plot, BayesIDcor)
 S3method(plot, ehr)
 
 

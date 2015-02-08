@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #include "gsl/gsl_matrix.h"
 #include "gsl/gsl_linalg.h"
@@ -39,6 +40,8 @@ void BpeSurvmcmc(double survData[],
                     double lambda_fin[])
 {
     GetRNGstate();
+    
+    time_t now;    
     
     int i, j, M;
     
@@ -123,39 +126,7 @@ void BpeSurvmcmc(double survData[],
     gsl_vector *xbeta = gsl_vector_calloc(*n);
     gsl_blas_dgemv(CblasNoTrans, 1, survCov, beta, 0, xbeta);
 
-    /*
-    gsl_matrix *xbeta_mat = gsl_matrix_calloc(*n, J+1);
-    for(j = 0; j < J+1; j++) gsl_matrix_set_col(xbeta_mat, j, xbeta);
-    */
 
-    
-     /* Indicators */
-    
-    /*
-    gsl_vector *case0yleq = gsl_vector_alloc(*n);
-    gsl_vector *case0ygeq = gsl_vector_alloc(*n);
-    gsl_vector *case1yleq = gsl_vector_alloc(*n);
-    gsl_vector *case1ygeq = gsl_vector_alloc(*n);
-    
-    gsl_matrix *ind_d   = gsl_matrix_calloc(*n, J_max+1);
-    gsl_matrix *ind_r   = gsl_matrix_calloc(*n, J_max+1);
-    gsl_vector *nEvent  = gsl_vector_calloc(J_max+1);
-    
-
-    set_Ind(ind_d, ind_r, nEvent, s, survTime, survEvent, case0yleq, case0ygeq, case1yleq, case1ygeq, s_max, J);
-    
-     */
-    
-    /* Calculating Delta */
-    
-    /*
-     
-    gsl_matrix *Delta = gsl_matrix_alloc(*n, J_max+1);
-    cal_Delta(Delta, survTime, s, J);
-     
-     */
-
-    
     
     /* Calculating Sigma_lam (from W and Q) */
 
@@ -218,11 +189,6 @@ void BpeSurvmcmc(double survData[],
             pDI = rho_lam * 2;
         }
         
-        /* pBI = 0; */
-        /* pDI = 0; */
-        
-
-        
         pRP = (*p > 0) ? (double) (1-pBI-pDI)/(numUpdate-2) : 0;
         pBH = (double) (1-pBI-pDI)/(numUpdate-2);
         pSP = 1-(pBI+pDI+pRP+pBH);
@@ -246,10 +212,6 @@ void BpeSurvmcmc(double survData[],
         
         if(move == 1)
         {
-            /*
-            BpeSur_updateRP1(beta, xbeta, accept_beta, lambda, survTime, survEvent, survCov, ind_r, ind_d, Delta, J);
-             */
-
             BpeSur_updateRP2(beta, xbeta, accept_beta, lambda, s, survTime, survEvent, survCov, J);
 
         }
@@ -264,13 +226,7 @@ void BpeSurvmcmc(double survData[],
         
         if(move == 2)
         {
-            /* 
-            BpeSur_updateBH1(lambda, xbeta, ind_r, Delta, nEvent, Sigma_lam, invSigma_lam, W, Q, mu_lam, sigSq_lam, J);
-             */
-
             BpeSur_updateBH2(lambda, s, xbeta, survTime, survEvent, Sigma_lam, invSigma_lam, W, Q, mu_lam, sigSq_lam, J);
-
-
         }
     
 
@@ -290,10 +246,6 @@ void BpeSurvmcmc(double survData[],
 
         if(move == 4)
         {
-            /*            
-            BpeSur_updateBI1(s, &J, &accept_BI, survTime, survEvent, case0yleq, case0ygeq, case1yleq, case1ygeq, xbeta, ind_r, ind_d, nEvent, Delta, Sigma_lam, invSigma_lam, W, Q, lambda, s_propBI, num_s_propBI, delPert, alpha, c_lam, mu_lam, sigSq_lam, s_max);
-            */            
-
             BpeSur_updateBI2(s, &J, &accept_BI, survTime, survEvent, xbeta, Sigma_lam, invSigma_lam, W, Q, lambda, s_propBI, num_s_propBI, delPert, alpha, c_lam, mu_lam, sigSq_lam, s_max);
         }
         
@@ -305,12 +257,7 @@ void BpeSurvmcmc(double survData[],
 
         if(move == 5)
         {
-           /*
-            BpeSur_updateDI1(s, &J, &accept_DI, survTime, survEvent, case0yleq, case0ygeq, case1yleq, case1ygeq, xbeta, ind_r, ind_d, nEvent, Delta, Sigma_lam, invSigma_lam, W, Q, lambda, s_propBI, num_s_propBI, delPert, alpha, c_lam, mu_lam, sigSq_lam, s_max, J_max);
-            */            
-
             BpeSur_updateDI2(s, &J, &accept_DI, survTime, survEvent, xbeta, Sigma_lam, invSigma_lam, W, Q, lambda, s_propBI, num_s_propBI, delPert, alpha, c_lam, mu_lam, sigSq_lam, s_max, J_max);
-
         }
         
         
@@ -369,6 +316,22 @@ void BpeSurvmcmc(double survData[],
             samples_misc[*p] = accept_BI;
             samples_misc[*p+1] = accept_DI;
         }
+        
+        
+        if( ( (M+1) % 10000 ) == 0)
+        {
+            time(&now);
+            
+            Rprintf("iteration: %d: %s\n", M+1, ctime(&now));
+            
+            
+            R_FlushConsole();
+            R_ProcessEvents();
+            
+            
+        }
+        
+        
 
    
     }    
@@ -377,233 +340,6 @@ void BpeSurvmcmc(double survData[],
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /*
-     
-     for(i = 0; i < *n; i++)
-     {
-     for(j = 0; j < J+1; j++)
-     {
-     printf("xbeta_mat%d,%d= %.3f\n", i+1, j+1, gsl_matrix_get(xbeta_mat, i, j));
-     }
-     }
-     
-     
-     */
-    
-    /*
-     
-     for(i = 0; i < 2; i++)
-     {
-     for(j = 0; j < J+1; j++)
-     {
-     printf("xbeta_mat%d,%d= %.3f", i+1, j+1, gsl_matrix_get(xbeta_mat, i, j));
-     }
-     }
-     
-     */
-    
-    
-    
-    
-    /*
-     for(i = 0; i < *n; i++)
-     {
-     printf("xbeta%d = %.3f\n", i+1, gsl_vector_get(xbeta, i));
-     }
-     */
-    
-    
-    
-    
-    /* checking the indicators ind_d
-     
-     for(i = 0; i < *n; i++)
-     {
-     for(j = 0; j < J+1; j++)
-     {
-     printf("ind_d %d ,%d = %.3f\n", i+1, j+1, gsl_matrix_get(ind_d, i, j));
-     }
-     }
-     */
-    
-    
-    /* checking the indicators ind_r
-     
-     for(i = 0; i < *n; i++)
-     {
-     for(j = 0; j < J+1; j++)
-     {
-     printf("ind_r %d ,%d = %.3f\n", i+1, j+1, gsl_matrix_get(ind_r, i, j));
-     
-     }
-     }
-     
-     for(j = 0; j < J+1; j++)
-     {
-     printf("nEvent%d= %.1f\n", j+1, gsl_vector_get(nEvent, j));
-     }
-     
-     */
-    
-    /* checking if all indicators are zero for j > J+1
-     for(i = 0; i < *n; i++)
-     {
-     
-     printf("ind_r %d ,%d = %.3f\n", i+1, 6, gsl_matrix_get(ind_r, i, 5));
-     }
-     for(i = 0; i < *n; i++)
-     {
-     
-     printf("ind_r %d ,%d = %.3f\n", i+1, 7, gsl_matrix_get(ind_r, i, 6));
-     }
-     */
-    
-
-    /* checking Delta */
-
-         /*
-    for(i = 0; i < *n; i++)
-    {
-        for(j = 0; j < J+1; j++)
-        {
-            printf("Delta%d,%d = %.1f\n", i+1, j+1, gsl_matrix_get(Delta, i, j));
-        }
-     
-    }
-    
-          */
-    
-    /* checking if Delta is zero for j > J+1
-     
-    for(i = 0; i < *n; i++)
-    {
-        printf("Delta%d,%d = %.1f\n", i+1, 6, gsl_matrix_get(Delta, i, 5));
-        printf("Delta%d,%d = %.1f\n", i+1, 7, gsl_matrix_get(Delta, i, 6));
-    }
-    
-    */
-    
-    
-            /*   
-    
-    for(i = 0; i < *n; i++)
-    {
-        printf("case0yleq %d = %.f\n", i+1, gsl_vector_get(case0yleq, i));
-        printf("case0ygeq %d = %.f\n", i+1, gsl_vector_get(case0ygeq, i));
-        printf("case1yleq %d = %.f\n", i+1, gsl_vector_get(case1yleq, i));
-        printf("case1ygeq %d = %.f\n\n", i+1, gsl_vector_get(case1ygeq, i));
-    }
-    
-    */
-    
-
-    
-    
-    /* 
-     
-     for(i = 0; i < *n; i++)
-     {
-     for(j = 0; j < J+1; j++)
-     {
-     printf("Delta%d,%d = %.1f\n", i+1, j+1, gsl_matrix_get(Delta, i, j));
-     }
-     
-     }
-     */
- 
-    
-    /*     
-    
-     for(i = 0; i < J+1; i++){
-     for(j = 0; j < J+1; j++)
-     {
-     printf("Q%d,%d =, %.6f\n", i+1, j+1, gsl_matrix_get(Q, i, j));
-     }
-     
-     }
-     
-     
-     for(i = 0; i < J+1; i++){
-     for(j = 0; j < J+1; j++)
-     {
-     printf("W%d,%d =, %.6f\n", i+1, j+1, gsl_matrix_get(W, i, j));
-     }
-     
-     }
-     
-     
-     for(i = 0; i < J+1; i++){
-     for(j = 0; j < J+1; j++)
-     {
-     printf("Sigma_lam%d,%d =, %.6f\n", i+1, j+1, gsl_matrix_get(Sigma_lam, i, j));
-     }
-     
-     }
-     
-     for(i = 0; i < J+1; i++){
-     for(j = 0; j < J+1; j++)
-     {
-     printf("invSigma_lam%d,%d =, %.20f\n", i+1, j+1, gsl_matrix_get(invSigma_lam, i, j));
-     }
-     
-     }
-          */
-     
-    /*
-    
-    printf("a = %.3f\n", a);
-    printf("b = %.3f\n", b);
-    printf("alpha = %.3f\n", alpha);
-    printf("c_lam = %.3f\n\n", c_lam);
-    
-    for(j = 0; j < *p; j++)
-    {
-        printf("beta%d = %.3f\n", j+1, gsl_vector_get(beta, j));
-    }
-    printf("J = %d\n", J);
-    printf("mu_lam = %.3f\n", mu_lam);
-    printf("sigSq_lam = %.3f\n\n", sigSq_lam);
-    for(j = 0; j < (J+1); j++)
-    {
-        printf("lambda%d = %.3f\n", j+1, gsl_vector_get(lambda, j));
-    }
-    for(j = 0; j < (J+1); j++)
-    {
-        printf("s%d = %.3f\n", j+1, gsl_vector_get(s, j));
-    }
-    printf("C = %.3f\n", C);
-    printf("delPert = %.3f\n", delPert);
-     
-     
-    for(j = 0; j < num_s_propBI; j++)
-    {
-        printf("s_propBI%d = %.3f\n", j+1, gsl_vector_get(s_propBI, j));
-    }
-    
- 
-    printf("J_max = %d\n", J_max);
-    printf("s_max = %.3f\n", s_max);
-    
-    
-    for(j = 0; j < nTime_lambda; j++)
-    {
-        printf("time_lambda%d = %.3f\n", j+1, gsl_vector_get(time_lambda, j));
-    }
-     */
-
 
 
     PutRNGstate();

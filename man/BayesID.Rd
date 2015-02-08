@@ -2,33 +2,33 @@
 \alias{BayesID}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-The function to fit Bayesian parametric and semi-parametric regression models to semi-competing risks data.
+The function to fit parametric and semi-parametric hierarchical models to semi-competing risks data.
 }
 \description{
-The function to fit Bayesian illness-death models to semi-competing risks data. 
-In the model, the conditional hazard for the terminal event given that the non-terminal event has occurred (\eqn{h_3}) is assumed 
-to be either Markov or semi-Markov with respect to the timing of the non-terminal event.
+Independent (not cluster-correlated) semi-competing risks data can be analyzed using hierarchical models. The prior of baseline hazard functions can be specified by either parametric (Weibull) model or non-parametric mixture of piecewise exponential models (PEM). The conditional hazard function for time to the terminal event given time to non-terminal can be modeled as Markov (it does not depend on the timing of the non-terminal event) or semi-Markov (it does depend on the timing).
 }
 \usage{
 BayesID(survData, nCov, hyperParams, startValues, mcmcParams, nGam_save, numReps, 
-thin, path, burninPerc = 0.5, type = "semi-parametric", model = "Markov", nChain = 1)
+thin, path, burninPerc = 0.5, hz.type = "Weibull", model = "Markov", nChain = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{survData}{
-	The data frame containing semi-competing risks data with covariate matrices from \code{n} subjects. See *Examples*. 
+	The data frame containing semi-competing risks data with covariate matrices from \code{n} subjects. It is of dimension \eqn{n\times(4+p_1+p_2+p_3)}, where \eqn{p_1},\eqn{p_2},\eqn{p_3} are the number of covariates included in the conditional hazard functions \eqn{h_1}, \eqn{h_2}, \eqn{h_3}, repectively. The first four columns correspond to \eqn{y_1}, \eqn{\delta_1}, \eqn{y_2}, \eqn{\delta_2}.
 }
   \item{nCov}{
-	a numeric vector that contains dimension of covariate space: c(\code{p1}, \code{p2}, \code{p3})
+	a numeric vector that contains dimensions of covariate space: c(\eqn{p_1},\eqn{p_2},\eqn{p_3})
 }
   \item{hyperParams}{
-	a vector containing hyperparameter values for hierarchical model. See *Details* and *Examples*.
+	a vector containing hyperparameter values for hierarchical model. For PEM model (\code{hz.type}="PEM"), it is of length 14; c(\eqn{a_1}, \eqn{a_2}, \eqn{a_3}, \eqn{b_1}, \eqn{b_2}, \eqn{b_3}, \eqn{\alpha_1}, \eqn{\alpha_2}, \eqn{\alpha_3}, \eqn{c_{\lambda1}}, \eqn{c_{\lambda2}}, \eqn{c_{\lambda3}}, \eqn{\psi}, \eqn{\omega}). For Weibull model (\code{hz.type}="Weibull"), it is of length 14; c(\eqn{a_1}, \eqn{b_1}, \eqn{a_2}, \eqn{b_2}, \eqn{a_3}, \eqn{b_3}, \eqn{c_1}, \eqn{d_1}, \eqn{c_2}, \eqn{d_2}, \eqn{c_3}, \eqn{d_3},\eqn{\psi}, \eqn{\omega}).
 }
   \item{startValues}{
-  	a list containing vectors of starting values of the parameters. See *Details* and *Examples*.
+  	a list containing vectors of starting values of parameters. The length of list must be equal to the number of chains (\code{nChain}). For PEM model (\code{hz.type}="PEM"), each of list components is of length \eqn{p_1+p_2+p_3+10+n+2(J_1+1)+2(J_2+1)+2(J_3+1)}; c(\eqn{\beta_1}, \eqn{\beta_2}, \eqn{\beta_3}, \eqn{J_1}, \eqn{J_2}, \eqn{J_3}, \eqn{\mu_{\lambda_1}}, \eqn{\mu_{\lambda_2}}, \eqn{\mu_{\lambda_3}}, \eqn{\sigma_{\lambda_1}^2}, \eqn{\sigma_{\lambda_2}^2}, \eqn{\sigma_{\lambda_3}^2}, \eqn{\theta}, \eqn{\gamma}, \eqn{\lambda_1}, \eqn{\lambda_2}, \eqn{\lambda_3}, \eqn{s_1}, \eqn{s_2}, \eqn{s_3}). For Weibull model (\code{hz.type}="Weibull"), each of list components is of length \eqn{p_1+p_2+p_3+7+n}; c(\eqn{\beta_1}, \eqn{\beta_2}, \eqn{\beta_3}, \eqn{\alpha_1}, \eqn{\alpha_2}, \eqn{\alpha_3}, \eqn{\kappa_1}, \eqn{\kappa_2}, \eqn{\kappa_3}, \eqn{\theta}, \eqn{\gamma}).
 }
   \item{mcmcParams}{
-	a vector containing variables required for Metropolis-Hastings-Green (MGH) algorithm. See *Details* and *Examples*.
+	a vector containing variables required for Metropolis-Hastings-Green (MHG) algorithm. \cr
+    For PEM model (\code{hz.type}="PEM"), it is of length \eqn{(18+num\_s\_propBI1+num\_s\_propBI2+num\_s\_propBI3+nTime\_lambda1+nTime\_lambda2+nTime\_lambda3}); c(\eqn{C_1}, \eqn{C_2}, \eqn{C_3}, delPert1, delPert2, delPert3, num_s_propBI1, num_s_propBI2, num_s_propBI3, \eqn{J_{1max}}, \eqn{J_{2max}}, \eqn{J_{3max}}, \eqn{s_{1max}}, \eqn{s_{2max}}, \eqn{s_{3max}}, nTime_lambda1, nTime_lambda2, nTime_lambda3, s_propBI1, s_propBI2, s_propBI3, time_lambda1,time_lambda2, time_lambda3, mhProp_theta_var). The perturbation random variable is drawn from Uniform(0.5-delPert1, 0.5+delPert1) in the birth/death move for \eqn{h_{01}}. nTime_lambda1 is \code{length}(time_lambda1), where time_lambda1 is a set of time points where the posterior estimates of \eqn{log(h_{01})} is calculated. s_propBI1 is a set of candidates for proposal values in birth move of \eqn{h_{01}}. mhProp_theta_var is the variance of proposal density in Metropolis-Hastings step for \eqn{\theta}.\cr
+    For Weibull model (\code{hz.type}="Weibull"), it is of length 4; c(mhProp_alpha1_var, mhProp_alpha2_var, mhProp_alpha3_var, mhProp_theta_var). mhProp_alpha1_var is the variance of proposal density in Metropolis-Hastings step for \eqn{\alpha_1}.
 }
   \item{nGam_save}{
 	the number of \eqn{\gamma} to be stored
@@ -45,8 +45,8 @@ thin, path, burninPerc = 0.5, type = "semi-parametric", model = "Markov", nChain
   \item{burninPerc}{
 	the proportion of burn-in
 }
-  \item{type}{
-	the type of analysis: either "\code{parametric}" or "\code{semi-parametric}"
+  \item{hz.type}{
+	prior specification for baseline hazard functions : either "\code{Weibull}" or "\code{PEM}"
 }
   \item{model}{
 	assumptions on \eqn{h_{03}}: either "\code{Markov}" or "\code{semi-Markov}"
@@ -56,21 +56,19 @@ thin, path, burninPerc = 0.5, type = "semi-parametric", model = "Markov", nChain
 }
 }
 \details{
-  In order to analyze semi-competing risks data, we view the data as arising from an underlying illness-death model system in which 
-  individuals may undergo one or more of three transition: 1) no event to non-terminal event, 2) no event to terminal event, 3) non-terminal event to terminal event.
-  The system of transitions is modeled via the specification of three hazard functions: 
+    We view the semi-competing risks data as arising from an underlying illness-death model system in which individuals may undergo one or more of three transitions: 1) no event to non-terminal event, 2) no event to terminal event, 3) non-terminal event to terminal event. Let \eqn{t_{1i}}, \eqn{t_{2i}} denote time to non-terminal and terminal event from subject \eqn{i=1,...,n}. The system of transitions is modeled via the specification of three hazard functions:
   \deqn{h_1(t_{1i} | \gamma_i, x_{1i}) = \gamma_i h_{01}(t_{1i})\exp(\beta_1 x_{1i}), t_{1i}>0,}
   \deqn{h_2(t_{2i} | \gamma_i, x_{2i}) = \gamma_i h_{02}(t_{2i})\exp(\beta_2 x_{2i}), t_{2i}>0,}
   \deqn{h_3(t_{2i} | t_{1i}, \gamma_i, x_{3i}) = \gamma_i h_{03}(t_{2i})\exp(\beta_3 x_{3i}), 0<t_{1i}<t_{2i},}
   
   where \eqn{\gamma_i} is a subject-specific frailty, taken to be distributed independently of \eqn{x_{1i}}, \eqn{x_{2i}}, and \eqn{x_{3i}}.
   For \eqn{g \in \{1,2,3\}}, \eqn{h_{0g}} is an unspecified baseline hazard function and \eqn{\beta_g} is a vector of \eqn{p_g} log-hazard ratio regression parameters.
-  The \eqn{h_{03}} is assumed to Markov with respect to \eqn{t_1}. we refer to the model specified by three conditional hazard functions as the `Markov model'.
+  The \eqn{h_{03}} is assumed to be Markov with respect to \eqn{t_1}. We refer to the model specified by three conditional hazard functions as the Markov model.
   An alternative specification is to model the risk of terminal event following non-terminal event as a function of the sojourn time. Specifically, retaining \eqn{h_1} and \eqn{h_2} as above,
   we consider modeling \eqn{h_3} as follows:
   \deqn{h_3(t_{2i} | t_{1i}, \gamma_i, x_{3i}) = \gamma_i h_{03}(t_{2i}-t_{1i})\exp(\beta_3 x_{3i}), 0<t_{1i}<t_{2i}.}
-  We refer to this alternative model as the `semi-Markov' model.
-  For `semi-parametric analysis', let \eqn{s_{g,\max}}$ denote the largest observed event time for each transition \eqn{g \in \{1,2,3\}}. 
+  We refer to this alternative model as the semi-Markov model. \cr
+  For non-parametric PEM prior specification for baseline hazard functions, let \eqn{s_{g,\max}} denote the largest observed event time for each transition \eqn{g \in \{1,2,3\}}.
   Then, consider the finite partition of the relevant time axis into \eqn{J_{g} + 1} disjoint intervals: \eqn{0<s_{g,1}<s_{g,2}<...<s_{g, J_g+1} = s_{g, \max}}. 
   For notational convenience, let \eqn{I_{g,j}=(s_{g, j-1}, s_{g, j}]} denote the \eqn{j^{th}} partition. 
   For given a partition, \eqn{s_g = (s_{g,1}, \dots, s_{g, J_g + 1})}, we assume the log-baseline hazard functions is piecewise constant:
@@ -82,7 +80,7 @@ thin, path, burninPerc = 0.5, type = "semi-parametric", model = "Markov", nChain
 	\deqn{\pi(\beta_g) \propto 1,}
 	\deqn{\lambda_g | J_g, \mu_{\lambda_g}, \sigma_{\lambda_g}^2 \sim \mathcal{N}_{J_g+1}(\mu_{\lambda_g}1, \sigma_{\lambda_g}^2\Sigma_{\lambda_g}),}
 	\deqn{J_g \sim \mathcal{P}(\alpha_g),}
-	\deqn{\pi(s_g | J_g) \propto \frac{(2J_g+1)! \prod_{j=1}^{J_g+1}(s_j-s_{j-1})}{(s_{g,J_g+1})^{(2J_g+1)}},}
+	\deqn{\pi(s_g | J_g) \propto \frac{(2J_g+1)! \prod_{j=1}^{J_g+1}(s_{g,j}-s_{g,j-1})}{(s_{g,J_g+1})^{(2J_g+1)}},}
 	\deqn{\pi(\mu_{\lambda_g}) \propto1,}
 	\deqn{\sigma_{\lambda_g}^{-2} \sim \mathcal{G}(a_g, b_g),}
 	\deqn{\gamma_i|\theta \sim \mathcal{G}(\theta^{-1}, \theta^{-1}),}
@@ -91,8 +89,7 @@ thin, path, burninPerc = 0.5, type = "semi-parametric", model = "Markov", nChain
 	Note that \eqn{J_g} and \eqn{s_g} are treated as random and the priors for \eqn{J_g} and \eqn{s_g} jointly form a time-homogeneous Poisson process prior for the partition.
 	The number of time splits and their positions are therefore updated within our computational scheme using reversible jump MCMC.
 	
-	For `parametric analysis', we assume the Weibull model for \eqn{h_{0g}(t) = \alpha_g \kappa_g t^{\alpha_g-1}}.
-   In our Bayesian framework, our prior choices are, for \eqn{g\in\{1,2,3\}}:	
+	For parametric Weibull prior specification for baseline hazard functions, \eqn{h_{0g}(t) = \alpha_g \kappa_g t^{\alpha_g-1}}. In our Bayesian framework, our prior choices are, for \eqn{g\in\{1,2,3\}}:
  	\deqn{\pi(\beta_g) \propto 1,}
  	\deqn{\pi(\alpha_g) \sim \mathcal{G}(a_g, b_g),}
  	\deqn{\pi(\kappa_g) \sim \mathcal{G}(c_g, d_g),} 	
@@ -103,14 +100,17 @@ thin, path, burninPerc = 0.5, type = "semi-parametric", model = "Markov", nChain
 
 
 \value{
-\code{BayesID} returns an object of class \code{BaysID}. \cr
-\code{names(object$chain1)} shows the list of posterior samples of model parameters, the number of acceptance in MGH algorithm, etc.
+\code{BayesID} returns an object of class \code{BayesID}. \cr
+\code{names(object$chain1)} shows the list of posterior samples of model parameters, the number of acceptance in MHG algorithm, etc.
 }
 \references{
-Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2013). 
-Bayesian Semi-parametric Analysis of Semi-competing Risks Data: 
-Estimating Readmission Rates among Pancreatic Cancer Patients, submitted.
+Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2014), 
+Bayesian semiparametric analysis of semicompeting risks data: 
+investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, \emph{in press}.
 }
+
+
+
 \author{
 Kyu Ha Lee and Sebastien Haneuse\cr
 Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
@@ -122,13 +122,13 @@ For a dataset with large \eqn{n}, \code{nGam_save} should be carefully specified
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-	\code{\link{print.BayesID}}, \code{\link{summary.BayesID}}, \code{\link{plot.BayesID}}, \code{\link{ehr}}
+	\code{\link{BayesIDcor}}, \code{\link{print.BayesID}}, \code{\link{summary.BayesID}}, \code{\link{plot.BayesID}}, \code{\link{ehr}}
 }
 \examples{
 
 \dontrun{
 
-# loading simulated data set
+# loading a data set
 data(scrData)
 	
 n = dim(scrData)[1]	
@@ -250,15 +250,14 @@ numReps		= 2e6
 thin		= 20
 burninPerc	= 0.5
 path1		= "outcome/"
-type 		= "semi-parametric"
+hz.type 	= "PEM"
 model 		= "Markov"
 nChain		= 2
 
 # fitting Bayesian semi-parametric regression model to semi-competing risks data	
-# In practice, set 'numReps' to a larger number such as 1000000
 
 fitScr <- BayesID(scrData, nCov, hyperParams, startValues, mcmcParams, nGam_save, 
-numReps, thin, path1, burninPerc, type, model, nChain)
+numReps, thin, path1, burninPerc, hz.type, model, nChain)
 		
 print(fitScr)
 summary(fitScr)

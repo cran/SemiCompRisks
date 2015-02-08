@@ -36,11 +36,13 @@ A vector with two numeric elements. The right censoring times are generated from
 \item{y}{a vector of \code{n} times to the event}
 \item{delta}{a vector of \code{n} censoring indicators for the event time (1=event occurred, 0=censored)}
 }
-\references{
-Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2013). 
-Bayesian Semi-parametric Analysis of Semi-competing Risks Data: 
-Estimating Readmission Rates among Pancreatic Cancer Patients, submitted.
-}
+%%\references{
+%%Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2014), 
+%%Bayesian semiparametric analysis of semicompeting risks data: 
+%%investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, \emph{in press}.\cr \cr
+%%Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S.,
+%%Hierarchical models for cluster-correlated semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{submitted}. \cr
+%%}
 \author{
 Kyu Ha Lee and Sebastien Haneuse \cr
 Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>

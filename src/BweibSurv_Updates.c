@@ -160,9 +160,6 @@ void BweibSurv_updateSC1(gsl_vector *beta,
      
      logR = logLH_prop - logLH + logPrior_prop - logPrior + logProp_PropToIni - logProp_IniToProp;
 
-    
-    /* logR = logLH_prop - logLH + logPrior_prop; */
-    
     u = log(runif(0, 1)) <logR;
     
     if(u == 1)

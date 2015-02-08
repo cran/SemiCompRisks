@@ -1,6 +1,6 @@
 
 
-### type = "semi-parametric" or "parametric"
+### hz.type = "PEM" (semi-parametric) or "Weibull" (parametric)
 
 BayesSurv <- function(survData, 
 						hyperParams,
@@ -10,7 +10,7 @@ BayesSurv <- function(survData,
 						thin,
 						path,
 						burninPerc=0.5,
-						type = "semi-parametric",
+						hz.type = "Weibull",
 						nChain = 1)
 {
 	
@@ -26,9 +26,9 @@ if(class(startValues) == "list" & length(startValues) == nChain){
 	startV <- as.vector(unlist(startValues[chain]))	
 	nam = paste("chain", chain, sep="")	
 	
-	# type = "semi-parametric"
+	# hz.type = "PEM"
 	
-	if(type == "semi-parametric"){
+	if(hz.type == "PEM"){
 
 		###
 		n	<- dim(survData)[1]
@@ -89,14 +89,14 @@ if(class(startValues) == "list" & length(startValues) == nChain){
 		
 		ret[[nam]] <- list(beta.p = beta.p, lambda.fin = lambda.fin, mu_lam.p = mu_lam.p, sigSq_lam.p = sigSq_lam.p, 
 					J.p = J.p, s.p = s.p, accept.beta = accept.beta, accept.BI = accept.BI, accept.DI = accept.DI,
-					covNames = covNames, time_lambda = time_lambda, type = type)
+					covNames = covNames, time_lambda = time_lambda, hz.type = hz.type)
 
 		}
 
 
-	# type = "parametric"
+	# hz.type = "Weibull"
 	
-	if(type == "parametric"){
+	if(hz.type == "Weibull"){
 
 		###
 		n	<- dim(survData)[1]
@@ -144,7 +144,7 @@ if(class(startValues) == "list" & length(startValues) == nChain){
         	}
 			
 		ret[[nam]] <- list(beta.p = beta.p, alpha.p = alpha.p, kappa.p = kappa.p, accept.beta = accept.beta, 
-					accept.alpha = accept.alpha, covNames = covNames, type = type)
+					accept.alpha = accept.alpha, covNames = covNames, hz.type = hz.type)
 
 		
 		}
@@ -152,7 +152,7 @@ if(class(startValues) == "list" & length(startValues) == nChain){
 	chain = chain + 1	
 	}		
 	
-	ret[["setup"]]	<- list(hyperParams = hyperParams, startValues = startValues, mcmcParams = mcmcParams, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, type = type, nChain = nChain)	
+	ret[["setup"]]	<- list(hyperParams = hyperParams, startValues = startValues, mcmcParams = mcmcParams, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, nChain = nChain)
 
 	class(ret) <- "BayesSurv"
 	return(ret)
