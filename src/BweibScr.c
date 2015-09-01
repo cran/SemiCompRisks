@@ -48,7 +48,8 @@ void BweibScrmcmc(double survData[],
                   double samples_kappa3[],
                   double samples_theta[],
                   double samples_gamma[],
-                  double samples_misc[])
+                  double samples_misc[],
+                  double moveVec[])
 {
     GetRNGstate();
     
@@ -253,6 +254,9 @@ void BweibScrmcmc(double survData[],
         if(choice > pRP1 + pRP2 + pRP3 + pSH1 + pSH2 + pSH3 + pSC1 + pSC2 + pSC3) move = 10;
         if(choice > pRP1 + pRP2 + pRP3 + pSH1 + pSH2 + pSH3 + pSC1 + pSC2 + pSC3 + pDP) move = 11;
         
+        
+        
+        moveVec[M] = (double) move;
         
         
         /* updating regression parameter: beta1 */

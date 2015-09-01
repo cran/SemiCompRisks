@@ -1213,7 +1213,7 @@ void BweibMvnCorScr_updateMP(gsl_vector *beta2,
                        int *accept_nu3)
 {
     double LP2, LP3, D1, D2, logLH;
-    double LP2_prop, LP3_prop, D1_prop, D2_prop, logLH_prop;
+    double D1_prop, D2_prop, logLH_prop;
     double nu2_prop_me, nu2_prop_var, nu2_prop;
     double nu3_prop_me, nu3_prop_var, nu3_prop;
     double nu2_prop_me_prop, nu2_prop_var_prop;
@@ -1223,8 +1223,8 @@ void BweibMvnCorScr_updateMP(gsl_vector *beta2,
     int i, jj, u;
     
     int n = survTime1 -> size;
-    int p2 = survCov2 -> size2;
-    int p3 = survCov3 -> size2;
+
+
     
     
     /* update nu2 */
@@ -1399,7 +1399,7 @@ void BweibMvnCorScr_updateFP(gsl_vector *beta1,
                        gsl_vector *mhGam_chk,
                        int *ChgProp)
 {
-    double LP, logLH, logLH_prop;
+    double logLH, logLH_prop;
     double gam, temp_prop, del1, del2;
     double logPrior, logPrior_prop;
     double logProp_IniToProp, logProp_PropToIni;
@@ -1540,7 +1540,7 @@ void BweibMvnCorScr_updateCP1(gsl_vector *beta1,
     double logProp_IniToProp, logProp_PropToIni;
     double logR;
     int u, i, j;
-    int n = survTime1 -> size;
+
     int J = V1  -> size;
     
     int startInx = 0;
@@ -1642,7 +1642,7 @@ void BweibMvnCorScr_updateCP1_amcmc(gsl_vector *beta1,
     double logProp_IniToProp, logProp_PropToIni;
     double logR, term, v_prop_me, v_prop_var, v_prop_me_prop, v_prop_var_prop;
     int u, i, j;
-    int n = survTime1 -> size;
+
     int J = V1  -> size;
     
     int startInx = 0;
@@ -1780,7 +1780,7 @@ void BweibMvnCorScr_updateCP2(gsl_vector *beta2,
     double logProp_IniToProp, logProp_PropToIni;
     double logR;
     int u, i, j;
-    int n = survTime1 -> size;
+
     int J = V2  -> size;
     
     int startInx = 0;
@@ -1885,7 +1885,7 @@ void BweibMvnCorScr_updateCP2_amcmc(gsl_vector *beta2,
     double logProp_IniToProp, logProp_PropToIni;
     double logR, term, v_prop_me, v_prop_var, v_prop_me_prop, v_prop_var_prop;
     int u, i, j;
-    int n = survTime1 -> size;
+
     int J = V2  -> size;    
     
     int startInx = 0;
@@ -2026,7 +2026,7 @@ void BweibMvnCorScr_updateCP3(gsl_vector *beta3,
     double logProp_IniToProp, logProp_PropToIni;
     double logR;
     int u, i, j;
-    int n = survTime1 -> size;
+
     int J = V3  -> size;
     
     int startInx = 0;
@@ -2129,7 +2129,7 @@ void BweibMvnCorScr_updateCP3_amcmc(gsl_vector *beta3,
     double logProp_IniToProp, logProp_PropToIni;
     double logR, term, v_prop_me, v_prop_var, v_prop_me_prop, v_prop_var_prop;
     int u, i, j;
-    int n = survTime1 -> size;
+
     int J = V3  -> size;
     
     int startInx = 0;

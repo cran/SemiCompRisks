@@ -188,8 +188,8 @@ void BpeDpCorScrSM_updateRP2(gsl_vector *beta2,
                             int K2,
                             gsl_vector *accept_beta2)
 {
-    double LP, D1, D2, logLH;
-    double LP_prop, D1_prop, D2_prop, logLH_prop;
+    double D1, D2, logLH;
+    double D1_prop, D2_prop, logLH_prop;
     double beta_prop_me, beta_prop_var, temp_prop;
     double beta_prop_me_prop, beta_prop_var_prop;
     double logProp_IniToProp, logProp_PropToIni;
@@ -338,8 +338,8 @@ void BpeDpCorScrSM_updateRP3(gsl_vector *beta3,
                             int K3,
                             gsl_vector *accept_beta3)
 {
-    double LP, D1, D2, logLH;
-    double LP_prop, D1_prop, D2_prop, logLH_prop;
+    double D1, D2, logLH;
+    double D1_prop, D2_prop, logLH_prop;
     double beta_prop_me, beta_prop_var, temp_prop;
     double beta_prop_me_prop, beta_prop_var_prop;
     double logProp_IniToProp, logProp_PropToIni;
@@ -1747,7 +1747,7 @@ void BpeDpCorScrSM_updateDI1(gsl_vector *s1,
     
     int skip, i, j, jj;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -2335,7 +2335,7 @@ void BpeDpCorScrSM_updateDI2(gsl_vector *s2,
     
     int skip, i, j, jj;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -2913,7 +2913,7 @@ void BpeDpCorScrSM_updateDI3(gsl_vector *s3,
     
     int skip, i, j, jj;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -3170,7 +3170,7 @@ void BpeDpCorScrSM_updateMP(gsl_vector *beta2,
                        int *accept_nu3)
 {
     double LP2, LP3, D1, D2, logLH;
-    double LP2_prop, LP3_prop, D1_prop, D2_prop, logLH_prop;
+    double D1_prop, D2_prop, logLH_prop;
     double nu2_prop_me, nu2_prop_var, nu2_prop;
     double nu3_prop_me, nu3_prop_var, nu3_prop;
     double nu2_prop_me_prop, nu2_prop_var_prop;
@@ -3180,8 +3180,8 @@ void BpeDpCorScrSM_updateMP(gsl_vector *beta2,
     int i, jj, u;
     
     int n = survTime1 -> size;
-    int p2 = survCov2 -> size2;
-    int p3 = survCov3 -> size2;
+
+
     
     
     /* update nu2 */
@@ -3320,8 +3320,7 @@ void BpeDpCorScrSM_updateMP(gsl_vector *beta2,
 
 
 
-/* updating cluster-specific random effects
- : the prior is used for the proposal density */
+/* updating cluster-specific random effects */
 
 void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
                             gsl_vector *beta2,
@@ -3363,8 +3362,10 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
                             int *nClass_DP,
                             gsl_rng *rr)
 {
-    int i, j, jj, k, u, n_jc, c_ind, c_new, kk, ll;
+    int i, j, jj, k, u, n_jc, c_ind;
     double zetaA, rhoA, prob2, b_mc, sum_prob, val;
+    double D1, D2, D1_prop, D2_prop;
+    double v_prop_me, v_prop_var, v_prop_me_prop, v_prop_var_prop;
     
     int n = survTime1 -> size;
     int J = V1 -> size;
@@ -3384,12 +3385,13 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
     gsl_matrix *mat2 = gsl_matrix_calloc(3, 3);
     gsl_vector *temp_vec = gsl_vector_calloc(3);
     
+    gsl_vector *zeroVec = gsl_vector_calloc(3);
     
     gsl_matrix *mu = gsl_matrix_calloc(1, 3);
     gsl_matrix *Sigma = gsl_matrix_calloc(3,3);
     
     gsl_vector *V_prop = gsl_vector_calloc(3);
-    gsl_matrix *invSigma = gsl_matrix_calloc(3,3);
+    gsl_matrix *invSigma_V = gsl_matrix_calloc(3,3);
     
     gsl_matrix *Delta1 = gsl_matrix_calloc(n, K1+1);
     gsl_matrix *Delta2 = gsl_matrix_calloc(n, K2+1);
@@ -3714,7 +3716,6 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
     int endInx = 0;
     
         
-    
     for(j = 0; j < J; j++)
     {
         for(i = 0; i < u; i++)
@@ -3726,14 +3727,20 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
         gsl_matrix_view Sigma_temp = gsl_matrix_submatrix(Sigma_all, 0, 3*jj, 3, 3);
         gsl_vector_view mu_temp = gsl_vector_subvector(mu_all, 3*jj, 3);
         
+        matrixInv(&Sigma_temp.matrix, invSigma_V);
         
-        matrixInv(&Sigma_temp.matrix, invSigma);
+        
+        /*updating V1j*/
+        
         
         logLH = 0; logLH_prop = 0;
+        D1 = 0; D2 = 0;
+        D1_prop = 0; D2_prop = 0;
         
         gsl_vector_set(V, 0, gsl_vector_get(V1, j));
         gsl_vector_set(V, 1, gsl_vector_get(V2, j));
         gsl_vector_set(V, 2, gsl_vector_get(V3, j));
+        gsl_vector_memcpy(V_prop, V);
         
         endInx += (int) gsl_vector_get(n_j, j);
         
@@ -3741,22 +3748,11 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
         {
             gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
             gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
-            gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
-            gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
-            gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
-            gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
             
             if(gsl_vector_get(survEvent1, i) == 1)
             {
                 logLH += gsl_vector_get(V1, j);
-            }
-            if(gsl_vector_get(case01, i) == 1)
-            {
-                logLH += gsl_vector_get(V2, j);
-            }
-            if(gsl_vector_get(case11, i) == 1)
-            {
-                logLH += gsl_vector_get(V3, j);
+                D1 += 1;
             }
             
             gam = gsl_vector_get(gamma, i);
@@ -3779,8 +3775,102 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
                 {
                     term = - gam * Del*exp(gsl_vector_get(lambda1, k))*exp(LP1+gsl_vector_get(V1, j));
                     logLH +=  term;
+                    D1 += term;
+                    D2 += term;
                 }
             }
+            
+        } /* the end of the loop with i */
+        
+        D1 += -gsl_matrix_get(invSigma_V, 0, 0)*gsl_vector_get(V, 0)-gsl_matrix_get(invSigma_V, 1, 0)*gsl_vector_get(V, 1) - gsl_matrix_get(invSigma_V, 2, 0)*gsl_vector_get(V, 2);
+        D2 += -gsl_matrix_get(invSigma_V, 0, 0);
+        
+        v_prop_me    = gsl_vector_get(V1, j) - D1/D2;
+        v_prop_var   = - pow(2.4, 2)/D2;
+        
+        temp_prop = rnorm(v_prop_me, sqrt(v_prop_var));
+        gsl_vector_set(V_prop, 0, temp_prop);
+        
+        
+        for(i = startInx; i < endInx; i++)
+        {
+            gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+            gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+            
+            if(gsl_vector_get(survEvent1, i) == 1)
+            {
+                logLH_prop += gsl_vector_get(V_prop, 0);
+                D1_prop += 1;
+            }
+            
+            gam = gsl_vector_get(gamma, i);
+            
+            for(k = 0; k < K1+1; k++)
+            {
+                Del = gsl_matrix_get(Delta1, i, k);
+                
+                if(Del > 0)
+                {
+                    term = - gam * Del*exp(gsl_vector_get(lambda1, k))*exp(LP1+gsl_vector_get(V_prop, 0));
+                    logLH_prop +=  term;
+                    D1_prop += term;
+                    D2_prop += term;
+                }
+            }
+            
+        } /* the end of the loop with i */
+        
+        
+        D1_prop += -gsl_matrix_get(invSigma_V, 0, 0)*temp_prop-gsl_matrix_get(invSigma_V, 1, 0)*gsl_vector_get(V, 1) - gsl_matrix_get(invSigma_V, 2, 0)*gsl_vector_get(V, 2);
+        D2_prop += -gsl_matrix_get(invSigma_V, 0, 0);
+        
+        v_prop_me_prop   = temp_prop - D1_prop/D2_prop;
+        v_prop_var_prop  = - pow(2.4, 2)/D2_prop;
+        
+        c_dmvnorm2(V, zeroVec, 1, invSigma_V, &logPrior);
+        c_dmvnorm2(V_prop, zeroVec, 1, invSigma_V, &logPrior_prop);
+        
+        logProp_PropToIni = dnorm(gsl_vector_get(V1, j), v_prop_me_prop, sqrt(v_prop_var_prop), 1);
+        logProp_IniToProp = dnorm(temp_prop, v_prop_me, sqrt(v_prop_var), 1);
+        
+        logR = logLH_prop - logLH + logPrior_prop - logPrior + logProp_PropToIni - logProp_IniToProp;
+        
+        uu = log(runif(0, 1)) <logR;
+        
+        if(uu == 1)
+        {
+            gsl_vector_set(V1, j, gsl_vector_get(V_prop, 0));
+            gsl_vector_set(accept_V, j, (gsl_vector_get(accept_V, j) + uu));
+        }
+        
+        
+        
+        
+        
+        /*updating V2j*/
+        
+        logLH = 0; logLH_prop = 0;
+        D1 = 0; D2 = 0;
+        D1_prop = 0; D2_prop = 0;
+        
+        
+        gsl_vector_set(V, 0, gsl_vector_get(V1, j));
+        gsl_vector_set(V, 1, gsl_vector_get(V2, j));
+        gsl_vector_set(V, 2, gsl_vector_get(V3, j));
+        gsl_vector_memcpy(V_prop, V);
+        
+        for(i = startInx; i < endInx; i++)
+        {
+            gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+            gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+            
+            if(gsl_vector_get(case01, i) == 1)
+            {
+                logLH += gsl_vector_get(V2, j);
+                D1 += 1;
+            }
+            
+            gam = gsl_vector_get(gamma, i);
             
             for(k = 0; k < K2+1; k++)
             {
@@ -3800,8 +3890,103 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
                 {
                     term = - pow(gam, nu2) * Del*exp(gsl_vector_get(lambda2, k))*exp(LP2+gsl_vector_get(V2, j));
                     logLH +=  term;
+                    D1 += term;
+                    D2 += term;
                 }
             }
+            
+            
+            
+        } /* the end of the loop with i */
+        
+        D1 += -gsl_matrix_get(invSigma_V, 1, 1)*gsl_vector_get(V, 1)-gsl_matrix_get(invSigma_V, 0, 1)*gsl_vector_get(V, 0) - gsl_matrix_get(invSigma_V, 2, 1)*gsl_vector_get(V, 2);
+        D2 += -gsl_matrix_get(invSigma_V, 1, 1);
+        
+        v_prop_me    = gsl_vector_get(V2, j) - D1/D2;
+        v_prop_var   = - pow(2.4, 2)/D2;
+        
+        temp_prop = rnorm(v_prop_me, sqrt(v_prop_var));
+        gsl_vector_set(V_prop, 1, temp_prop);
+        
+        
+        for(i = startInx; i < endInx; i++)
+        {
+            gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+            gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+            
+            if(gsl_vector_get(case01, i) == 1)
+            {
+                logLH_prop += gsl_vector_get(V_prop, 1);
+                D1_prop += 1;
+            }
+            
+            gam = gsl_vector_get(gamma, i);
+            
+            
+            for(k = 0; k < K2+1; k++)
+            {
+                Del = gsl_matrix_get(Delta2, i, k);
+                
+                if(Del > 0)
+                {
+                    term = - pow(gam, nu2) * Del*exp(gsl_vector_get(lambda2, k))*exp(LP2+gsl_vector_get(V_prop, 1));
+                    logLH_prop +=  term;
+                    D1_prop += term;
+                    D2_prop += term;
+                }
+            }
+            
+            
+        } /* the end of the loop with i */
+        
+        
+        D1_prop += -gsl_matrix_get(invSigma_V, 1, 1)*temp_prop - gsl_matrix_get(invSigma_V, 0, 1)*gsl_vector_get(V, 0) - gsl_matrix_get(invSigma_V, 2, 1)*gsl_vector_get(V, 2);
+        D2_prop += -gsl_matrix_get(invSigma_V, 1, 1);
+        
+        v_prop_me_prop   = temp_prop - D1_prop/D2_prop;
+        v_prop_var_prop  = - pow(2.4, 2)/D2_prop;
+        
+        c_dmvnorm2(V, zeroVec, 1, invSigma_V, &logPrior);
+        c_dmvnorm2(V_prop, zeroVec, 1, invSigma_V, &logPrior_prop);
+        
+        logProp_PropToIni = dnorm(gsl_vector_get(V2, j), v_prop_me_prop, sqrt(v_prop_var_prop), 1);
+        logProp_IniToProp = dnorm(temp_prop, v_prop_me, sqrt(v_prop_var), 1);
+        
+        logR = logLH_prop - logLH + logPrior_prop - logPrior + logProp_PropToIni - logProp_IniToProp;
+        
+        uu = log(runif(0, 1)) <logR;
+        
+        if(uu == 1)
+        {
+            gsl_vector_set(V2, j, gsl_vector_get(V_prop, 1));
+            gsl_vector_set(accept_V, j, (gsl_vector_get(accept_V, j) + uu));
+        }
+        
+        
+        
+        /*updating V3j*/
+        
+        logLH = 0; logLH_prop = 0;
+        D1 = 0; D2 = 0;
+        D1_prop = 0; D2_prop = 0;
+        
+        gsl_vector_set(V, 0, gsl_vector_get(V1, j));
+        gsl_vector_set(V, 1, gsl_vector_get(V2, j));
+        gsl_vector_set(V, 2, gsl_vector_get(V3, j));
+        gsl_vector_memcpy(V_prop, V);
+        
+        for(i = startInx; i < endInx; i++)
+        {
+            gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+            gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+            
+            if(gsl_vector_get(case11, i) == 1)
+            {
+                logLH += gsl_vector_get(V3, j);
+                D1 += 1;
+            }
+            
+            gam = gsl_vector_get(gamma, i);
             
             for(k = 0; k < K3+1; k++)
             {
@@ -3821,63 +4006,35 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
                 {
                     term = - pow(gam, nu3) * Del*exp(gsl_vector_get(lambda3, k))*exp(LP3+gsl_vector_get(V3, j));
                     logLH +=  term;
+                    D1 += term;
+                    D2 += term;
                 }
             }
-
+            
             
         } /* the end of the loop with i */
         
-        c_rmvnorm(mu, &mu_temp.vector, &Sigma_temp.matrix);
-        gsl_vector_set(V_prop, 0, gsl_matrix_get(mu, 0, 0));
-        gsl_vector_set(V_prop, 1, gsl_matrix_get(mu, 0, 1));
-        gsl_vector_set(V_prop, 2, gsl_matrix_get(mu, 0, 2));
+        D1 += -gsl_matrix_get(invSigma_V, 2, 2)*gsl_vector_get(V, 2)-gsl_matrix_get(invSigma_V, 0, 2)*gsl_vector_get(V, 0) - gsl_matrix_get(invSigma_V, 1, 2)*gsl_vector_get(V, 1);
+        D2 += -gsl_matrix_get(invSigma_V, 2, 2);
         
+        v_prop_me    = gsl_vector_get(V3, j) - D1/D2;
+        v_prop_var   = - pow(2.4, 2)/D2;
+        
+        temp_prop = rnorm(v_prop_me, sqrt(v_prop_var));
+        gsl_vector_set(V_prop, 2, temp_prop);
         
         for(i = startInx; i < endInx; i++)
         {
-            gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
-            gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
-            gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
-            gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
             gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
             gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
             
-            if(gsl_vector_get(survEvent1, i) == 1)
-            {
-                logLH_prop += gsl_vector_get(V_prop, 0);
-            }
-            if(gsl_vector_get(case01, i) == 1)
-            {
-                logLH_prop += gsl_vector_get(V_prop, 1);
-            }
             if(gsl_vector_get(case11, i) == 1)
             {
                 logLH_prop += gsl_vector_get(V_prop, 2);
+                D1_prop += 1;
             }
             
             gam = gsl_vector_get(gamma, i);
-            
-            for(k = 0; k < K1+1; k++)
-            {
-                Del = gsl_matrix_get(Delta1, i, k);
-                
-                if(Del > 0)
-                {
-                    term = - gam * Del*exp(gsl_vector_get(lambda1, k))*exp(LP1+gsl_vector_get(V_prop, 0));
-                    logLH_prop +=  term;
-                }
-            }
-            
-            for(k = 0; k < K2+1; k++)
-            {
-                Del = gsl_matrix_get(Delta2, i, k);
-                
-                if(Del > 0)
-                {
-                    term = - pow(gam, nu2) * Del*exp(gsl_vector_get(lambda2, k))*exp(LP2+gsl_vector_get(V_prop, 1));
-                    logLH_prop +=  term;
-                }
-            }
             
             for(k = 0; k < K3+1; k++)
             {
@@ -3887,26 +4044,41 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
                 {
                     term = - pow(gam, nu3) * Del*exp(gsl_vector_get(lambda3, k))*exp(LP3+gsl_vector_get(V_prop, 2));
                     logLH_prop +=  term;
+                    D1_prop += term;
+                    D2_prop += term;
                 }
             }
-
+            
         } /* the end of the loop with i */
         
         
         startInx = endInx;
         
-        logR = logLH_prop - logLH;
         
-        uu = log(runif(0, 1)) < logR;
+        D1_prop += -gsl_matrix_get(invSigma_V, 2, 2)*temp_prop - gsl_matrix_get(invSigma_V, 0, 2)*gsl_vector_get(V, 0) - gsl_matrix_get(invSigma_V, 1, 2)*gsl_vector_get(V, 1);
+        D2_prop += -gsl_matrix_get(invSigma_V, 2, 2);
+        
+        v_prop_me_prop   = temp_prop - D1_prop/D2_prop;
+        v_prop_var_prop  = - pow(2.4, 2)/D2_prop;
+        
+        c_dmvnorm2(V, zeroVec, 1, invSigma_V, &logPrior);
+        c_dmvnorm2(V_prop, zeroVec, 1, invSigma_V, &logPrior_prop);
+        
+        logProp_PropToIni = dnorm(gsl_vector_get(V3, j), v_prop_me_prop, sqrt(v_prop_var_prop), 1);
+        logProp_IniToProp = dnorm(temp_prop, v_prop_me, sqrt(v_prop_var), 1);
+        
+        logR = logLH_prop - logLH + logPrior_prop - logPrior + logProp_PropToIni - logProp_IniToProp;
+        
+        uu = log(runif(0, 1)) <logR;
         
         if(uu == 1)
         {
-            gsl_vector_set(V1, j, gsl_vector_get(V_prop, 0));
-            gsl_vector_set(V2, j, gsl_vector_get(V_prop, 1));
             gsl_vector_set(V3, j, gsl_vector_get(V_prop, 2));
             gsl_vector_set(accept_V, j, (gsl_vector_get(accept_V, j) + uu));
         }
         
+        
+        startInx = endInx;
         
     }/* the end of the loop with j */
     
@@ -3922,15 +4094,17 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
     gsl_vector_free(Vsum);
     gsl_vector_free(muA);
     gsl_vector_free(temp_vec);
+    gsl_vector_free(zeroVec);
     gsl_matrix_free(PsiA);
     gsl_matrix_free(mat1);
     gsl_matrix_free(mat2);
     gsl_matrix_free(mu);
     gsl_matrix_free(Sigma);
-    gsl_matrix_free(invSigma);
+    gsl_matrix_free(invSigma_V);
     gsl_matrix_free(Delta1);
     gsl_matrix_free(Delta2);
     gsl_matrix_free(Delta3);
+    
     
     
     return;
@@ -3939,7 +4113,6 @@ void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
     
     
 }
-
 
 
 

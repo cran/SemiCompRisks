@@ -258,7 +258,7 @@ void BweibSurv_updateCP(gsl_vector *beta,
     double logProp_IniToProp, logProp_PropToIni;
     double logR;
     int u, i, j;
-    int n = survTime -> size;
+
     int J = V  -> size;
     
     int startInx = 0;

@@ -41,14 +41,15 @@ void BweibCorSurvmcmc(double survData[],
                   double samples_kappa[],
                   double samples_V[],
                   double samples_zeta[],
-                  double samples_misc[])
+                      double samples_misc[],
+                      double moveVec[])
 {
     GetRNGstate();
     
     time_t now;    
     
-    int i, j, MM, lastChgProp;
-    int ChgProp = 0;
+    int i, j, MM;
+
     
     /* Survival Data */
     
@@ -170,6 +171,8 @@ void BweibCorSurvmcmc(double survData[],
         if(choice > pRP + pSH) move = 3;
         if(choice > pRP + pSH + pSC) move = 4;
         if(choice > pRP + pSH + pSC + pCP) move = 5;
+        
+        moveVec[MM] = (double) move;
 
         
         /* updating regression parameter: beta

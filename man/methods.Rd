@@ -1,86 +1,73 @@
 \name{methods}
-\alias{print.BayesSurv}
-\alias{print.BayesSurvcor}
-\alias{print.BayesID}
-\alias{print.BayesIDcor}
-\alias{summary.BayesSurv}
-\alias{summary.BayesSurvcor}
-\alias{summary.BayesID}
-\alias{summary.BayesIDcor}
-\alias{plot.BayesSurv}
-\alias{plot.BayesSurvcor}
-\alias{plot.BayesID}
-\alias{plot.BayesIDcor}
-\alias{plot.ehr}
+\alias{print.Bayes}
+\alias{print.summ.Bayes}
+\alias{print.Freq}
+\alias{print.summ.Freq}
+\alias{summary.Bayes}
+\alias{summary.Freq}
+\alias{plot.Bayes}
+\alias{plot.Freq}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-    Methods for objects of classes, \cr
-    \code{BayesSurv}/\code{BayesSurvcor}/\code{BayesID}/\code{BayesIDcor}
+    Methods for objects of classes, \code{Bayes}/\code{Freq}.
 }
 \description{
-The \code{BayesSurv} (\code{BayesSurvcor}) class represents results from analysis of (cluster-correlated) univariate time-to-event data.\cr
-The \code{BayesID} (\code{BayesIDcor}) class represents results from analysis of (cluster-correlated) semi-competing risks data.
+The \code{Bayes} class represents results from Bayesian analysis of semi-competing risks or univariate time-to-event data.\cr
+The \code{Freq} class represents results from Frequentist analysis of semi-competing risks or univariate time-to-event data.\cr
 }
 \usage{
-\method{print}{BayesSurv}(x, ...)
-\method{print}{BayesSurvcor}(x, ...)
-\method{print}{BayesID}(x, ...)
-\method{print}{BayesIDcor}(x, ...)
-\method{summary}{BayesSurv}(object, ...)
-\method{summary}{BayesSurvcor}(object, ...)
-\method{summary}{BayesID}(object, ...)
-\method{summary}{BayesIDcor}(object, ...)
-\method{plot}{BayesSurv}(x, tlim = c(0, 10), ...)
-\method{plot}{BayesSurvcor}(x, tlim = c(0, 10), ...)
-\method{plot}{BayesID}(x, tlim = c(0, 10), ...)
-\method{plot}{BayesIDcor}(x, tlim = c(0, 10), ...)
-\method{plot}{ehr}(x, tlim = c(0, 10), ...)
+\method{print}{Bayes}(x, digits=3, ...)
+\method{print}{summ.Bayes}(x, digits=3, ...)
+\method{print}{Freq}(x, digits=3, ...)
+\method{print}{summ.Freq}(x, digits=3, ...)
+\method{summary}{Bayes}(object, digits=3, ...)
+\method{summary}{Freq}(object, digits=3, ...)
+\method{plot}{Freq}(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+\method{plot}{Bayes}(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-    An object of class; \code{BayesSurv}/\code{BayesID}/\code{ehr}.
+    an object of class \code{Bayes} or \code{Freq}.
+}
+  \item{digits}{
+    a numeric value indicating the number of digits to display.
 }
   \item{object}{
-    An object of class; \code{BayesSurv} or \code{BayesID}.
+    an object of class \code{Bayes} or \code{Freq}.
 }
-  \item{tlim}{
-	The time (x-axis) limits (x1, x2) of the plot. Only required for an object returned by parametric (Weibull) models.
+  \item{tseq}{
+	the points at which tick-marks are to be drawn. 
+	Required only if the object \code{x} is returned by parametric Weibull models. 
+}
+  \item{plot}{
+	If \code{TRUE} (the default) then either estimated baseline hazard functions or estimated baseline survival functions are produced depending on the value of \code{plot.est}. 
+	If \code{FALSE}, the summaries which the plots are based on are returned.
+}
+  \item{plot.est}{
+  	used only if \code{plot} is \code{TRUE}. 
+  	If \code{BS} (the default) then estimated baseline survival functions are produced. 
+  	If \code{BH} then estimated baseline hazard functions are produced.
+}
+  \item{xlab}{
+	a title for the x axis.
+}
+  \item{ylab}{
+	a title for the y axis.
 }
 	\item{...}{
-	Additional arguments.
+	additional arguments.
 }
-
-
 }
-
-%\details{
-%%  ~~ If necessary, more details than the description above ~~
-%}
-%\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-%}
-%\references{
-%% ~put references to the literature/web site here ~
-%}
-%\author{
-%%  ~~who you are~~
-%}
-%\note{
-%%  ~~further notes~~
-%}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-	\code{\link{BayesSurv}}, \code{\link{BayesSurvcor}}, \code{\link{BayesID}}, \code{\link{BayesIDcor}}, \code{\link{ehr}}
+	\code{\link{BayesID}}, \code{\link{BayesSurv}}, \code{\link{FreqID}}, \code{\link{FreqSurv}}.
 }
 
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Bayesian framework }
+\keyword{ frequentist framework }

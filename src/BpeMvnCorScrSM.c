@@ -71,14 +71,15 @@ void BpeMvnCorScrSMmcmc(double survData[],
                         double dev[],
                         double invLH[],
                         double *logLH_fin,
-                        double lpml[])
+                        double lpml[],
+                        double moveVec[])
 {
     GetRNGstate();
     
     time_t now;    
     
-    int i, j, MM, lastChgProp;
-    int ChgProp = 0;
+    int i, j, MM;
+
     
     /* Survival Data */
     
@@ -264,13 +265,13 @@ void BpeMvnCorScrSMmcmc(double survData[],
     
     double mhProp_theta_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3];
     
-    double mhProp_gamma_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+1];
+
     double mhProp_V1_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+2];
     double mhProp_V2_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+3];
     double mhProp_V3_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+4];
-    int numGamUpdate = (int) mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+5];
+
     
-    gsl_vector *mhGam_chk = gsl_vector_calloc(*n); /* 0=RW, 1=IP */
+
     
     
     
@@ -391,7 +392,7 @@ void BpeMvnCorScrSMmcmc(double survData[],
     gsl_vector *accept_beta2 = gsl_vector_calloc(nP2);
     gsl_vector *accept_beta3 = gsl_vector_calloc(nP3);
     
-    gsl_vector *accept_gamma    = gsl_vector_calloc(*n);
+
     gsl_vector *accept_V1       = gsl_vector_calloc(*J);
     gsl_vector *accept_V2       = gsl_vector_calloc(*J);
     gsl_vector *accept_V3       = gsl_vector_calloc(*J);
@@ -403,8 +404,8 @@ void BpeMvnCorScrSMmcmc(double survData[],
     int accept_BI3      = 0;
     int accept_DI3      = 0;
     int accept_theta    = 0;
-    int accept_nu2  = 0;
-    int accept_nu3  = 0;
+
+
     
 
     
@@ -440,7 +441,7 @@ void BpeMvnCorScrSMmcmc(double survData[],
     gsl_vector *invLH_mean = gsl_vector_calloc(*n);
     gsl_vector *cpo_vec = gsl_vector_calloc(*n);
     
-    double invLHval, invfVal, lpml_temp, lpml_temp2;
+    double invLHval, lpml_temp;
     
     double theta_mean;
     
@@ -452,7 +453,7 @@ void BpeMvnCorScrSMmcmc(double survData[],
     
     /* Compute probabilities for various types of moves (22 moves)*/
     
-    double pRP1, pRP2, pRP3, pBH1, pBH2, pBH3, pSP1, pSP2, pSP3, pBI1, pBI2, pBI3, pDI1, pDI2, pDI3, pFP, pDP, pMP, pCP1, pCP2, pCP3, pVP, choice;
+    double pRP1, pRP2, pRP3, pBH1, pBH2, pBH3, pSP1, pSP2, pSP3, pBI1, pBI2, pBI3, pDI1, pDI2, pDI3, pFP, pDP;
     int move, numUpdate;
     
     gsl_vector *pB1          = gsl_vector_calloc(K1_max);
@@ -605,7 +606,7 @@ void BpeMvnCorScrSMmcmc(double survData[],
         
          
          
-         
+        moveVec[MM] = (double) move;
         
         
         /* updating regression parameter: beta1         

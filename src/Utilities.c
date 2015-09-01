@@ -61,7 +61,7 @@ void BpeDpCorSurv_logLH(gsl_vector *beta,
 {
     double logLH = 0;
     
-    int p = beta -> size;
+
     int n = survTime -> size;
     
     int i, j, jj;
@@ -141,7 +141,7 @@ void BpeMvnCorSurv_logLH(gsl_vector *beta,
 {
     double logLH = 0;
     
-    int p = beta -> size;
+
     int n = survTime -> size;
     
     int i, j, jj;
@@ -265,7 +265,7 @@ void BpeDpCorScrSM_logMLH(gsl_vector *beta1,
     double gfunc;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -386,8 +386,8 @@ void BpeDpCorScrSM_logMLH_i(int i,
     double gfunc;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
     int j, jj;
     
@@ -501,7 +501,7 @@ void BpeDpCorScrSM_logLH(gsl_vector *beta1,
     double gam;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -618,8 +618,8 @@ void BpeDpCorScrSM_logLH_i(int i,
     double gam;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
     int j, jj;
     
@@ -864,7 +864,7 @@ void BpeDpCorScr_logMLH(gsl_vector *beta1,
     double gfunc;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -978,8 +978,8 @@ void BpeDpCorScr_logMLH_i(int i,
     double gfunc;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
     int j, jj;
     
@@ -1088,7 +1088,7 @@ void BpeDpCorScr_logLH(gsl_vector *beta1,
     double gam;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -1203,8 +1203,8 @@ void BpeDpCorScr_logLH_i(int i,
     double gam;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
     int j, jj;
     
@@ -1441,8 +1441,8 @@ void BpeMvnCorScrSM_logMLH_i(int i,
     double gfunc;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
     int j, jj;
     
@@ -1558,7 +1558,7 @@ void BpeMvnCorScrSM_logMLH(gsl_vector *beta1,
     double gfunc;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -1678,8 +1678,8 @@ void BpeMvnCorScrSM_logLH_i(int i,
     double gam;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
     int j, jj;
     
@@ -1791,7 +1791,7 @@ void BpeMvnCorScrSM_logLH(gsl_vector *beta1,
     double gam;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -2025,7 +2025,7 @@ void BpeMvnCorScr_logLH(gsl_vector *beta1,
     double gam;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -2140,8 +2140,8 @@ void BpeMvnCorScr_logLH_i(int i,
     double gam;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
     int j, jj;
     
@@ -2253,8 +2253,8 @@ void BpeMvnCorScr_logf_i(int i,
     double gam;
     double logf = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
     int j, jj;
     
@@ -2507,10 +2507,10 @@ void BweibDpCorScrSM_logMLH(gsl_vector *beta1,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
-    int i, j, jj;
+    int i, jj;
     
     for(i = 0; i < n; i++)
     {
@@ -2599,10 +2599,10 @@ void BweibDpCorScrSM_logMLH_i(int i,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
-    int j, jj;
+    int jj;
     
     
     
@@ -2687,10 +2687,10 @@ void BweibDpCorScrSM_logLH(gsl_vector *beta1,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
-    int i, j, jj;
+    int i, jj;
     
     for(i = 0; i < n; i++)
     {
@@ -2775,10 +2775,10 @@ void BweibDpCorScrSM_logLH_i(int i,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
-    int j, jj;
+    int jj;
     
     gam = gsl_vector_get(gamma, i);
     
@@ -2973,10 +2973,10 @@ void BweibDpCorScr_logLH(gsl_vector *beta1,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
-    int i, j, jj;
+    int i, jj;
     
     for(i = 0; i < n; i++)
     {
@@ -3060,10 +3060,10 @@ void BweibDpCorScr_logLH_i(int i,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
-    int j, jj;
+    int jj;
     
     gam = gsl_vector_get(gamma, i);
     
@@ -3145,10 +3145,10 @@ void BweibDpCorScr_logMLH(gsl_vector *beta1,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
-    int i, j, jj;
+    int i, jj;
     
     for(i = 0; i < n; i++)
     {
@@ -3230,10 +3230,10 @@ void BweibDpCorScr_logMLH_i(int i,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
-    int j, jj;
+    int jj;
     
     gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
     gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
@@ -3584,10 +3584,10 @@ void BweibMvnCorScrSM_logMLH(gsl_vector *beta1,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
-    int i, j, jj;
+    int i, jj;
     
     for(i = 0; i < n; i++)
     {
@@ -3671,10 +3671,10 @@ void BweibMvnCorScrSM_logMLH_i(int i,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
-    int j, jj;
+    int jj;
     
     
     
@@ -3754,10 +3754,10 @@ void BweibMvnCorScrSM_logLH(gsl_vector *beta1,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
-    int i, j, jj;
+    int i, jj;
     
     for(i = 0; i < n; i++)
     {
@@ -3842,10 +3842,10 @@ void BweibMvnCorScrSM_logLH_i(int i,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
-    int j, jj;
+    int jj;
     
     gam = gsl_vector_get(gamma, i);
     
@@ -4031,10 +4031,10 @@ void BweibMvnCorScr_logLH(gsl_vector *beta1,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
-    int i, j, jj;
+    int i, jj;
     
     for(i = 0; i < n; i++)
     {
@@ -4118,10 +4118,10 @@ void BweibMvnCorScr_logLH_i(int i,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
-    int j, jj;
+    int jj;
     
     gam = gsl_vector_get(gamma, i);
     
@@ -4206,10 +4206,10 @@ void BweibMvnCorScr_logMLH(gsl_vector *beta1,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
+
     int n = survTime1 -> size;
     
-    int i, j, jj;
+    int i, jj;
     
     for(i = 0; i < n; i++)
     {
@@ -4291,10 +4291,10 @@ void BweibMvnCorScr_logMLH_i(int i,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-    int p = beta1 -> size;
-    int n = survTime1 -> size;
+
+
     
-    int j, jj;
+    int jj;
     
     gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
     gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
@@ -4811,7 +4811,7 @@ void cal_Sigma(gsl_matrix *Sigma_lam,
                double c_lam,
                int J)
 {
-    int i, j;
+    int j;
     gsl_matrix_view W_sub               = gsl_matrix_submatrix(W, 0, 0, J+1, J+1);
     gsl_matrix_view Q_sub               = gsl_matrix_submatrix(Q, 0, 0, J+1, J+1);
     gsl_matrix_view Sigma_lam_sub       = gsl_matrix_submatrix(Sigma_lam, 0, 0, J+1, J+1);

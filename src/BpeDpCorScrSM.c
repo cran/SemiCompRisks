@@ -80,15 +80,16 @@ void BpeDpCorScrSMmcmc(double survData[],
                        double dev[],
                        double invLH[],
                        double *logLH_fin,
-                       double lpml[])
+                       double lpml[],
+                       double moveVec[])
 {
     GetRNGstate();
     
     time_t now;    
     
     
-    int i, j, MM, lastChgProp;
-    int ChgProp = 0;
+    int i, j, lastChgProp, MM;
+
     
     const gsl_rng_type * TT;
     gsl_rng * rr;
@@ -296,13 +297,13 @@ void BpeDpCorScrSMmcmc(double survData[],
     
     double mhProp_theta_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3];
     
-    double mhProp_gamma_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+1];
-    double mhProp_V1_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+2];
-    double mhProp_V2_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+3];
-    double mhProp_V3_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+4];
-    int numGamUpdate = (int) mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+5];
+
+
+
+
+
     
-    gsl_vector *mhGam_chk = gsl_vector_calloc(*n); /* 0=RW, 1=IP */
+    
     
     
     
@@ -425,7 +426,7 @@ void BpeDpCorScrSMmcmc(double survData[],
     gsl_vector *accept_beta2 = gsl_vector_calloc(nP2);
     gsl_vector *accept_beta3 = gsl_vector_calloc(nP3);
     
-    gsl_vector *accept_gamma    = gsl_vector_calloc(*n);
+
     gsl_vector *accept_V       = gsl_vector_calloc(*J);
     
     int accept_BI1      = 0;
@@ -435,8 +436,8 @@ void BpeDpCorScrSMmcmc(double survData[],
     int accept_BI3      = 0;
     int accept_DI3      = 0;
     int accept_theta    = 0;
-    int accept_nu2  = 0;
-    int accept_nu3  = 0;
+
+
     
     gsl_vector *mu_all = gsl_vector_calloc(3* *J);
     gsl_matrix *Sigma_all = gsl_matrix_calloc(3,3* *J);
@@ -622,7 +623,7 @@ void BpeDpCorScrSMmcmc(double survData[],
         
          
          
-         
+        moveVec[MM] = (double) move;
         
         
         /* updating regression parameter: beta1         

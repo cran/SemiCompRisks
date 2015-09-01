@@ -63,14 +63,16 @@ void BweibMvnCorScrSMmcmc(double survData[],
                           double invLH[],
                           double *logLH_fin,
                           double lpml[],
-                          double lpml2[])
+                          double lpml2[],
+                          double moveVec[])
 {
     GetRNGstate();
     
     time_t now;    
     
-    int i, j, MM, lastChgProp;
-    int ChgProp = 0;
+    int i, j, MM;
+    int lastChgProp = 0;
+
     
     /* Survival Data */
     
@@ -199,11 +201,11 @@ void BweibMvnCorScrSMmcmc(double survData[],
     double mhProp_alpha2_var = mcmcParams[1];
     double mhProp_alpha3_var = mcmcParams[2];
     double mhProp_theta_var  = mcmcParams[3];
-    double mhProp_gamma_var  = mcmcParams[4];
+
     double mhProp_V1_var  = mcmcParams[5];
     double mhProp_V2_var  = mcmcParams[6];
     double mhProp_V3_var  = mcmcParams[7];
-    int numGamUpdate = (int) mcmcParams[8];
+
     
     gsl_vector *mhGam_chk = gsl_vector_calloc(*n); /* 0=RW, 1=IP */
     
@@ -297,9 +299,9 @@ void BweibMvnCorScrSMmcmc(double survData[],
     gsl_vector *beta2_mean = gsl_vector_calloc(nP2);
     gsl_vector *beta3_mean = gsl_vector_calloc(nP3);
     
-    gsl_vector *xbeta1_mean = gsl_vector_calloc(*n);
-    gsl_vector *xbeta2_mean = gsl_vector_calloc(*n);
-    gsl_vector *xbeta3_mean = gsl_vector_calloc(*n);
+
+
+
     
     gsl_vector *gamma_mean = gsl_vector_calloc(*n);
     
@@ -313,11 +315,11 @@ void BweibMvnCorScrSMmcmc(double survData[],
     gsl_vector *invLH_mean = gsl_vector_calloc(*n);
     gsl_vector *cpo_vec = gsl_vector_calloc(*n);
     
-    gsl_vector *invf_vec = gsl_vector_calloc(*n);
-    gsl_vector *invf_mean = gsl_vector_calloc(*n);
-    gsl_vector *cpo_vec2 = gsl_vector_calloc(*n);
+
+
+
     
-    double invLHval, invfVal, lpml_temp, lpml_temp2;
+    double invLHval, lpml_temp;
     
     double alpha1_mean=0;
     double alpha2_mean=0;
@@ -393,6 +395,8 @@ void BweibMvnCorScrSMmcmc(double survData[],
         if(choice > pRP1 + pRP2 + pRP3 + pSH1 + pSH2 + pSH3 + pSC1 + pSC2 + pSC3 + pDP + pFP + pMP + pCP1 + pCP2) move = 15;
         if(choice > pRP1 + pRP2 + pRP3 + pSH1 + pSH2 + pSH3 + pSC1 + pSC2 + pSC3 + pDP + pFP + pMP + pCP1 + pCP2 + pCP3) move = 16;
         
+        
+        moveVec[MM] = (double) move;
         
         /* updating regression parameter: beta1 
         

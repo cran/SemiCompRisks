@@ -181,8 +181,8 @@ void BpeMvnCorScr_updateRP2(gsl_vector *beta2,
                             int K2,
                             gsl_vector *accept_beta2)
 {
-    double LP, D1, D2, logLH;
-    double LP_prop, D1_prop, D2_prop, logLH_prop;
+    double D1, D2, logLH;
+    double D1_prop, D2_prop, logLH_prop;
     double beta_prop_me, beta_prop_var, temp_prop;
     double beta_prop_me_prop, beta_prop_var_prop;
     double logProp_IniToProp, logProp_PropToIni;
@@ -331,8 +331,8 @@ void BpeMvnCorScr_updateRP3(gsl_vector *beta3,
                             int K3,
                             gsl_vector *accept_beta3)
 {
-    double LP, D1, D2, logLH;
-    double LP_prop, D1_prop, D2_prop, logLH_prop;
+    double D1, D2, logLH;
+    double D1_prop, D2_prop, logLH_prop;
     double beta_prop_me, beta_prop_var, temp_prop;
     double beta_prop_me_prop, beta_prop_var_prop;
     double logProp_IniToProp, logProp_PropToIni;
@@ -1760,7 +1760,7 @@ void BpeMvnCorScr_updateDI1(gsl_vector *s1,
     
     int skip, i, j, jj;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -2371,7 +2371,7 @@ void BpeMvnCorScr_updateDI2(gsl_vector *s2,
     
     int skip, i, j, jj;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -2965,7 +2965,7 @@ void BpeMvnCorScr_updateDI3(gsl_vector *s3,
     
     int skip, i, j, jj;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -3233,7 +3233,7 @@ void BpeMvnCorScr_updateMP(gsl_vector *beta2,
                        int *accept_nu3)
 {
     double LP2, LP3, D1, D2, logLH;
-    double LP2_prop, LP3_prop, D1_prop, D2_prop, logLH_prop;
+    double D1_prop, D2_prop, logLH_prop;
     double nu2_prop_me, nu2_prop_var, nu2_prop;
     double nu3_prop_me, nu3_prop_var, nu3_prop;
     double nu2_prop_me_prop, nu2_prop_var_prop;
@@ -3243,8 +3243,8 @@ void BpeMvnCorScr_updateMP(gsl_vector *beta2,
     int i, jj, u;
     
     int n = survTime1 -> size;
-    int p2 = survCov2 -> size2;
-    int p3 = survCov3 -> size2;
+
+
     
     
     /* update nu2 */

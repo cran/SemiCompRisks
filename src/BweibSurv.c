@@ -34,7 +34,8 @@ void BweibSurvmcmc(double survData[],
                     double samples_beta[],
                     double samples_alpha[],
                     double samples_kappa[],
-                    double samples_misc[])
+                    double samples_misc[],
+                    double moveVec[])
 {
     GetRNGstate();
     
@@ -103,24 +104,58 @@ void BweibSurvmcmc(double survData[],
     
     int accept_alpha = 0;
     
+    /* Compute probabilities for various types of moves */
+    
+    double pRP, pSH, pSC, choice;
+    int move, numUpdate;
+
+    numUpdate = 2;
+    if(*p > 0) numUpdate += 1;
+    
+    pRP  = (*p > 0) ? (double) 1/numUpdate : 0;
+    pSH  = (double) 1/numUpdate;
+    pSC  = 1-(pRP + pSH);
+    
+    
 
     for(M = 0; M < *numReps; M++)
     {
+        /* selecting a move */
+        /* move: 1=RP, 2=SH, 3=SC */
+        
+        choice  = runif(0, 1);
+        move    = 1;
+        if(choice > pRP) move = 2;
+        if(choice > pRP + pSH) move = 3;
+        
+        moveVec[M] = (double) move;
+        
+        
         /* updating regression parameter: beta */
-        if(*p > 0)
+        
+        if(move == 1)
         {
             BweibSurv_updateRP(beta, &alpha, &kappa, survTime, survEvent, survCov, accept_beta);
         }
-
-        /* updating scale parameter: alpha */
-        
-        BweibSurv_updateSC1(beta, &alpha, &kappa, survTime, survEvent, survCov, mhProp_alpha_var, a, b, &accept_alpha);
-        
         
         /* updating shape parameter: kappa */
         
-        BweibSurv_updateSH(beta, &alpha, &kappa, survTime, survEvent, survCov, c, d);
+        if(move == 2)
+        {
+            BweibSurv_updateSH(beta, &alpha, &kappa, survTime, survEvent, survCov, c, d);
+        }
+        
+        
+        /* updating scale parameter: alpha */
+        
+        if(move == 3)
+        {
+            BweibSurv_updateSC1(beta, &alpha, &kappa, survTime, survEvent, survCov, mhProp_alpha_var, a, b, &accept_alpha);
             
+        }
+        
+        
+        
         
         /* Storing posterior samples */
         

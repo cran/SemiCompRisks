@@ -35,7 +35,7 @@ void BpeDpCorSurv_updateRP(gsl_vector *beta,
                            gsl_vector *accept_beta)
 {
     double D1, D2, logLH, Del;
-    double LP_prop, D1_prop, D2_prop, logLH_prop;
+    double D1_prop, D2_prop, logLH_prop;
     double beta_prop_me, beta_prop_var, temp_prop;
     double beta_prop_me_prop, beta_prop_var_prop;
     double logProp_IniToProp, logProp_PropToIni;
@@ -727,7 +727,7 @@ void BpeDpCorSurv_updateDI(gsl_vector *s,
     
     int skip, i, j, jj;
     int j_old, K_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -957,8 +957,7 @@ void BpeDpCorSurv_updateDI(gsl_vector *s,
 
 
 
-/* updating cluster-specific random effects
- : the prior is used for the proposal density */
+/* updating cluster-specific random effects */
 
 void BpeDpCorSurv_updateCP(gsl_vector *beta,
                           gsl_vector *lambda,
@@ -982,7 +981,7 @@ void BpeDpCorSurv_updateCP(gsl_vector *beta,
                           int *nClass_DP,
                           gsl_rng *rr)
 {
-    int i, j, jj, k, u, n_jc, c_ind, c_new, kk, ll;
+    int i, j, jj, k, u, n_jc, c_ind;
     double prob2, b_mc, sum_prob, val, mu, zeta;
     
     int n = survTime -> size;
@@ -996,7 +995,7 @@ void BpeDpCorSurv_updateCP(gsl_vector *beta,
     gsl_vector *prob1 = gsl_vector_calloc(J+1);
     
     double Vbar, Vsum, muA, zetaA, aA, bA, tempSum;
-    double V_prop;
+
     
     gsl_matrix *Delta = gsl_matrix_calloc(n, K+1);
     

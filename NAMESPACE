@@ -1,30 +1,25 @@
 useDynLib(SemiCompRisks) 
 
-
-export(BayesSurvcor)
-export(BayesIDcor)
 export(BayesSurv)
 export(BayesID)
+export(FreqID)
+export(FreqSurv)
 export(simID)
 export(simSurv)
-export(ehr)
+export(initiate.startValues)
 
+S3method(print, Bayes)
+S3method(print, summ.Bayes)
+S3method(print, Freq)
+S3method(print, summ.Freq)
+S3method(summary, Bayes)
+S3method(summary, Freq)
+S3method(plot, Bayes)
+S3method(plot, Freq)
 
-S3method(print, BayesSurv)
-S3method(print, BayesSurvcor)
-S3method(print, BayesID)
-S3method(print, BayesIDcor)
-S3method(summary, BayesSurv)
-S3method(summary, BayesSurvcor)
-S3method(summary, BayesID)
-S3method(summary, BayesIDcor)
-S3method(plot, BayesSurv)
-S3method(plot, BayesSurvcor)
-S3method(plot, BayesID)
-S3method(plot, BayesIDcor)
-S3method(plot, ehr)
+import(MASS)
+import(survival)
 
-
-
-
-
+importFrom("graphics", "abline", "lines", "par", "plot", "axis")
+importFrom("stats", "median", "quantile", "runif", "rweibull", "sd", "var", "as.formula", "coef", "model.frame", "model.matrix", "nlm", "qnorm", "rgamma", "rnorm")
+importFrom("utils", "write.table")

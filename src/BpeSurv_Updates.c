@@ -1279,7 +1279,7 @@ void BpeSur_updateDI2(gsl_vector *s,
     
     int skip, i, j;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -1574,7 +1574,7 @@ void BpeSur_updateDI1(gsl_vector *s,
     
     int skip, i, j;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;

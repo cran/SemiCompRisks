@@ -274,10 +274,10 @@ void BweibDpCorSurv_updateCP(gsl_vector *beta,
                            int *nClass_DP,
                            gsl_rng *rr)
 {
-    int i, j, jj, k, u, n_jc, c_ind, c_new, kk, ll;
+    int i, j, jj, k, u, n_jc, c_ind;
     double prob2, b_mc, sum_prob, val, mu, zeta;
     
-    int n = survTime -> size;
+
     int J = V -> size;
     
     
@@ -288,7 +288,7 @@ void BweibDpCorSurv_updateCP(gsl_vector *beta,
     gsl_vector *prob1 = gsl_vector_calloc(J+1);
     
     double Vbar, Vsum, muA, zetaA, aA, bA, tempSum;
-    double V_prop;
+
     
     
     gsl_vector_set_zero(mu_all);

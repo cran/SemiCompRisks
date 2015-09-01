@@ -49,14 +49,15 @@ void BweibDpCorSurvmcmc(double survData[],
                         double samples_mu[],
                         double samples_zeta[],
                         double samples_tau[],
-                  double samples_misc[])
+                        double samples_misc[],
+                        double moveVec[])
 {
     GetRNGstate();
     
     time_t now;       
     
-    int i, j, MM, lastChgProp;
-    int ChgProp = 0;
+    int i, j, MM;
+
     
     const gsl_rng_type * TT;
     gsl_rng * rr;
@@ -204,20 +205,18 @@ void BweibDpCorSurvmcmc(double survData[],
         if(choice > pRP) move = 2;
         if(choice > pRP + pSH) move = 3;
         if(choice > pRP + pSH + pSC) move = 4;
+        
+        moveVec[MM] = (double) move;
 
         
-        /* updating regression parameter: beta
-        
-        move = 100;*/
+        /* updating regression parameter: beta */
         
         if(move == 1)
         {
             BweibDpCorSurv_updateRP(beta, &alpha, &kappa, V, survTime, survEvent, cluster, survCov, accept_beta);
         }
         
-        /* updating shape parameter: alpha
-        
-        move = 40;          */        
+        /* updating shape parameter: alpha */
         
         if(move == 2)
         {
@@ -226,9 +225,7 @@ void BweibDpCorSurvmcmc(double survData[],
 
        
 
-        /* updating scale parameter: kappa
-  
-        move = 70;     */
+        /* updating scale parameter: kappa */
         
         if(move == 3)
         {
@@ -239,9 +236,7 @@ void BweibDpCorSurvmcmc(double survData[],
 
         
         
-        /* updating cluster-specific random effect: V 
-         
-         move = 130;*/
+        /* updating cluster-specific random effect: V */
     
         if(move == 4)
         {

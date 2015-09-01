@@ -55,14 +55,15 @@ void BpeDpCorSurvmcmc(double survData[],
                        double samples_tau[],
                        double samples_misc[],
                        double lambda_fin[],
-                       double dev[])
+                      double dev[],
+                      double moveVec[])
 {
     GetRNGstate();
     
     time_t now;     
     
-    int i, j, MM, lastChgProp;
-    int ChgProp = 0;
+    int i, j, MM;
+
     
     const gsl_rng_type * TT;
     gsl_rng * rr;
@@ -151,7 +152,7 @@ void BpeDpCorSurvmcmc(double survData[],
         gsl_vector_set(time_lambda, i, mcmcParams[num_s_propBI + 6 + i]);
     }
     
-    double mhProp_V_var     = mcmcParams[num_s_propBI + 6 + nTime_lambda];    
+
 
     
     
@@ -219,7 +220,7 @@ void BpeDpCorSurvmcmc(double survData[],
     int accept_BI = 0;
     int accept_DI = 0;
     
-    double logLH;
+
     
     gsl_vector *mu_all = gsl_vector_calloc(*J);
     gsl_vector *zeta_all = gsl_vector_calloc(*J);
@@ -229,7 +230,7 @@ void BpeDpCorSurvmcmc(double survData[],
     
     /* Compute probabilities for various types of moves */
     
-    double pRP, pBH, pSP, pBI, pDI, pCP, pVP, choice;
+    double pRP, pBH, pSP, pBI, pDI, pCP, choice;
     int move, numUpdate;
     
     gsl_vector *pB          = gsl_vector_calloc(K_max);
@@ -287,6 +288,8 @@ void BpeDpCorSurvmcmc(double survData[],
         if(choice > pRP + pBH + pSP + pBI) move = 5;
         if(choice > pRP + pBH + pSP + pBI + pDI) move = 6;
         
+        
+        moveVec[MM] = (double) move;
         
         /* updating regression parameter: beta
         

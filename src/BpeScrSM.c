@@ -54,7 +54,8 @@ void BpeScrSMmcmc(double survData[],
                     double samples_misc[],
                     double lambda1_fin[],
                     double lambda2_fin[],
-                    double lambda3_fin[])
+                  double lambda3_fin[],
+                  double moveVec[])
 {
     GetRNGstate();
     
@@ -430,7 +431,7 @@ void BpeScrSMmcmc(double survData[],
         if(choice > pRP1+pRP2+pRP3+pBH1+pBH2+pBH3+pSP1+pSP2+pSP3+pFP+pDP+pBI1+pBI2+pBI3+pDI1) move = 16;
         if(choice > pRP1+pRP2+pRP3+pBH1+pBH2+pBH3+pSP1+pSP2+pSP3+pFP+pDP+pBI1+pBI2+pBI3+pDI1+pDI2) move = 17;
         
-        
+        moveVec[M] = (double) move;
         
         
         /* updating regression parameter: beta1 */

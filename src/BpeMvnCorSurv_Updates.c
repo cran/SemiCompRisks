@@ -31,7 +31,7 @@ void BpeMvnCorSurv_updateRP(gsl_vector *beta,
                            gsl_vector *accept_beta)
 {
     double D1, D2, logLH, Del;
-    double LP_prop, D1_prop, D2_prop, logLH_prop;
+    double D1_prop, D2_prop, logLH_prop;
     double beta_prop_me, beta_prop_var, temp_prop;
     double beta_prop_me_prop, beta_prop_var_prop;
     double logProp_IniToProp, logProp_PropToIni;
@@ -736,7 +736,7 @@ void BpeMvnCorSurv_updateDI(gsl_vector *s,
     
     int skip, i, j, jj;
     int j_old, K_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -987,7 +987,7 @@ void BpeMvnCorSurv_updateCP(gsl_vector *beta,
                                   gsl_vector *accept_V,
                                   double mhProp_V_var)
 {
-    double LP, logLH, logLH_prop, gam, Del;
+    double LP, logLH, logLH_prop, Del;
     double D1, D2, D1_prop, D2_prop;
     double logPrior, logPrior_prop, temp_prop;
     double logProp_IniToProp, logProp_PropToIni;

@@ -2,85 +2,78 @@
 \alias{simSurv}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-The function to simulate right censored survival data under Weibull model
+The function that simulates independent/cluster-correlated right-censored survival data under Weibull/Weibull-Normal model.
 }
 \description{
-The function to simulate right censored survival data under Weibull model
+The function to simulate independent/cluster-correlated right-censored survival data under Weibull/Weibull-Normal model.
 }
 \usage{
-simSurv(x, beta.true, alpha.true, kappa.true, cens)
+simSurv(cluster=NULL, x, beta.true, alpha.true, kappa.true, sigmaV.true=NULL, cens)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
+  \item{cluster}{
+	a vector of cluster information for \code{n} subjects. The cluster membership must be set to consecutive positive integers, \eqn{1:J}. 
+	Required only when generating clustered data.
+}
   \item{x}{
-Covariate matrix, \code{n} observations by \code{p} variables
+	covariate matrix, \code{n} observations by \code{p} variables.
 }
   \item{beta.true}{
-True value for \eqn{\beta}
+	true value for \eqn{\beta}.
 }
   \item{alpha.true}{
-True value for \eqn{\alpha}
+	true value for \eqn{\alpha}.
 }
   \item{kappa.true}{
-True value for \eqn{\kappa}
+	true value for \eqn{\kappa}.
+}
+  \item{sigmaV.true}{
+	true value for \eqn{\sigma_V}. 
+	Required only when generating clustered data.
 }
   \item{cens}{
-A vector with two numeric elements. The right censoring times are generated from Uniform(\eqn{cens[1]}, \eqn{cens[2]})
+	a vector with two numeric elements. The right censoring times are generated from Uniform(\eqn{cens[1]}, \eqn{cens[2]}).
 }
 }
+
 %\details{
 %%  ~~ If necessary, more details than the description above ~~
 %}
 \value{
-\code{simSurv} returns an object of class \code{simSurv} \cr
+\code{simSurv} returns a data.frame containing univariate time-to-event outcomes from \code{n} subjects. 
+It is of dimension \eqn{n\times 2}: the columns correspond to \eqn{y}, \eqn{\delta}.\cr
 \item{y}{a vector of \code{n} times to the event}
 \item{delta}{a vector of \code{n} censoring indicators for the event time (1=event occurred, 0=censored)}
 }
-%%\references{
-%%Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2014), 
-%%Bayesian semiparametric analysis of semicompeting risks data: 
-%%investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, \emph{in press}.\cr \cr
-%%Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S.,
-%%Hierarchical models for cluster-correlated semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{submitted}. \cr
-%%}
 \author{
 Kyu Ha Lee and Sebastien Haneuse \cr
 Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 }
-%\note{
-%%  ~~further notes~~
-%}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-%\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-%}
 \examples{
-
-	### simulating survival data ###
-	
 	set.seed(123456)
 	
-	n = 2000
-	p = 2
+	J = 110
+	nj = 50
+	n = J * nj
 
-	x	= matrix(0, n, p)	
+	cluster <- rep(1:J, each = nj)	
+
+	x	= matrix(0, n, 2)	
 	x[,1]	= rnorm(n, 0, 2)	
 	x[,2]	= sample(c(0, 1), n, replace = TRUE)
-			
-	# - true value of parameter
-	
+
 	beta.true = c(0.5, 0.5)
 	
 	alpha.true = 1.5		
 	kappa.true = 0.02
+	sigmaV.true = 0.1
 
 	cens <- c(30, 40)		
 
-	simData <- simSurv(x, beta.true, alpha.true, kappa.true, cens) 
-	
-   	summary(simData)			 
+	simData <- simSurv(cluster, x, beta.true, alpha.true, kappa.true, 
+				sigmaV.true, cens) 		 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

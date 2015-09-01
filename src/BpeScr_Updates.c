@@ -1775,7 +1775,7 @@ void Bscr_updateDI1(gsl_vector *s1,
     
     int skip, i, j;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -2336,7 +2336,7 @@ void Bscr_updateDI2(gsl_vector *s2,
     
     int skip, i, j;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
@@ -2879,7 +2879,7 @@ void Bscr_updateDI3(gsl_vector *s3,
     
     int skip, i, j;
     int j_old, J_new, u;
-    double s_star, Upert, newLam;
+    double Upert, newLam;
     double logLH, logLH_prop, Del;
     double logPrior, logPrior_prop, logPriorR, logPropR;
     double logJacob, logR;
