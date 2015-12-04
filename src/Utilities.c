@@ -201,23 +201,23 @@ void BpeMvnCorSurv_logLH(gsl_vector *beta,
 
 /********* For Weibull-DPM (univariate) model *************/
 
-
 double Qfunc_univ(double V,
              double mu0,
              double zeta0,
              double a0,
              double b0)
 {
-    double term1, term2, term3, val;
+    double lterm1, term2, term3, val;
     
-    term1 = gsl_sf_gamma(a0+0.5)/ gsl_sf_gamma(a0);
+    lterm1 = gsl_sf_lngamma(a0+0.5) - gsl_sf_lngamma(a0);
     term2 = sqrt(zeta0/(2*Pi*b0*(zeta0 + 1)));
     term3 = pow(zeta0*pow(V - mu0, 2)/(2*b0*(zeta0 + 1)) + 1, -a0-0.5);
     
-    val = term1*term2*term3;
+    val = exp(lterm1)*term2*term3;
     
     return val;
 }
+
 
 
 

@@ -88,7 +88,7 @@ void BpeDpCorScrSMmcmc(double survData[],
     time_t now;    
     
     
-    int i, j, lastChgProp, MM;
+    int i, j, MM;
 
     
     const gsl_rng_type * TT;
@@ -858,7 +858,7 @@ void BpeDpCorScrSMmcmc(double survData[],
             BpeDpCorScrSM_updateCP(beta1, beta2, beta3, lambda1, lambda2, lambda3, s1, s2, s3, K1, K2, K3, gamma, V1, V2, V3, nu2, nu3, survTime1, yStar, survEvent1, case01, case11, cluster, survCov1, survCov2, survCov3, n_j, mu_all, Sigma_all, c, accept_V, mu0, Psi0, zeta0, rho0, tau, &nClass_DP, rr);
             
             
-            BpeDpCorScrSM_updatePP(n, &tau, aTau, bTau, &nClass_DP);
+            BpeDpCorScrSM_updatePP(J, &tau, aTau, bTau, &nClass_DP);
         }
         
         /*    */

@@ -242,7 +242,7 @@ void BweibDpCorSurvmcmc(double survData[],
         {
             BweibDpCorSurv_updateCP(beta, alpha, kappa, V, survTime, survEvent, cluster, survCov, n_j, mu_all, zeta_all, c, accept_V, mhProp_V_var, mu0, zeta0, a0, b0, tau, &nClass_DP, rr);
             
-            BweibDpCorSurv_updatePP(n, &tau, aTau, bTau, &nClass_DP);
+            BweibDpCorSurv_updatePP(J, &tau, aTau, bTau, &nClass_DP);
  
         }
         

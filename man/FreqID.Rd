@@ -5,10 +5,10 @@
 The function to fit parametric Weibull models for the frequentist anlaysis of semi-competing risks data.
 }
 \description{
-Independent semi-competing risks data can be analyzed using hierarchical models. Markov assumption is adopted for the conditional hazard function for time to the terminal event given time to non-terminal.
+Independent semi-competing risks data can be analyzed using hierarchical models. Markov or semi-Markov assumption can be adopted for the conditional hazard function for time to the terminal event given time to non-terminal event.
 }
 \usage{
-FreqID(Y, lin.pred, data, frailty = TRUE)
+FreqID(Y, lin.pred, data, model="semi-Markov", frailty = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,6 +20,9 @@ FreqID(Y, lin.pred, data, frailty = TRUE)
 }
   \item{data}{
 	a data.frame in which to interpret the variables named in the formulas in \code{lin.pred}.
+}
+\item{model}{
+	a character value that specifies the type of a model based on the assumption on \eqn{h_3}: "semi-Markov" or "Markov". 
 }
   \item{frailty}{
 	a logical value to determine whether to include the subject-specific shared frailty term, \eqn{\gamma}, into the model.
@@ -60,7 +63,7 @@ form2 <- as.formula( ~ x1 + x2)
 form3 <- as.formula( ~ x1 + x2)
 lin.pred <- list(form1, form2, form3)
 
-fit_WB	<- FreqID(Y, lin.pred, data=scrData)
+fit_WB	<- FreqID(Y, lin.pred, data=scrData, model="semi-Markov")
 
 fit_WB
 summ.fit_WB <- summary(fit_WB); names(summ.fit_WB)

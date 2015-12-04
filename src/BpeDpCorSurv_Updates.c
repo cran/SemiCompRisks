@@ -1201,6 +1201,8 @@ void BpeDpCorSurv_updateCP(gsl_vector *beta,
     for(j = 0; j < u; j++)
     {
         
+        n_jc = gsl_vector_get(cUniq_count, j);        
+        
         zetaA = zeta0 + gsl_vector_get(cUniq_count, j);
         
         aA = a0 + gsl_vector_get(cUniq_count, j)/2;

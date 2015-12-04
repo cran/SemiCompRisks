@@ -5,7 +5,7 @@
 The function to implement Bayesian parametric and semi-parametric analyses for semi-competing risks data.
 }
 \description{
-Independent/cluster-correlated semi-competing risks data can be analyzed using hierarchical models. The priors for baseline hazard functions can be specified by either parametric (Weibull) model or non-parametric mixture of piecewise exponential models (PEM). The option to choose between parametric multivariate normal (MVN) and non-parametric Dirichlet process mixture of multivariate normals (DPM) is available for the prior of cluster-specific random effects distribution. The conditional hazard function for time to the terminal event given time to non-terminal can be modeled based on either Markov (it does not depend on the timing of the non-terminal event) or semi-Markov assumption (it does depend on the timing).
+Independent/cluster-correlated semi-competing risks data can be analyzed using hierarchical models. The priors for baseline hazard functions can be specified by either parametric (Weibull) model or non-parametric mixture of piecewise exponential models (PEM). The option to choose between parametric multivariate normal (MVN) and non-parametric Dirichlet process mixture of multivariate normals (DPM) is available for the prior of cluster-specific random effects distribution. The conditional hazard function for time to the terminal event given time to non-terminal event can be modeled based on either Markov (it does not depend on the timing of the non-terminal event) or semi-Markov assumption (it does depend on the timing).
 }
 \usage{
 BayesID(Y, lin.pred, data, cluster=NULL, model=c("semi-Markov", "Weibull"), 

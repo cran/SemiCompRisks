@@ -6,7 +6,7 @@
 ##
 print.Freq <- function(x, digits=3, ...)
 {   
-	obj <- x
+    obj <- x
   ##
   logEst <- obj$estimate
   logSE  <- sqrt(diag(obj$Finv))
@@ -32,7 +32,7 @@ print.Freq <- function(x, digits=3, ...)
   {
     ##
     cat("\nAnalysis of independent semi-competing risks data \n")
-    cat("Markov assumption for h3\n")
+    cat(class(obj)[5], "assumption for h3\n")
     ##
     #cat("\nBaseline hazard function components:\n")
     #print(round(value[c(1:6),], digits=digits))
@@ -782,7 +782,15 @@ summary.Freq <- function(object, digits=3, ...)
     output.h0 <- output
     ##
     value <- list(coef=output.coef, theta=output.theta, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results))
-    class(value) <- c("summ.Freq", "ID")
+    if(class(obj)[5] == "semi-Markov")
+    {
+        class(value) <- c("summ.Freq", "ID", "semi-Markov")
+    }
+    if(class(obj)[5] == "Markov")
+    {
+        class(value) <- c("summ.Freq", "ID", "Markov")
+    }
+    
   }
   
   ##
@@ -1992,7 +2000,7 @@ print.summ.Freq <- function(x, digits=3, ...)
   {
       ##
       cat("\nAnalysis of independent semi-competing risks data \n")
-      cat("Markov assumption for h3\n")
+      cat(class(obj)[3], "assumption for h3\n")
   }
   ##
   #cat("\nRegression coefficients:\n")
@@ -2334,7 +2342,14 @@ plot.Freq <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, 
         }
         
         ##
-        if(is.null(xlab)) xlab <- c("Time", "Time", "Time")
+        if(is.null(xlab))
+        {
+            xlab <- c("Time", "Time", "Time")
+            if(class(obj)[5] == "semi-Markov")
+            {
+                xlab[3] <- "Time since non-terminal event"
+            }
+        }
         
         ##
         if(plot == TRUE){
@@ -2553,7 +2568,7 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
         BH3_tbl <- cbind(time3hz, BH3Med, BH3Lb, BH3Ub)
         dimnames(BH3_tbl) <- list(rep("", length(time3hz)), c("time", "h0.3", "LL.3", "UL.3"))
         
-        BS1_tbl <- cbind(time1, BS1Med, BS1Lb, BS1Lb)
+        BS1_tbl <- cbind(time1, BS1Med, BS1Lb, BS1Ub)
         dimnames(BS1_tbl) <- list(rep("", length(time1)), c("time", "S0.1", "LL.1", "UL.1"))
         BS2_tbl <- cbind(time2, BS2Med, BS2Lb, BS2Ub)
         dimnames(BS2_tbl) <- list(rep("", length(time2)), c("time", "S0.2", "LL.2", "UL.2"))

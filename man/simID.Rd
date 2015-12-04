@@ -2,10 +2,10 @@
 \alias{simID}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-The function that simulates independent/cluster-correlated semi-competing risks data under Weibull/Weibull-MVN model.
+The function that simulates independent/cluster-correlated semi-competing risks data under semi-Markov Weibull/Weibull-MVN models.
 }
 \description{
-The function to simulate independent/cluster-correlated semi-competing risks data under Weibull/Weibull-MVN model.
+The function to simulate independent/cluster-correlated semi-competing risks data under semi-Markov Weibull/Weibull-MVN models.
 }
 \usage{
 simID(cluster=NULL, x1, x2, x3, beta1.true, beta2.true, beta3.true, 

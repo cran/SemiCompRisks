@@ -221,19 +221,19 @@ BayesID <- function(Y,
                         }
                         
                         if(p1 > 0){
-                            covNames1 = colnames(survData)[c(5:(4+p1))]
+                            covNames1 = colnames(Xmat1)
                         }
                         if(p1 == 0){
                             covNames1 = NULL
                         }
                         if(p2 > 0){
-                            covNames2 = colnames(survData)[c((4+p1+1):(4+p1+p2))]
+                            covNames2 = colnames(Xmat2)
                         }
                         if(p2 == 0){
                             covNames2 = NULL
                         }
                         if(p3 > 0){
-                            covNames3 = colnames(survData)[c((4+p1+p2+1):(4+p1+p2+p3))]
+                            covNames3 = colnames(Xmat3)
                         }
                         if(p3 == 0){
                             covNames3 = NULL
@@ -333,19 +333,19 @@ BayesID <- function(Y,
                         }
                         
                         if(p1 > 0){
-                            covNames1 = colnames(survData)[c(5:(4+p1))]
+                            covNames1 = colnames(Xmat1)
                         }
                         if(p1 == 0){
                             covNames1 = NULL
                         }
                         if(p2 > 0){
-                            covNames2 = colnames(survData)[c((4+p1+1):(4+p1+p2))]
+                            covNames2 = colnames(Xmat2)
                         }
                         if(p2 == 0){
                             covNames2 = NULL
                         }
                         if(p3 > 0){
-                            covNames3 = colnames(survData)[c((4+p1+p2+1):(4+p1+p2+p3))]
+                            covNames3 = colnames(Xmat3)
                         }
                         if(p3 == 0){
                             covNames3 = NULL
@@ -560,20 +560,20 @@ BayesID <- function(Y,
                         }
                         
                         if(p1 > 0){
-                            covNames1 = colnames(survData)[c(5:(4+p1))]
+                            covNames1 = colnames(Xmat1)
                         }
                         if(p1 == 0){
                             covNames1 = NULL
                         }
                         
                         if(p2 > 0){
-                            covNames2 = colnames(survData)[c((4+p1+1):(4+p1+p2))]
+                            covNames2 = colnames(Xmat2)
                         }
                         if(p2 == 0){
                             covNames2 = NULL
                         }
                         if(p3 > 0){
-                            covNames3 = colnames(survData)[c((4+p1+p2+1):(4+p1+p2+p3))]
+                            covNames3 = colnames(Xmat3)
                         }
                         if(p3 == 0){
                             covNames3 = NULL
@@ -713,23 +713,24 @@ BayesID <- function(Y,
                         }
                         
                         if(p1 > 0){
-                            covNames1 = colnames(survData)[c(5:(4+p1))]
-                        }	
+                            covNames1 = colnames(Xmat1)
+                        }
                         if(p1 == 0){
                             covNames1 = NULL
                         }
+                        
                         if(p2 > 0){
-                            covNames2 = colnames(survData)[c((4+p1+1):(4+p1+p2))]
-                        }	
+                            covNames2 = colnames(Xmat2)
+                        }
                         if(p2 == 0){
                             covNames2 = NULL
-                        }     
+                        }
                         if(p3 > 0){
-                            covNames3 = colnames(survData)[c((4+p1+p2+1):(4+p1+p2+p3))]
-                        }	
+                            covNames3 = colnames(Xmat3)
+                        }
                         if(p3 == 0){
                             covNames3 = NULL
-                        }  	
+                        }
                         
                         
                         ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, theta.p = theta.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3)
@@ -1048,20 +1049,20 @@ BayesID <- function(Y,
                             }
                             
                             if(p1 > 0){
-                                covNames1 = colnames(survData)[c(5:(4+p1))]
+                                covNames1 = colnames(Xmat1)
                             }
                             if(p1 == 0){
                                 covNames1 = NULL
                             }
                             
                             if(p2 > 0){
-                                covNames2 = colnames(survData)[c((4+p1+1):(4+p1+p2))]
+                                covNames2 = colnames(Xmat2)
                             }
                             if(p2 == 0){
                                 covNames2 = NULL
                             }
                             if(p3 > 0){
-                                covNames3 = colnames(survData)[c((4+p1+p2+1):(4+p1+p2+p3))]
+                                covNames3 = colnames(Xmat3)
                             }
                             if(p3 == 0){
                                 covNames3 = NULL
@@ -1256,20 +1257,20 @@ BayesID <- function(Y,
                             }
                             
                             if(p1 > 0){
-                                covNames1 = colnames(survData)[c(6:(5+p1))]
+                                covNames1 = colnames(Xmat1)
                             }
                             if(p1 == 0){
                                 covNames1 = NULL
                             }
                             
                             if(p2 > 0){
-                                covNames2 = colnames(survData)[c((5+p1+1):(5+p1+p2))]
+                                covNames2 = colnames(Xmat2)
                             }
                             if(p2 == 0){
                                 covNames2 = NULL
                             }
                             if(p3 > 0){
-                                covNames3 = colnames(survData)[c((5+p1+p2+1):(5+p1+p2+p3))]
+                                covNames3 = colnames(Xmat3)
                             }
                             if(p3 == 0){
                                 covNames3 = NULL
@@ -1486,20 +1487,20 @@ BayesID <- function(Y,
                             
                             
                             if(p1 > 0){
-                                covNames1 = colnames(survData)[c(5:(4+p1))]
+                                covNames1 = colnames(Xmat1)
                             }
                             if(p1 == 0){
                                 covNames1 = NULL
                             }
                             
                             if(p2 > 0){
-                                covNames2 = colnames(survData)[c((4+p1+1):(4+p1+p2))]
+                                covNames2 = colnames(Xmat2)
                             }
                             if(p2 == 0){
                                 covNames2 = NULL
                             }
                             if(p3 > 0){
-                                covNames3 = colnames(survData)[c((4+p1+p2+1):(4+p1+p2+p3))]
+                                covNames3 = colnames(Xmat3)
                             }
                             if(p3 == 0){
                                 covNames3 = NULL
@@ -1706,20 +1707,20 @@ BayesID <- function(Y,
                             }
                             
                             if(p1 > 0){
-                                covNames1 = colnames(survData)[c(6:(5+p1))]
+                                covNames1 = colnames(Xmat1)
                             }
                             if(p1 == 0){
                                 covNames1 = NULL
                             }
                             
                             if(p2 > 0){
-                                covNames2 = colnames(survData)[c((5+p1+1):(5+p1+p2))]
+                                covNames2 = colnames(Xmat2)
                             }
                             if(p2 == 0){
                                 covNames2 = NULL
                             }
                             if(p3 > 0){
-                                covNames3 = colnames(survData)[c((5+p1+p2+1):(5+p1+p2+p3))]
+                                covNames3 = colnames(Xmat3)
                             }
                             if(p3 == 0){
                                 covNames3 = NULL
@@ -2061,20 +2062,20 @@ BayesID <- function(Y,
                             }
                             
                             if(p1 > 0){
-                                covNames1 = colnames(survData)[c(6:(5+p1))]
+                                covNames1 = colnames(Xmat1)
                             }
                             if(p1 == 0){
                                 covNames1 = NULL
                             }
                             
                             if(p2 > 0){
-                                covNames2 = colnames(survData)[c((5+p1+1):(5+p1+p2))]
+                                covNames2 = colnames(Xmat2)
                             }
                             if(p2 == 0){
                                 covNames2 = NULL
                             }
                             if(p3 > 0){
-                                covNames3 = colnames(survData)[c((5+p1+p2+1):(5+p1+p2+p3))]
+                                covNames3 = colnames(Xmat3)
                             }
                             if(p3 == 0){
                                 covNames3 = NULL
@@ -2315,20 +2316,20 @@ BayesID <- function(Y,
                             }
                             
                             if(p1 > 0){
-                                covNames1 = colnames(survData)[c(6:(5+p1))]
+                                covNames1 = colnames(Xmat1)
                             }
                             if(p1 == 0){
                                 covNames1 = NULL
                             }
                             
                             if(p2 > 0){
-                                covNames2 = colnames(survData)[c((5+p1+1):(5+p1+p2))]
+                                covNames2 = colnames(Xmat2)
                             }
                             if(p2 == 0){
                                 covNames2 = NULL
                             }
                             if(p3 > 0){
-                                covNames3 = colnames(survData)[c((5+p1+p2+1):(5+p1+p2+p3))]
+                                covNames3 = colnames(Xmat3)
                             }
                             if(p3 == 0){
                                 covNames3 = NULL
@@ -2577,20 +2578,20 @@ BayesID <- function(Y,
                             
                             
                             if(p1 > 0){
-                                covNames1 = colnames(survData)[c(6:(5+p1))]
+                                covNames1 = colnames(Xmat1)
                             }
                             if(p1 == 0){
                                 covNames1 = NULL
                             }
                             
                             if(p2 > 0){
-                                covNames2 = colnames(survData)[c((5+p1+1):(5+p1+p2))]
+                                covNames2 = colnames(Xmat2)
                             }
                             if(p2 == 0){
                                 covNames2 = NULL
                             }
                             if(p3 > 0){
-                                covNames3 = colnames(survData)[c((5+p1+p2+1):(5+p1+p2+p3))]
+                                covNames3 = colnames(Xmat3)
                             }
                             if(p3 == 0){
                                 covNames3 = NULL
@@ -2833,21 +2834,21 @@ BayesID <- function(Y,
                             }
                             
                             if(p1 > 0){
-                                covNames1 = colnames(survData)[c(6:(5+p1))]
-                            }	
+                                covNames1 = colnames(Xmat1)
+                            }
                             if(p1 == 0){
                                 covNames1 = NULL
                             }
                             
                             if(p2 > 0){
-                                covNames2 = colnames(survData)[c((5+p1+1):(5+p1+p2))]
-                            }	
+                                covNames2 = colnames(Xmat2)
+                            }
                             if(p2 == 0){
                                 covNames2 = NULL
-                            }     
+                            }
                             if(p3 > 0){
-                                covNames3 = colnames(survData)[c((5+p1+p2+1):(5+p1+p2+p3))]
-                            }	
+                                covNames3 = colnames(Xmat3)
+                            }
                             if(p3 == 0){
                                 covNames3 = NULL
                             }

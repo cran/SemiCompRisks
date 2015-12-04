@@ -1640,7 +1640,7 @@ void BweibDpCorScrSM_updateCP(gsl_vector *beta1,
         for(j = 0; j < u; j++)
         {
             
-                    n_jc = gsl_vector_get(cUniq_count, j);
+            n_jc = gsl_vector_get(cUniq_count, j);
             
             if(gsl_vector_get(c, jj) == gsl_vector_get(cUniq, j)) n_jc -= 1;
             
@@ -1817,7 +1817,7 @@ void BweibDpCorScrSM_updateCP(gsl_vector *beta1,
     
     for(j = 0; j < u; j++)
     {
-        
+        n_jc = gsl_vector_get(cUniq_count, j);
                 
         zetaA = pow(1/zeta0 + gsl_vector_get(cUniq_count, j), -1);
         
@@ -1920,7 +1920,7 @@ void BweibDpCorScrSM_updateCP(gsl_vector *beta1,
         }
         
         gsl_matrix_view Sigma_temp = gsl_matrix_submatrix(Sigma_all, 0, 3*jj, 3, 3);
-        gsl_vector_view mu_temp = gsl_vector_subvector(mu_all, 3*jj, 3);
+
         
         matrixInv(&Sigma_temp.matrix, invSigma_V);
         

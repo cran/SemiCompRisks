@@ -1,4 +1,4 @@
-FreqID <- function(Y, lin.pred, data, frailty=TRUE)
+FreqID <- function(Y, lin.pred, data, model = "semi-Markov", frailty=TRUE)
 {	
 
     ##
@@ -26,14 +26,30 @@ FreqID <- function(Y, lin.pred, data, frailty=TRUE)
                        -coef(fit.survreg.1)[-1] * alpha1,
                        -coef(fit.survreg.2)[-1] * alpha2,
                        -coef(fit.survreg.3)[-1] * alpha3)
-    ##
-    fit0  <- nlm(logLike.weibull.SCR, p=startVals * runif(length(startVals), 0.9, 1.1),
-                 y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
-                 iterlim=1000, hessian=TRUE)
-                 
-    fit1  <- nlm(logLike.weibull.SCR, p=runif(length(startVals), -1, 1),
-                 y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
-                 iterlim=1000, hessian=TRUE)    
+    
+    if(model == "Markov")
+    {
+        ##
+        fit0  <- nlm(logLike.weibull.SCR, p=startVals * runif(length(startVals), 0.9, 1.1),
+        y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
+        iterlim=1000, hessian=TRUE)
+        
+        fit1  <- nlm(logLike.weibull.SCR, p=runif(length(startVals), -1, 1),
+        y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
+        iterlim=1000, hessian=TRUE)
+    }
+    if(model == "semi-Markov")
+    {
+        ##
+        fit0  <- nlm(logLike.weibull.SCR.SM, p=startVals * runif(length(startVals), 0.9, 1.1),
+        y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
+        iterlim=1000, hessian=TRUE)
+        
+        fit1  <- nlm(logLike.weibull.SCR.SM, p=runif(length(startVals), -1, 1),
+        y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
+        iterlim=1000, hessian=TRUE)
+    }
+
     ##
     if(fit0$code == 1 | fit0$code == 2)
     {
@@ -44,7 +60,16 @@ FreqID <- function(Y, lin.pred, data, frailty=TRUE)
       nP <- c(ncol(Xmat1), ncol(Xmat2), ncol(Xmat3))
       ##
       value <- list(estimate=fit0$estimate, Finv=solve(fit0$hessian), logLike=-fit0$minimum, myLabels=myLabels, frailty=frailty, nP=nP, Xmat=list(Xmat1, Xmat2, Xmat3))
-      class(value) <- c("Freq", "ID", "Ind", "WB")
+      
+      if(model == "semi-Markov")
+      {
+          class(value) <- c("Freq", "ID", "Ind", "WB", "semi-Markov")
+      }
+      if(model == "Markov")
+      {
+          class(value) <- c("Freq", "ID", "Ind", "WB", "Markov")
+      }
+      
       return(value)
     }
     

@@ -144,7 +144,7 @@ BayesSurv <- function(Y,
                     }
                     accept.alpha	<- as.vector(mcmcRet$samples_misc[(p+1)])/sum(as.vector(mcmcRet$moveVec)==3)
                     if(p > 0){
-                        covNames = colnames(survData)[-c(1,2)]
+                        covNames = colnames(Xmat)
                     }
                     if(p == 0){
                         covNames = NULL
@@ -252,8 +252,8 @@ BayesSurv <- function(Y,
                     accept.DI		<- as.vector(mcmcRet$samples_misc[(p+2)])/sum(as.vector(mcmcRet$moveVec)==5)
                     
                     if(p > 0){
-                        covNames = colnames(survData)[-c(1,2)]
-                    }	
+                        covNames = colnames(Xmat)
+                    }
                     if(p == 0){
                         covNames = NULL
                     }
@@ -458,15 +458,12 @@ BayesSurv <- function(Y,
                             save(V.p, file = paste(path, "VPch", chain, ".RData", sep = ""))
                         }
                         
-                        
                         if(p > 0){
-                            covNames = colnames(survData)[c(4:(3+p))]
+                            covNames = colnames(Xmat)
                         }
                         if(p == 0){
                             covNames = NULL
                         }
-                        
-                        
                         
                         ret[[nam]] <- list(beta.p = beta.p, alpha.p = alpha.p, kappa.p = kappa.p, zeta.p = zeta.p, accept.beta = accept.beta, accept.alpha = accept.alpha, accept.V = accept.V, Vsum = Vsummary, covNames = covNames)
                         
@@ -543,14 +540,11 @@ BayesSurv <- function(Y,
                         }
                         
                         if(p > 0){
-                            covNames = colnames(survData)[c(4:(3+p))]
+                            covNames = colnames(Xmat)
                         }
                         if(p == 0){
                             covNames = NULL
                         }
-                        
-     
-     
                         
                         ret[[nam]] <- list(beta.p = beta.p, alpha.p = alpha.p, kappa.p = kappa.p, class.p = c.p, mu.p = mu.p, zeta.p = zeta.p, tau.p = tau.p, accept.beta = accept.beta, accept.alpha = accept.alpha, accept.V = accept.V, covNames = covNames, Vsum = Vsummary)
                         
@@ -690,14 +684,12 @@ BayesSurv <- function(Y,
                             save(V.p, file = paste(path, "VPch", chain, ".RData", sep = ""))
                         }
                         
-                        
                         if(p > 0){
-                            covNames = colnames(survData)[c(4:(3+p))]
+                            covNames = colnames(Xmat)
                         }
                         if(p == 0){
                             covNames = NULL
                         }
-                        
   
                         ret[[nam]] <- list(beta.p = beta.p, lambda.fin = lambda.fin, mu_lam.p = mu_lam.p, sigSq_lam.p = sigSq_lam.p, K.p = K.p, s.p = s.p, zeta.p = zeta.p, accept.beta = accept.beta, accept.BI = accept.BI, accept.DI = accept.DI, time_lambda = time_lambda, accept.V = accept.V, covNames = covNames, Vsum = Vsummary)
                         
@@ -796,8 +788,8 @@ BayesSurv <- function(Y,
                         }
                         
                         if(p > 0){
-                            covNames = colnames(survData)[c(4:(3+p))]
-                        }	
+                            covNames = colnames(Xmat)
+                        }
                         if(p == 0){
                             covNames = NULL
                         }

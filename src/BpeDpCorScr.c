@@ -852,7 +852,7 @@ void BpeDpCorScrmcmc(double survData[],
             BpeDpCorScr_updateCP(beta1, beta2, beta3, lambda1, lambda2, lambda3, s1, s2, s3, K1, K2, K3, gamma, V1, V2, V3, nu2, nu3, survTime1, survTime2, survEvent1, case01, case11, cluster, survCov1, survCov2, survCov3, n_j, mu_all, Sigma_all, c, accept_V, mu0, Psi0, zeta0, rho0, tau, &nClass_DP, rr);
             
             
-            BpeDpCorScr_updatePP(n, &tau, aTau, bTau, &nClass_DP);
+            BpeDpCorScr_updatePP(J, &tau, aTau, bTau, &nClass_DP);
         }
         
         /*    */

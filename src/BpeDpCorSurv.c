@@ -357,7 +357,7 @@ void BpeDpCorSurvmcmc(double survData[],
             /*             */
             BpeDpCorSurv_updateCP(beta, lambda, s, K, V, survTime, survEvent, cluster, survCov, n_j, mu_all, zeta_all, c, accept_V, mu0, zeta0, a0, b0, tau, &nClass_DP, rr);
             
-            BpeDpCorSurv_updatePP(n, &tau, aTau, bTau, &nClass_DP);
+            BpeDpCorSurv_updatePP(J, &tau, aTau, bTau, &nClass_DP);
         }
         
         

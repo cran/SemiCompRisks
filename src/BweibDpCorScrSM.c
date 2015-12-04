@@ -585,7 +585,7 @@ void BweibDpCorScrSMmcmc(double survData[],
              BweibDpCorScrSM_updateCP(beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, gamma, V1, V2, V3, survTime1, yStar, survEvent1, case01, case11, cluster, survCov1, survCov2, survCov3, n_j, mu_all, Sigma_all, c, accept_V, mu0, Psi0, zeta0, rho0, tau, &nClass_DP, rr);
 
             
-            BweibDpCorScrSM_updatePP(n, &tau, aTau, bTau, &nClass_DP);
+            BweibDpCorScrSM_updatePP(J, &tau, aTau, bTau, &nClass_DP);
         }
 
                 
