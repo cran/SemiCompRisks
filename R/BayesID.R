@@ -92,6 +92,7 @@ BayesID <- function(Y,
             }
             if(hz.type == "PEM")
             {
+                mcmcList$tuning$sg_max <- c(1,1,1)
                 mcmc <- as.vector(c(C1=mcmcList$tuning$Cg[1], C2=mcmcList$tuning$Cg[2], C3=mcmcList$tuning$Cg[3], delPert1=mcmcList$tuning$delPertg[1], delPert2=mcmcList$tuning$delPertg[2], delPert3=mcmcList$tuning$delPertg[3], rj.scheme = mcmcList$tuning$rj.scheme, K1_max=mcmcList$tuning$Kg_max[1], K2_max=mcmcList$tuning$Kg_max[2], K3_max=mcmcList$tuning$Kg_max[3], s1_max=mcmcList$tuning$sg_max[1], s2_max=mcmcList$tuning$sg_max[2], s3_max=mcmcList$tuning$sg_max[3], mhProp_theta_var=mcmcList$tuning$mhProp_theta_var, nGam_save=mcmcList$storage$nGam_save, numReps=mcmcList$run$numReps, thin=mcmcList$run$thin, burninPerc=mcmcList$run$burninPerc))
             }
             
@@ -371,9 +372,9 @@ BayesID <- function(Y,
                     K1_max <- mcmc[8]
                     K2_max <- mcmc[9]
                     K3_max <- mcmc[10]
-                    s1_max <- mcmc[11]
-                    s2_max <- mcmc[12]
-                    s3_max <- mcmc[13]
+                    s1_max <- max(temp$PEM$PEM.s1)
+                    s2_max <- max(temp$PEM$PEM.s2)
+                    s3_max <- max(temp$PEM$PEM.s3)
                     mhProp_theta_var <- mcmc[14]
                     nGam_save   <- mcmc[15]
                     numReps     <- mcmc[16]
@@ -417,22 +418,22 @@ BayesID <- function(Y,
                     mcmcParams <- c(C1, C2, C3, delPert1, delPert2, delPert3, num_s_propBI1, num_s_propBI2, num_s_propBI3, K1_max, K2_max, K3_max, s1_max, s2_max, s3_max, nTime_lambda1, nTime_lambda2, nTime_lambda3, s_propBI1, s_propBI2, s_propBI3, time_lambda1, time_lambda2, time_lambda3, mhProp_theta_var)
                     
                     
-                    s1  		<- unique(sort(c(sample(time_lambda1, min(length(time_lambda1), 1)), s1_max)))
-                    s2			<- unique(sort(c(sample(time_lambda2, min(length(time_lambda2), 1)), s2_max)))
-                    s3			<- unique(sort(c(sample(time_lambda3, min(length(time_lambda3), 1)), s3_max)))
-                    lambda1 <- runif(length(s1), -3, -2)
-                    lambda2 <- runif(length(s2), -3, -2)
-                    lambda3 <- runif(length(s3), -3, -2)
+                    s1  		<- temp$PEM$PEM.s1
+                    s2			<- temp$PEM$PEM.s2
+                    s3			<- temp$PEM$PEM.s3
+                    lambda1 <- temp$PEM$PEM.lambda1
+                    lambda2 <- temp$PEM$PEM.lambda2
+                    lambda3 <- temp$PEM$PEM.lambda3
                     
-                    K1=length(s1)-1
-                    K2=length(s2)-1
-                    K3=length(s3)-1
-                    mu_lam1=mean(lambda1)
-                    mu_lam2=mean(lambda2)
-                    mu_lam3=mean(lambda3)
-                    sigSq_lam1=ifelse(length(lambda1)==1, 0.1, var(lambda1))
-                    sigSq_lam2=ifelse(length(lambda2)==1, 0.1, var(lambda2))
-                    sigSq_lam3=ifelse(length(lambda3)==1, 0.1, var(lambda3))
+                    K1=temp$PEM$K1
+                    K2=temp$PEM$K2
+                    K3=temp$PEM$K3
+                    mu_lam1=temp$PEM$PEM.mu_lam[1]
+                    mu_lam2=temp$PEM$PEM.mu_lam[2]
+                    mu_lam3=temp$PEM$PEM.mu_lam[3]
+                    sigSq_lam1=temp$PEM$PEM.sigSq_lam[1]
+                    sigSq_lam2=temp$PEM$PEM.sigSq_lam[2]
+                    sigSq_lam3=temp$PEM$PEM.sigSq_lam[3]
                     
                     
                     # model_h3 = "Markov"
@@ -840,6 +841,7 @@ BayesID <- function(Y,
             }
             if(hz.type == "PEM")
             {
+                mcmcList$tuning$sg_max <- c(1,1,1)
                 mcmc <- as.vector(c(C1=mcmcList$tuning$Cg[1], C2=mcmcList$tuning$Cg[2], C3=mcmcList$tuning$Cg[3], delPert1=mcmcList$tuning$delPertg[1], delPert2=mcmcList$tuning$delPertg[2], delPert3=mcmcList$tuning$delPertg[3], rj.scheme = mcmcList$tuning$rj.scheme, K1_max=mcmcList$tuning$Kg_max[1], K2_max=mcmcList$tuning$Kg_max[2], K3_max=mcmcList$tuning$Kg_max[3], s1_max=mcmcList$tuning$sg_max[1], s2_max=mcmcList$tuning$sg_max[2], s3_max=mcmcList$tuning$sg_max[3], mhProp_theta_var=mcmcList$tuning$mhProp_theta_var, mhProp_V1_var=mcmcList$tuning$mhProp_Vg_var[1], mhProp_V2_var=mcmcList$tuning$mhProp_Vg_var[2], mhProp_V3_var=mcmcList$tuning$mhProp_Vg_var[3], nGam_save=mcmcList$storage$nGam_save, numReps=mcmcList$run$numReps, thin=mcmcList$run$thin, burninPerc=mcmcList$run$burninPerc, storeV=mcmcList$storage$storeV))
             }
             
@@ -1782,9 +1784,9 @@ BayesID <- function(Y,
                     K1_max <- mcmc[8]
                     K2_max <- mcmc[9]
                     K3_max <- mcmc[10]
-                    s1_max <- mcmc[11]
-                    s2_max <- mcmc[12]
-                    s3_max <- mcmc[13]
+                    s1_max <- max(temp$PEM$PEM.s1)
+                    s2_max <- max(temp$PEM$PEM.s2)
+                    s3_max <- max(temp$PEM$PEM.s3)
                     mhProp_theta_var <- mcmc[14]
                     mhProp_V1_var   <- mcmc[15]
                     mhProp_V2_var   <- mcmc[16]
@@ -1831,23 +1833,23 @@ BayesID <- function(Y,
                     
                     mcmcParams <- c(C1, C2, C3, delPert1, delPert2, delPert3, num_s_propBI1, num_s_propBI2, num_s_propBI3, K1_max, K2_max, K3_max, s1_max, s2_max, s3_max, nTime_lambda1, nTime_lambda2, nTime_lambda3, s_propBI1, s_propBI2, s_propBI3, time_lambda1, time_lambda2, time_lambda3, mhProp_theta_var, mhProp_V1_var, mhProp_V2_var, mhProp_V3_var)
                     
-                    s1  		<- unique(sort(c(sample(time_lambda1, min(length(time_lambda1), 1)), s1_max)))
-                    s2			<- unique(sort(c(sample(time_lambda2, min(length(time_lambda2), 1)), s2_max)))
-                    s3			<- unique(sort(c(sample(time_lambda3, min(length(time_lambda3), 1)), s3_max)))
+                    s1  		<- temp$PEM$PEM.s1
+                    s2			<- temp$PEM$PEM.s2
+                    s3			<- temp$PEM$PEM.s3
                     
-                    lambda1 <- runif(length(s1), -3, -2)
-                    lambda2 <- runif(length(s2), -3, -2)
-                    lambda3 <- runif(length(s3), -3, -2)
+                    lambda1 <- temp$PEM$PEM.lambda1
+                    lambda2 <- temp$PEM$PEM.lambda1
+                    lambda3 <- temp$PEM$PEM.lambda3
                     
-                    K1=length(s1)-1
-                    K2=length(s2)-1
-                    K3=length(s3)-1
-                    mu_lam1=mean(lambda1)
-                    mu_lam2=mean(lambda2)
-                    mu_lam3=mean(lambda3)
-                    sigSq_lam1=ifelse(length(lambda1)==1, 0.1, var(lambda1))
-                    sigSq_lam2=ifelse(length(lambda2)==1, 0.1, var(lambda2))
-                    sigSq_lam3=ifelse(length(lambda3)==1, 0.1, var(lambda3))
+                    K1=temp$PEM$K1
+                    K2=temp$PEM$K2
+                    K3=temp$PEM$K3
+                    mu_lam1=temp$PEM$PEM.mu_lam[1]
+                    mu_lam2=temp$PEM$PEM.mu_lam[2]
+                    mu_lam3=temp$PEM$PEM.mu_lam[3]
+                    sigSq_lam1=temp$PEM$PEM.sigSq_lam[1]
+                    sigSq_lam2=temp$PEM$PEM.sigSq_lam[2]
+                    sigSq_lam3=temp$PEM$PEM.sigSq_lam[3]
                     
                     
                     

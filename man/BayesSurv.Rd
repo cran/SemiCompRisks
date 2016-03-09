@@ -54,8 +54,8 @@ BayesSurv(Y, lin.pred, data, cluster=NULL, model="Weibull",
 	\code{C}, a numeric value for the proportion that determines the sum of probabilities of choosing the birth and the death moves in PEM models. 
 	The value should not exceed 0.8;
 	\code{delPert}, the perturbation parameter in the birth update in PEM models. The values must be between 0 and 0.5;
-	If \code{rj.scheme}=1, the birth update will draw the proposal time split from uniquely ordered failure times in the data. 
-	If \code{rj.scheme}=2, the birth update will draw the proposal time split from \eqn{1:s_{max}}. Only required for PEM models;
+	If \code{rj.scheme}=1, the birth update will draw the proposal time split from \eqn{1:s_{max}}.
+	If \code{rj.scheme}=2, the birth update will draw the proposal time split from uniquely ordered failure times in the data. Only required for PEM models;
 	\code{K_max}, the maximum number of splits allowed at each iteration in MHG algorithm for PEM models;
 	\code{time_lambda} - time points at which the log-hazard function is calculated for \code{\link{plot.Bayes}}, Only required for PEM models).
 	See Details and Examples below.
@@ -113,8 +113,8 @@ BayesSurv(Y, lin.pred, data, cluster=NULL, model="Weibull",
 Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015), 
 Bayesian semiparametric analysis of semicompeting risks data: 
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
-Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S.,
-Hierarchical models for cluster-correlated semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{arXiv:1502.00526}; submitted. \cr
+Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S. (2016),
+Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, in press. \cr
 }
 \author{
 Kyu Ha Lee and Sebastien Haneuse \cr
@@ -209,7 +209,7 @@ mcmc.WB  <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
 mcmc.PEM <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
                     storage=list(storeV=storeV),
                     tuning=list(mhProp_V_var=mhProp_V_var, C=C, delPert=delPert,
-                    rj.scheme=rj.scheme, K_max=K_max, s_max=s_max, time_lambda=time_lambda))
+                    rj.scheme=rj.scheme, K_max=K_max, time_lambda=time_lambda))
 
 ################################################################
 ## Analysis of Independent Univariate Survival Data ############

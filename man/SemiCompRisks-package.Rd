@@ -26,8 +26,8 @@ The package includes following functions:
 \tabular{ll}{
 Package: \tab SemiCompRisks\cr
 Type: \tab Package\cr
-Version: \tab 2.3\cr
-Date: \tab 2015-12-04\cr
+Version: \tab 2.4\cr
+Date: \tab 2016-3-8\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }
@@ -40,8 +40,8 @@ Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015), 
 Bayesian semiparametric analysis of semicompeting risks data: 
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
-Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S.,
-Hierarchical models for cluster-correlated semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{arXiv:1502.00526}; submitted. \cr
+Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S. (2016),
+Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, in press. \cr
 }
 %Optionally other standard keywords, one per line, from file KEYWORDS in the R ~~
 %documentation directory ~~

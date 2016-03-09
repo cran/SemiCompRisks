@@ -15,6 +15,9 @@ initiate.startValues(Y, lin.pred, data, model, cluster = NULL,
                    gamma.ji = NULL, theta = NULL,
                    V.j1 = NULL, V.j2 = NULL, V.j3 = NULL, V.j = NULL,
                    WB.alpha = NULL, WB.kappa = NULL, 
+                   PEM.lambda1=NULL, PEM.lambda2=NULL, PEM.lambda3=NULL, PEM.lambda=NULL,
+                   PEM.s1=NULL, PEM.s2=NULL, PEM.s3=NULL, PEM.s=NULL,
+                   PEM.mu_lam=NULL, PEM.sigSq_lam=NULL,
                    MVN.SigmaV = NULL, Normal.zeta = NULL, 
                    DPM.class = NULL, DPM.tau = NULL)
 }
@@ -75,6 +78,38 @@ initiate.startValues(Y, lin.pred, data, model, cluster = NULL,
 	starting values of the Weibull parameters, \eqn{\kappa_g} for \code{BayesID}.
 	starting values of the Weibull parameter, \eqn{\kappa} for \code{BayesSurv}.
 }
+  \item{PEM.lambda1}{
+	starting values of the PEM parameters, \eqn{\lambda_1} for \code{BayesID}.
+}
+  \item{PEM.lambda2}{
+	starting values of the PEM parameters, \eqn{\lambda_2} for \code{BayesID}.
+}
+  \item{PEM.lambda3}{
+	starting values of the PEM parameters, \eqn{\lambda_3} for \code{BayesID}.
+}
+  \item{PEM.lambda}{
+	starting values of \eqn{\lambda} for \code{BayesSurv}.
+}
+  \item{PEM.s1}{
+	starting values of the PEM parameters, \eqn{s_1} for \code{BayesID}.
+}
+  \item{PEM.s2}{
+	starting values of the PEM parameters, \eqn{s_2} for \code{BayesID}.
+}
+  \item{PEM.s3}{
+	starting values of the PEM parameters, \eqn{s_3} for \code{BayesID}.
+}
+  \item{PEM.s}{
+	starting values of \eqn{s} for \code{BayesSurv}.
+}
+  \item{PEM.mu_lam}{
+	starting values of the PEM parameters, \eqn{\mu_{\lambda,g}} for \code{BayesID}.
+	starting values of the PEM parameter, \eqn{\mu_{\lambda}} for \code{BayesSurv}.
+}
+  \item{PEM.sigSq_lam}{
+	starting values of the PEM parameters, \eqn{\sigma_{\lambda,g}^2} for \code{BayesID}.
+	starting values of the PEM parameter, \eqn{\sigma_{\lambda}^2} for \code{BayesSurv}.
+}
   \item{MVN.SigmaV}{
 	starting values of \eqn{\Sigma_V} in DPM models for \code{BayesID}.
 }
@@ -98,8 +133,8 @@ initiate.startValues(Y, lin.pred, data, model, cluster = NULL,
 Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015), 
 Bayesian semiparametric analysis of semicompeting risks data: 
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
-Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S.,
-Hierarchical models for cluster-correlated semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{arXiv:1502.00526}; submitted. \cr
+Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S. (2016),
+Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, in press. \cr
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr

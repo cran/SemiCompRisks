@@ -2454,20 +2454,24 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
             BH3Ub   <-  apply(exp(lambda3.fin), 2, quantile, prob = 0.975)
             BH3Lb   <-  apply(exp(lambda3.fin), 2, quantile, prob = 0.025)
             
+            dif1    <- diff(c(0, time1hz))
+            dif2    <- diff(c(0, time2hz))
+            dif3    <- diff(c(0, time3hz))
+            
             BS1     <- matrix(NA, dim(lambda1.fin)[1], dim(lambda1.fin)[2])
             for(i in 1:dim(lambda1.fin)[1])
             {
-                BS1[i,] <- exp(-cumsum(exp(lambda1.fin[i,])))
+                BS1[i,] <- exp(-cumsum(exp(lambda1.fin[i,])* dif1) )
             }
             BS2     <- matrix(NA, dim(lambda2.fin)[1], dim(lambda2.fin)[2])
             for(i in 1:dim(lambda2.fin)[1])
             {
-                BS2[i,] <- exp(-cumsum(exp(lambda2.fin[i,])))
+                BS2[i,] <- exp(-cumsum(exp(lambda2.fin[i,])* dif2) )
             }
             BS3     <- matrix(NA, dim(lambda3.fin)[1], dim(lambda3.fin)[2])
             for(i in 1:dim(lambda3.fin)[1])
             {
-                BS3[i,] <- exp(-cumsum(exp(lambda3.fin[i,])))
+                BS3[i,] <- exp(-cumsum(exp(lambda3.fin[i,])* dif3) )
             }
             
             BS1Med  <-  apply(BS1, 2, median)
@@ -2595,54 +2599,94 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                     ylab <- "Baseline hazard"
                 }
                 
-                ygrid <- (max(BH1Ub, BH2Ub, BH3Ub) - min(BH1Lb, BH2Lb, BH3Lb))/5
-                ylim <- seq(from=min(BH1Lb, BH2Lb, BH3Lb), to=max(BH1Ub, BH2Ub, BH3Ub), by=ygrid)
+                ygrid <- (max(BH1Ub, BH2Ub, BH3Ub) - 0)/5
+                ylim <- seq(from=0, to=max(BH1Ub, BH2Ub, BH3Ub), by=ygrid)
                 
                 ##
                 par(mfrow=c(1,3))
                 ##
-                plot(range(time1), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][1](t), "")), axes=FALSE)
+                plot(c(0, max(time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][1](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
                 {
-                    axis(1, at=range(time1))
+                    axis(1, at=c(0, max(time1)))
                 }
                 if(class(x)[4] == "WB")
                 {
                     axis(1, at=tseq)
                 }
                 axis(2, at=round(ylim, 4))
+                
+                
+                #if(time1hz[1] == 0)
+                #{
+                #    lines(time1hz, BH1Med, col="blue", lwd=3)
+                #    lines(time1hz, BH1Ub, col="blue", lwd=3, lty=3)
+                #    lines(time1hz, BH1Lb, col="blue", lwd=3, lty=3)
+                #}else
+                #{
+                #    lines(unique(c(0, time1hz)), c(0, BH1Med), col="red", lwd=3)
+                #    lines(unique(c(0, time1hz)), c(0, BH1Ub), col="red", lwd=3, lty=3)
+                #    lines(unique(c(0, time1hz)), c(0, BH1Lb), col="red", lwd=3, lty=3)
+                #}
                 lines(time1hz, BH1Med, col="blue", lwd=3)
                 lines(time1hz, BH1Ub, col="blue", lwd=3, lty=3)
                 lines(time1hz, BH1Lb, col="blue", lwd=3, lty=3)
+
                 ##
-                plot(range(time2), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][2](t), "")), axes=FALSE)
+                plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][2](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
                 {
-                    axis(1, at=range(time2))
+                    axis(1, at=c(0, max(time2)))
                 }
                 if(class(x)[4] == "WB")
                 {
                     axis(1, at=tseq)
                 }
                 axis(2, at=round(ylim, 4))
+                
+                #if(time2hz[1] == 0)
+                #{
+                #    lines(time2hz, BH2Med, col="blue", lwd=3)
+                #    lines(time2hz, BH2Ub, col="blue", lwd=3, lty=3)
+                #    lines(time2hz, BH2Lb, col="blue", lwd=3, lty=3)
+                #}else
+                #{
+                #    lines(unique(c(0, time2hz)), c(0, BH2Med), col="red", lwd=3)
+                #    lines(unique(c(0, time2hz)), c(0, BH2Ub), col="red", lwd=3, lty=3)
+                #    lines(unique(c(0, time2hz)), c(0, BH2Lb), col="red", lwd=3, lty=3)
+                #}
                 lines(time2hz, BH2Med, col="red", lwd=3)
                 lines(time2hz, BH2Ub, col="red", lwd=3, lty=3)
                 lines(time2hz, BH2Lb, col="red", lwd=3, lty=3)
+                
+                
                 ##
-                plot(range(time3), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][3](t), "")), axes=FALSE)
+                plot(c(0, max(time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][3](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
                 {
-                    axis(1, at=range(time3))
+                    axis(1, at=c(0, max(time3)))
                 }
                 if(class(x)[4] == "WB")
                 {
                     axis(1, at=tseq)
                 }
                 axis(2, at=round(ylim, 4))
+                
+                #if(time3hz[1] == 0)
+                #{
+                #    lines(time3hz, BH3Med, col="blue", lwd=3)
+                #    lines(time3hz, BH3Ub, col="blue", lwd=3, lty=3)
+                #    lines(time3hz, BH3Lb, col="blue", lwd=3, lty=3)
+                #}else
+                #{
+                #    lines(unique(c(0, time3hz)), c(0, BH3Med), col="red", lwd=3)
+                #    lines(unique(c(0, time3hz)), c(0, BH3Ub), col="red", lwd=3, lty=3)
+                #    lines(unique(c(0, time3hz)), c(0, BH3Lb), col="red", lwd=3, lty=3)
+                #}
                 lines(time3hz, BH3Med, col="red", lwd=3)
                 lines(time3hz, BH3Ub, col="red", lwd=3, lty=3)
                 lines(time3hz, BH3Lb, col="red", lwd=3, lty=3)
-                
+
             }
             
             if(plot.est == "BS")
@@ -2656,47 +2700,76 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                 ##
                 par(mfrow=c(1,3))
                 ##
-                plot(range(time1), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][1](t), "")), axes=FALSE)
+                plot(c(0, max(time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][1](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
                 {
-                    axis(1, at=range(time1))
+                    axis(1, at=c(0, max(time1)))
                 }
                 if(class(x)[4] == "WB")
                 {
                     axis(1, at=tseq)
                 }
                 axis(2, at=ylim)
-                lines(time1, BS1Med, col="blue", lwd=3)
-                lines(time1, BS1Ub, col="blue", lwd=3, lty=3)
-                lines(time1, BS1Lb, col="blue", lwd=3, lty=3)
+                
+                if(time1[1] == 0)
+                {
+                    lines(time1, BS1Med, col="blue", lwd=3)
+                    lines(time1, BS1Ub, col="blue", lwd=3, lty=3)
+                    lines(time1, BS1Lb, col="blue", lwd=3, lty=3)
+                }else
+                {
+                    lines(unique(c(0, time1)), c(1, BS1Med), col="red", lwd=3)
+                    lines(unique(c(0, time1)), c(1, BS1Ub), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time1)), c(1, BS1Lb), col="red", lwd=3, lty=3)
+                }
+
                 ##
-                plot(range(time2), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][2](t), "")), axes=FALSE)
+                plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][2](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
                 {
-                    axis(1, at=range(time2))
+                    axis(1, at=c(0, max(time2)))
                 }
                 if(class(x)[4] == "WB")
                 {
                     axis(1, at=tseq)
                 }
                 axis(2, at=ylim)
-                lines(time2, BS2Med, col="red", lwd=3)
-                lines(time2, BS2Ub, col="red", lwd=3, lty=3)
-                lines(time2, BS2Lb, col="red", lwd=3, lty=3)
+                
+                if(time2[1] == 0)
+                {
+                    lines(time2, BS2Med, col="blue", lwd=3)
+                    lines(time2, BS2Ub, col="blue", lwd=3, lty=3)
+                    lines(time2, BS2Lb, col="blue", lwd=3, lty=3)
+                }else
+                {
+                    lines(unique(c(0, time2)), c(1, BS2Med), col="red", lwd=3)
+                    lines(unique(c(0, time2)), c(1, BS2Ub), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time2)), c(1, BS2Lb), col="red", lwd=3, lty=3)
+                }
+
                 ##
-                plot(range(time3), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][3](t), "")), axes=FALSE)
+                plot(c(0, max(time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][3](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
                 {
-                    axis(1, at=range(time3))
+                    axis(1, at=c(0, max(time3)))
                 }
                 if(class(x)[4] == "WB")
                 {
                     axis(1, at=tseq)
                 }
                 axis(2, at=ylim)
-                lines(time3, BS3Med, col="red", lwd=3)
-                lines(time3, BS3Ub, col="red", lwd=3, lty=3)
-                lines(time3, BS3Lb, col="red", lwd=3, lty=3)
+                
+                if(time3[1] == 0)
+                {
+                    lines(time3, BS3Med, col="blue", lwd=3)
+                    lines(time3, BS3Ub, col="blue", lwd=3, lty=3)
+                    lines(time3, BS3Lb, col="blue", lwd=3, lty=3)
+                }else
+                {
+                    lines(unique(c(0, time3)), c(1, BS3Med), col="red", lwd=3)
+                    lines(unique(c(0, time3)), c(1, BS3Ub), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time3)), c(1, BS3Lb), col="red", lwd=3, lty=3)
+                }
                 
             }
         }
@@ -2727,10 +2800,12 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
             BHUb   <-  apply(exp(lambda.fin), 2, quantile, prob = 0.975)
             BHLb   <-  apply(exp(lambda.fin), 2, quantile, prob = 0.025)
             
+            dif <- diff(c(0, timehz))
+            
             BS     <- matrix(NA, dim(lambda.fin)[1], dim(lambda.fin)[2])
             for(i in 1:dim(lambda.fin)[1])
             {
-                BS[i,] <- exp(-cumsum(exp(lambda.fin[i,])))
+                BS[i,] <- exp(-cumsum(exp(lambda.fin[i,])* dif) )
             }
             
             BSMed  <-  apply(BS, 2, median)
@@ -2802,20 +2877,32 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                     ylab <- "Baseline hazard"
                 }
                 
-                ygrid <- (max(BHUb) - min(BHLb))/5
-                ylim <- seq(from=min(BHLb), to=max(BHUb), by=ygrid)
+                ygrid <- (max(BHUb) - 0)/5
+                ylim <- seq(from=0, to=max(BHUb), by=ygrid)
                 
                 ##
-                plot(range(time), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", h[0](t), "")), axes=FALSE)
+                plot(c(0, max(time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", h[0](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
                 {
-                    axis(1, at=range(time))
+                    axis(1, at=c(0, max(time)))
                 }
                 if(class(x)[4] == "WB")
                 {
                     axis(1, at=tseq)
                 }
                 axis(2, at=round(ylim, 4))
+                
+                #if(timehz[1] == 0)
+                #{
+                #    lines(timehz, BHMed, col="red", lwd=3)
+                #    lines(timehz, BHUb, col="red", lwd=3, lty=3)
+                #    lines(timehz, BHLb, col="red", lwd=3, lty=3)
+                #}else
+                #{
+                #    lines(unique(c(0, timehz)), c(0, BHMed), col="red", lwd=3)
+                #    lines(unique(c(0, timehz)), c(0, BHUb), col="red", lwd=3, lty=3)
+                #    lines(unique(c(0, timehz)), c(0, BHLb), col="red", lwd=3, lty=3)
+                #}
                 lines(timehz, BHMed, col="red", lwd=3)
                 lines(timehz, BHUb, col="red", lwd=3, lty=3)
                 lines(timehz, BHLb, col="red", lwd=3, lty=3)
@@ -2831,20 +2918,28 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                 ylim <- seq(from=0, to=1, by=0.2)
                 
                 ##
-                plot(range(time), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", S[0](t), "")), axes=FALSE)
+                plot(c(0, max(time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", S[0](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
                 {
-                    axis(1, at=range(time))
+                    axis(1, at=c(0, max(time)))
                 }
                 if(class(x)[4] == "WB")
                 {
                     axis(1, at=tseq)
                 }
                 axis(2, at=ylim)
-                lines(time, BSMed, col="red", lwd=3)
-                lines(time, BSUb, col="red", lwd=3, lty=3)
-                lines(time, BSLb, col="red", lwd=3, lty=3)
                 
+                if(time[1] == 0)
+                {
+                    lines(time, BSMed, col="red", lwd=3)
+                    lines(time, BSUb, col="red", lwd=3, lty=3)
+                    lines(time, BSLb, col="red", lwd=3, lty=3)
+                }else
+                {
+                    lines(unique(c(0, time)), c(1, BSMed), col="red", lwd=3)
+                    lines(unique(c(0, time)), c(1, BSUb), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time)), c(1, BSLb), col="red", lwd=3, lty=3)
+                }
             }
         }
         if(plot == FALSE)

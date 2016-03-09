@@ -66,6 +66,7 @@ BayesSurv <- function(Y,
             }
             if(hz.type == "PEM")
             {
+                mcmcList$tuning$s_max <- 1
                 mcmc <- as.vector(c(C=mcmcList$tuning$C, delPert=mcmcList$tuning$delPert, rj.scheme = mcmcList$tuning$rj.scheme, K_max=mcmcList$tuning$K_max, s_max=mcmcList$tuning$s_max, numReps=mcmcList$run$numReps, thin=mcmcList$run$thin, burninPerc=mcmcList$run$burninPerc))
             }
             
@@ -167,7 +168,7 @@ BayesSurv <- function(Y,
                     delPert     <- mcmc[2]
                     rj.scheme   <- mcmc[3]
                     J_max       <- mcmc[4]
-                    s_max       <- mcmc[5]
+                    s_max       <- max(temp$PEM$PEM.s)
                     
                     numReps     <- mcmc[6]
                     thin        <- mcmc[7]
@@ -195,12 +196,12 @@ BayesSurv <- function(Y,
                     
                     mcmcParams <- c(C, delPert, num_s_propBI, J_max, s_max, nTime_lambda, s_propBI, time_lambda)
                     
-                    s  		<- unique(sort(c(sample(time_lambda, min(length(time_lambda), 1)), s_max)))
-                    lambda <- runif(length(s), -3, -2)
+                    s  		<- temp$PEM$PEM.s
+                    lambda  <- temp$PEM$PEM.lambda
                     
-                    J=length(s)-1
-                    mu_lam=mean(lambda)
-                    sigSq_lam=ifelse(length(lambda)==1, 0.1, var(lambda))
+                    J=temp$PEM$K
+                    mu_lam=temp$PEM$PEM.mu_lam
+                    sigSq_lam=temp$PEM$PEM.sigSq_lam
                     
                     
                     J_ <- J
@@ -343,6 +344,7 @@ BayesSurv <- function(Y,
             }
             if(hz.type == "PEM")
             {
+                mcmcList$tuning$s_max <- 1
                 mcmc <- as.vector(c(C=mcmcList$tuning$C, delPert=mcmcList$tuning$delPert, rj.scheme = mcmcList$tuning$rj.scheme, K_max=mcmcList$tuning$K_max, s_max=mcmcList$tuning$s_max, mhProp_V_var=mcmcList$tuning$mhProp_V_var, numReps=mcmcList$run$numReps, thin=mcmcList$run$thin, burninPerc=mcmcList$run$burninPerc, storeV=mcmcList$storage$storeV))
             }
             
@@ -561,8 +563,8 @@ BayesSurv <- function(Y,
                     delPert     <- mcmc[2]
                     rj.scheme   <- mcmc[3]
                     K_max       <- mcmc[4]
-                    s_max       <- mcmc[5]
-                    mhProp_V_var   <- mcmc[6]
+                    s_max       <- max(temp$PEM$PEM.s)
+                    mhProp_V_var <- mcmc[6]
                     numReps     <- mcmc[7]
                     thin        <- mcmc[8]
                     burninPerc  <- mcmc[9]
@@ -590,12 +592,12 @@ BayesSurv <- function(Y,
                     mcmcParams <- c(C, delPert, num_s_propBI, K_max, s_max, nTime_lambda, s_propBI, time_lambda, mhProp_V_var)
                     
                     
-                    s  		<- unique(sort(c(sample(time_lambda, min(length(time_lambda), 1)), s_max)))
-                    lambda <- runif(length(s), -3, -2)
+                    s  		<- temp$PEM$PEM.s
+                    lambda <- temp$PEM$PEM.lambda
                     
-                    K=length(s)-1
-                    mu_lam=mean(lambda)
-                    sigSq_lam=ifelse(length(lambda)==1, 0.1, var(lambda))
+                    K=temp$PEM$K
+                    mu_lam=temp$PEM$PEM.mu_lam
+                    sigSq_lam=temp$PEM$PEM.sigSq_lam
                     
                     
                     
