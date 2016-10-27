@@ -4,59 +4,59 @@
 ## PRINT METHOD
 ####
 ##
-print.Freq <- function(x, digits=3, ...)
-{   
+print.Freq_HReg <- function(x, digits=3, ...)
+{
     obj <- x
-  ##
-  logEst <- obj$estimate
-  logSE  <- sqrt(diag(obj$Finv))
-  value  <- cbind(logEst, logSE, logEst - 1.96*logSE, logEst + 1.96*logSE)
-  ## 
-  dimnames(value) <- list(obj$myLabels, c( "Estimate", "SE", "LL", "UL"))
-  
-  ##
-  if(class(obj)[2] == "Surv")
-  {
     ##
-    cat("\nAnalysis of independent univariate time-to-event data \n")
-    ## 
-    #cat("\nBaseline hazard function components:\n")
-    #print(round(value[c(1:2),], digits=digits))
+    logEst <- obj$estimate
+    logSE  <- sqrt(diag(obj$Finv))
+    value  <- cbind(logEst, logSE, logEst - 1.96*logSE, logEst + 1.96*logSE)
     ##
-    cat("\nRegression coefficients:\n")
-    print(round(value[-c(1:2),], digits=digits))
-  }
-
-  ##
-  if(class(obj)[2] == "ID")
-  {
-    ##
-    cat("\nAnalysis of independent semi-competing risks data \n")
-    cat(class(obj)[5], "assumption for h3\n")
-    ##
-    #cat("\nBaseline hazard function components:\n")
-    #print(round(value[c(1:6),], digits=digits))
-    ##
-    value_theta <- matrix(exp(value[7,]), ncol = 4)
-    dimnames(value_theta) <- list("", c( "Estimate", "SE", "LL", "UL"))
-    value_theta[1,2] <- value[7,2] * exp(value[7,1])
+    dimnames(value) <- list(obj$myLabels, c( "Estimate", "SE", "LL", "UL"))
     
-    cat("\nVariance of frailties, theta:\n")
-    if(obj$frailty == TRUE) print(round(value_theta, digits=digits))
-    if(obj$frailty == FALSE) print("NA")    
     ##
-    cat("\nRegression coefficients:\n")
-    if(obj$frailty == TRUE) print(round(value[-c(1:7),], digits=digits))
-    if(obj$frailty == FALSE) print(round(value[-c(1:6),], digits=digits))  
-  }
-  
-  ##
-  invisible()
+    if(class(obj)[2] == "Surv")
+    {
+        ##
+        cat("\nAnalysis of independent univariate time-to-event data \n")
+        ##
+        #cat("\nBaseline hazard function components:\n")
+        #print(round(value[c(1:2),], digits=digits))
+        ##
+        cat("\nRegression coefficients:\n")
+        print(round(value[-c(1:2),], digits=digits))
+    }
+    
+    ##
+    if(class(obj)[2] == "ID")
+    {
+        ##
+        cat("\nAnalysis of independent semi-competing risks data \n")
+        cat(class(obj)[5], "assumption for h3\n")
+        ##
+        #cat("\nBaseline hazard function components:\n")
+        #print(round(value[c(1:6),], digits=digits))
+        ##
+        value_theta <- matrix(exp(value[7,]), ncol = 4)
+        dimnames(value_theta) <- list("", c( "Estimate", "SE", "LL", "UL"))
+        value_theta[1,2] <- value[7,2] * exp(value[7,1])
+        
+        cat("\nVariance of frailties, theta:\n")
+        if(obj$frailty == TRUE) print(round(value_theta, digits=digits))
+        if(obj$frailty == FALSE) print("NA")
+        ##
+        cat("\nRegression coefficients:\n")
+        if(obj$frailty == TRUE) print(round(value[-c(1:7),], digits=digits))
+        if(obj$frailty == FALSE) print(round(value[-c(1:6),], digits=digits))
+    }
+    
+    ##
+    invisible()
 }
 
-print.Bayes <- function(x, digits=3, ...)
+print.Bayes_HReg <- function(x, digits=3, ...)
 {
-	nChain = x$setup$nChain    
+    nChain = x$setup$nChain
     
     if(class(x)[2] == "ID")
     {
@@ -96,7 +96,7 @@ print.Bayes <- function(x, digits=3, ...)
     ##
     cat("Percentage of burnin: ", x$setup$burninPerc*100, "%\n", sep = "")
     
-  
+    
     # convergence diagnostics
     
     if(nChain > 1){
@@ -106,7 +106,7 @@ print.Bayes <- function(x, digits=3, ...)
         
         if(class(x)[2] == "ID")
         {
-
+            
             theta <- x$chain1$theta.p
             for(i in 2:nChain){
                 nam <- paste("chain", i, sep = "")
@@ -119,7 +119,7 @@ print.Bayes <- function(x, digits=3, ...)
             cat("\nVariance of frailties, theta:")
             print(round(psrftheta, digits=digits))
             
-
+            
             beta.names <- unique(c(x$chain1$covNames1, x$chain1$covNames2, x$chain1$covNames3))
             nP         <- length(beta.names)
             output <- matrix(NA, nrow=nP, ncol=3)
@@ -201,13 +201,12 @@ print.Bayes <- function(x, digits=3, ...)
             
             if(nP > 0)
             {
-
                 cat("\nRegression coefficients:\n")
                 output.coef <- output
                 print(round(output.coef, digits=digits))
             }
-
-
+            
+            
             ##
             cat("\nBaseline hazard function components:\n")
             
@@ -353,7 +352,7 @@ print.Bayes <- function(x, digits=3, ...)
                     sig <- cbind(sig, x[[nam]]$sigSq_lam1.p)
                 }
                 psrfSig1 <- calcPSR(sig)
-
+                
                 
                 sig <- x$chain1$sigSq_lam2.p
                 for(i in 2:nChain){
@@ -361,7 +360,7 @@ print.Bayes <- function(x, digits=3, ...)
                     sig <- cbind(sig, x[[nam]]$sigSq_lam2.p)
                 }
                 psrfSig2 <- calcPSR(sig)
-
+                
                 
                 sig <- x$chain1$sigSq_lam3.p
                 for(i in 2:nChain){
@@ -399,7 +398,7 @@ print.Bayes <- function(x, digits=3, ...)
                 cat("\n")
                 print(round(bh_PEM, digits=digits))
             }
-
+            
         }
         
         if(class(x)[2] == "Surv")
@@ -528,7 +527,7 @@ print.Bayes <- function(x, digits=3, ...)
                 cat("\n")
                 print(round(bh_PEM, digits=digits))
             }
-
+            
         }
         
         
@@ -536,7 +535,7 @@ print.Bayes <- function(x, digits=3, ...)
     else if(nChain == 1)
     {
         cat("Potential scale reduction factor cannot be calculated. \n")
-        cat("The number of chains must be larger than 1. \n")	
+        cat("The number of chains must be larger than 1. \n")
     }
     
     cat("\n######\n")
@@ -571,7 +570,7 @@ print.Bayes <- function(x, digits=3, ...)
         
         print(round(tbl, digits=digits))
         
-
+        
         ##
         
         tbl_beta <- NULL
@@ -663,7 +662,7 @@ print.Bayes <- function(x, digits=3, ...)
             tbl_beta     <- rbind(tbl_beta, tbl3)
         }
         
-
+        
     }
     
     if(class(x)[2] == "Surv")
@@ -702,12 +701,485 @@ print.Bayes <- function(x, digits=3, ...)
         colnames(tbl_beta) <- c( "Estimate", "SD", "LL", "UL")
         print(round(tbl_beta, digits=digits))
     }
-
-
-    
     
     invisible()
 }
+
+print.Bayes_AFT <- function(x, digits=3, ...)
+{
+    nChain = x$setup$nChain
+    
+    if(class(x)[2] == "ID")
+    {
+        if(class(x)[3] == "Cor")
+        {
+            ##
+            cat("\nAnalysis of cluster-correlated semi-competing risks data \n")
+        }
+        if(class(x)[3] == "Ind")
+        {
+            ##
+            cat("\nAnalysis of independent semi-competing risks data \n")
+        }
+    }
+    if(class(x)[2] == "Surv")
+    {
+        if(class(x)[3] == "Cor")
+        {
+            ##
+            cat("\nAnalysis of cluster-correlated univariate time-to-event data \n")
+        }
+        if(class(x)[3] == "Ind")
+        {
+            ##
+            cat("\nAnalysis of independent univariate time-to-event data \n")
+        }
+    }
+    
+    ##
+    cat("\nNumber of chains:    ", nChain,"\n")
+    ##
+    cat("Number of scans:     ", x$setup$numReps,"\n")
+    ##
+    cat("Thinning:            ", x$setup$thin,"\n")
+    ##
+    cat("Percentage of burnin: ", x$setup$burninPerc*100, "%\n", sep = "")
+    
+    
+    # convergence diagnostics
+    
+    if(nChain > 1){
+        
+        cat("\n######\n")
+        cat("Potential Scale Reduction Factor\n")
+        
+        if(class(x)[2] == "ID")
+        {
+            theta <- x$chain1$theta.p
+            for(i in 2:nChain){
+                nam <- paste("chain", i, sep = "")
+                theta <- cbind(theta, x[[nam]]$theta.p)
+            }
+            psrftheta <- matrix(calcPSR(theta), 1, 1)
+            dimnames(psrftheta) <- list("", "")
+            
+            cat("\nVariance of frailties, theta:")
+            print(round(psrftheta, digits=digits))
+            
+            beta.names <- unique(c(x$chain1$covNames1, x$chain1$covNames2, x$chain1$covNames3))
+            nP         <- length(beta.names)
+            output <- matrix(NA, nrow=nP, ncol=3)
+            dimnames(output) <- list(beta.names, c("beta1", "beta2", "beta3"))
+            
+            if(length(x$chain1$beta1.p) != 0){
+                
+                #beta1
+                p1	= dim(x$chain1$beta1.p)[2]
+                
+                psrfBeta1 <- rep(NA, p1)
+                for(j in 1:p1){
+                    #namPara = paste("beta_", j, sep = "")
+                    beta1 <- x$chain1$beta1[,j]
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep = "")
+                        beta1 <- cbind(beta1, x[[nam]]$beta1[,j])
+                    }
+                    psrfBeta1[j] <- calcPSR(beta1)
+                }
+                
+                for(i in 1:nP)
+                {
+                    for(k in 1:p1) if(x$chain1$covNames1[k] == beta.names[i]) output[i,1] <- psrfBeta1[k]
+                }
+            }
+            
+            if(length(x$chain1$beta2.p) != 0){
+                
+                #beta2
+                p2	= dim(x$chain1$beta2.p)[2]
+                
+                psrfBeta2 <- rep(NA, p2)
+                for(j in 1:p2){
+                    #namPara = paste("beta_", j, sep = "")
+                    beta2 <- x$chain1$beta2[,j]
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep = "")
+                        beta2 <- cbind(beta2, x[[nam]]$beta2[,j])
+                    }
+                    psrfBeta2[j] <- calcPSR(beta2)
+                }
+                for(i in 1:nP)
+                {
+                    for(k in 1:p2) if(x$chain1$covNames2[k] == beta.names[i]) output[i,2] <- psrfBeta2[k]
+                }
+            }
+            
+            if(length(x$chain1$beta3.p) != 0){
+                
+                #beta3
+                p3	= dim(x$chain1$beta3.p)[2]
+                
+                psrfBeta3 <- rep(NA, p3)
+                for(j in 1:p3){
+                    #namPara = paste("beta_", j, sep = "")
+                    beta3 <- x$chain1$beta3[,j]
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep = "")
+                        beta3 <- cbind(beta3, x[[nam]]$beta3[,j])
+                    }
+                    psrfBeta3[j] <- calcPSR(beta3)
+                }
+                for(i in 1:nP)
+                {
+                    for(k in 1:p3) if(x$chain1$covNames3[k] == beta.names[i]) output[i,3] <- psrfBeta3[k]
+                }
+            }
+            
+            if(nP > 0)
+            {
+                cat("\nRegression coefficients:\n")
+                output.coef <- output
+                print(round(output.coef, digits=digits))
+            }
+            
+            
+            ##
+            cat("\nBaseline survival function components:\n")
+            
+            if(class(x)[4] == "LN")
+            {
+                ##
+                # mu
+                mu <- x$chain1$mu1.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    mu <- cbind(mu, x[[nam]]$mu1.p)
+                }
+                psrfmu1 <- calcPSR(mu)
+                
+                mu <- x$chain1$mu2.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    mu <- cbind(mu, x[[nam]]$mu2.p)
+                }
+                psrfmu2 <- calcPSR(mu)
+                
+                mu <- x$chain1$mu3.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    mu <- cbind(mu, x[[nam]]$mu3.p)
+                }
+                psrfmu3 <- calcPSR(mu)
+                
+                # sigSq
+                
+                sigSq <- x$chain1$sigSq1.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    sigSq <- cbind(sigSq, x[[nam]]$sigSq1.p)
+                }
+                psrfSigSq1 <- calcPSR(sigSq)
+                
+                sigSq <- x$chain1$sigSq2.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    sigSq <- cbind(sigSq, x[[nam]]$sigSq2.p)
+                }
+                psrfSigSq2 <- calcPSR(sigSq)
+                
+                sigSq <- x$chain1$sigSq3.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    sigSq <- cbind(sigSq, x[[nam]]$sigSq3.p)
+                }
+                psrfSigSq3 <- calcPSR(sigSq)
+                
+                bh_LN <- matrix(c(psrfmu1, psrfmu2, psrfmu3, psrfSigSq1, psrfSigSq2, psrfSigSq3), 2, 3, byrow = T)
+                dimnames(bh_LN) <- list(c("mu", "sigmaSq"), c("g=1", "g=2", "g=3"))
+                print(round(bh_LN, digits=digits))
+                
+            }
+            
+            if(class(x)[4] == "DPM")
+            {
+                ##
+                # tau
+                tau <- x$chain1$tau1.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    tau <- cbind(tau, x[[nam]]$tau1.p)
+                }
+                psrfTau1 <- calcPSR(tau)
+                
+                tau <- x$chain1$tau2.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    tau <- cbind(tau, x[[nam]]$tau2.p)
+                }
+                psrfTau2 <- calcPSR(tau)
+                
+                tau <- x$chain1$tau3.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    tau <- cbind(tau, x[[nam]]$tau3.p)
+                }
+                psrfTau3 <- calcPSR(tau)
+                
+                
+                bh_DPM <- matrix(c(psrfTau1, psrfTau2, psrfTau3), 1, 3, byrow = T)
+                dimnames(bh_DPM) <- list(c("tau"), c("g=1", "g=2", "g=3"))
+                cat("\n")
+                print(round(bh_DPM, digits=digits))
+            }
+        }
+        
+        if(class(x)[2] == "Surv")
+        {
+            beta.names <- c(x$chain1$covNames)
+            nP         <- length(beta.names)
+            output <- matrix(NA, nrow=nP, ncol=1)
+            dimnames(output) <- list(beta.names, c("beta"))
+            
+            if(length(x$chain1$beta.p) != 0){
+                
+                #beta
+                p	= dim(x$chain1$beta.p)[2]
+                
+                psrfBeta <- rep(NA, p)
+                for(j in 1:p){
+                    beta <- x$chain1$beta.p[,j]
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep = "")
+                        beta <- cbind(beta, x[[nam]]$beta.p[,j])
+                    }
+                    psrfBeta[j] <- calcPSR(beta)
+                }
+                
+                for(i in 1:nP)
+                {
+                    for(k in 1:p) if(x$chain1$covNames[k] == beta.names[i]) output[i,1] <- psrfBeta[k]
+                }
+                
+            }
+            
+            if(nP > 0)
+            {
+                cat("\nRegression coefficients:\n")
+                output.coef <- output
+                print(round(output.coef, digits=digits))
+            }
+            
+            
+            if(class(x)[4] == "LN")
+            {
+                ##
+                # mu
+                mu <- x$chain1$mu.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    mu <- cbind(mu, x[[nam]]$mu.p)
+                }
+                psrfmu <- calcPSR(mu)
+                
+                # sigSq
+                
+                sigSq <- x$chain1$sigSq.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    sigSq <- cbind(sigSq, x[[nam]]$sigSq.p)
+                }
+                psrfSigSq <- calcPSR(sigSq)
+                
+                
+                bh_LN <- matrix(c(psrfmu, psrfSigSq), 2, 1, byrow = T)
+                dimnames(bh_LN) <- list(c("mu", "sigmaSq"), c("h"))
+                print(round(bh_LN, digits=digits))
+                
+            }
+            
+            if(class(x)[4] == "DPM")
+            {
+                ##
+                # tau
+                tau <- x$chain1$tau.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    tau <- cbind(tau, x[[nam]]$tau.p)
+                }
+                psrfTau <- calcPSR(tau)
+                
+                
+                bh_DPM <- matrix(c(psrfTau), 1, 1, byrow = T)
+                dimnames(bh_DPM) <- list(c("tau"), c("h"))
+                cat("\n")
+                print(round(bh_DPM, digits=digits))
+            }
+            
+        }
+        
+        
+    }
+    else if(nChain == 1)
+    {
+        cat("Potential scale reduction factor cannot be calculated. \n")
+        cat("The number of chains must be larger than 1. \n")
+    }
+    
+    cat("\n######\n")
+    cat("Estimates\n")
+    
+    if(class(x)[2] == "ID")
+    {
+        ##
+        cat("\nVariance of frailties, theta:\n")
+        
+        theta.p <- x$chain1$theta.p
+        
+        if(nChain > 1){
+            for(i in 2:nChain){
+                nam <- paste("chain", i, sep="")
+                theta.p <- rbind(theta.p, x[[nam]]$theta.p)
+            }
+        }
+        
+        theta.pMed <- apply(theta.p, 2, median)
+        theta.pSd <- apply(theta.p, 2, sd)
+        theta.pUb <- apply(theta.p, 2, quantile, prob = 0.975)
+        theta.pLb <- apply(theta.p, 2, quantile, prob = 0.025)
+        
+        tbl <- matrix(NA, 1, 4)
+        dimnames(tbl) <- list("", c( "Estimate", "SD", "LL", "UL"))
+        
+        tbl[,1]	<- theta.pMed
+        tbl[,2]	<- theta.pSd
+        tbl[,3]	<- theta.pLb
+        tbl[,4]	<- theta.pUb
+        
+        print(round(tbl, digits=digits))
+        
+        ##
+        tbl_beta <- NULL
+        
+        if(length(x$chain1$beta1.p) != 0){
+            
+            p1	= dim(x$chain1$beta1.p)[2]
+            beta.p <- x$chain1$beta1.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta1.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl1 <- matrix(NA, p1, 4)
+            rownames(tbl1) <- x$chain1$covNames1
+            
+            tbl1[,1]	<- beta.pMed
+            tbl1[,2]	<- beta.pSd
+            tbl1[,3]	<- exp(beta.pLb)
+            tbl1[,4]	<- exp(beta.pUb)
+            tbl_beta    <- tbl1
+        }
+        
+        if(length(x$chain1$beta2.p) != 0){
+            
+            p2	= dim(x$chain1$beta2.p)[2]
+            beta.p <- x$chain1$beta2.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta2.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl2 <- matrix(NA, p2, 4)
+            rownames(tbl2) <- x$chain1$covNames2
+            
+            tbl2[,1]	<- beta.pMed
+            tbl2[,2]	<- beta.pSd
+            tbl2[,3]	<- exp(beta.pLb)
+            tbl2[,4]	<- exp(beta.pUb)
+            tbl_beta     <- rbind(tbl_beta, tbl2)
+        }
+        
+        if(length(x$chain1$beta3.p) != 0){
+            
+            p3	= dim(x$chain1$beta3.p)[2]
+            beta.p <- x$chain1$beta3.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta3.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl3 <- matrix(NA, p3, 4)
+            rownames(tbl3) <- x$chain1$covNames3
+            
+            tbl3[,1]	<- beta.pMed
+            tbl3[,2]	<- beta.pSd
+            tbl3[,3]	<- exp(beta.pLb)
+            tbl3[,4]	<- exp(beta.pUb)
+            tbl_beta     <- rbind(tbl_beta, tbl3)
+        }
+    }
+    
+    if(class(x)[2] == "Surv")
+    {
+        if(length(x$chain1$beta.p) != 0){
+            
+            p	= dim(x$chain1$beta.p)[2]
+            beta.p <- x$chain1$beta.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta.p)
+                }
+            }
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl_beta <- matrix(NA, p, 4)
+            rownames(tbl_beta) <- x$chain1$covNames
+            
+            tbl_beta[,1]	<- beta.pMed
+            tbl_beta[,2]	<- beta.pSd
+            tbl_beta[,3]	<- exp(beta.pLb)
+            tbl_beta[,4]	<- exp(beta.pUb)
+        }
+    }
+    
+    if(!is.null(tbl_beta))
+    {
+        cat("\nRegression coefficients:\n")
+        colnames(tbl_beta) <- c( "Estimate", "SD", "LL", "UL")
+        print(round(tbl_beta, digits=digits))
+    }
+    
+    invisible()
+}
+
 
 
 
@@ -715,92 +1187,92 @@ print.Bayes <- function(x, digits=3, ...)
 ## SUMMARY METHOD
 ####
 ##
-summary.Freq <- function(object, digits=3, ...)
+summary.Freq_HReg <- function(object, digits=3, ...)
 {
-	obj <- object
-  ##
-  logEst  <- obj$estimate
-  logSE   <- sqrt(diag(obj$Finv))
-  results <- cbind(logEst, logEst - 1.96*logSE, logEst + 1.96*logSE)
-  
-  ##
-  if(class(obj)[2] == "Surv")
-  {
+    obj <- object
     ##
-    #cat("\nRegression coefficients:\n")
-    output.coef           <- results[-c(1:2),]
-    dimnames(output.coef) <- list(unique(obj$myLabels[-c(1:2)]), c("beta", "LL", "UL"))
+    logEst  <- obj$estimate
+    logSE   <- sqrt(diag(obj$Finv))
+    results <- cbind(logEst, logEst - 1.96*logSE, logEst + 1.96*logSE)
+    
     ##
-    #cat("\nBaseline hazard function components:\n")
-    output.h0           <- results[c(1:2),]
-    dimnames(output.h0) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("beta", "LL", "UL"))
-    ##  
-    value <- list(coef=output.coef, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results))
-    class(value) <- c("summ.Freq", "Surv")
-  }
-  
-
-  ##
-  if(class(obj)[2] == "ID")
-  {
-    ##
-    nP.0 <- ifelse(obj$frailty, 7, 6)
-    nP.1 <- obj$nP[1]
-    nP.2 <- obj$nP[2]
-    nP.3 <- obj$nP[3]
-    ##
-    beta.names <- unique(obj$myLabels[-c(1:nP.0)])
-    nP         <- length(beta.names)
-    ##
-    #cat("\nRegression coefficients:\n")
-    output <- matrix(NA, nrow=nP, ncol=9)
-    dimnames(output) <- list(beta.names, c("beta1", "LL", "UL", "beta2", "LL", "UL", "beta3", "LL", "UL"))
-    for(i in 1:nP)
+    if(class(obj)[2] == "Surv")
     {
-      for(j in 1:nP.1) if(obj$myLabels[nP.0+j] == beta.names[i]) output[i,1:3] <- results[nP.0+j,]
-      for(j in 1:nP.2) if(obj$myLabels[nP.0+nP.1+j] == beta.names[i]) output[i,4:6] <- results[nP.0+nP.1+j,]
-      for(j in 1:nP.3) if(obj$myLabels[nP.0+nP.1+nP.2+j] == beta.names[i]) output[i,7:9] <- results[nP.0+nP.1+nP.2+j,]
-    }
-    output.coef <- output
-    ##
-    #cat("\nVariance of frailties:\n")
-    output <- matrix(NA, nrow=1, ncol=3)
-    dimnames(output) <- list(c("theta"), c("Estimate", "LL", "UL"))
-    if(obj$frailty == TRUE)  output[1,] <- exp(results[7,])
-    if(obj$frailty == FALSE) output[1,] <- rep(NA, 3)
-    output.theta <- output
-    ##
-    #cat("\nBaseline hazard function components:\n")
-    output <- matrix(NA, nrow=2, ncol=9)
-    dimnames(output) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("h1-PM", "LL", "UL", "h2-PM", "LL", "UL", "h3-PM", "LL", "UL"))
-    output[1,1:3] <- results[1,]
-    output[1,4:6] <- results[3,]
-    output[1,7:9] <- results[5,]
-    output[2,1:3] <- results[2,]
-    output[2,4:6] <- results[4,]
-    output[2,7:9] <- results[6,] 
-    output.h0 <- output
-    ##
-    value <- list(coef=output.coef, theta=output.theta, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results))
-    if(class(obj)[5] == "semi-Markov")
-    {
-        class(value) <- c("summ.Freq", "ID", "semi-Markov")
-    }
-    if(class(obj)[5] == "Markov")
-    {
-        class(value) <- c("summ.Freq", "ID", "Markov")
+        ##
+        #cat("\nRegression coefficients:\n")
+        output.coef           <- results[-c(1:2),]
+        dimnames(output.coef) <- list(unique(obj$myLabels[-c(1:2)]), c("beta", "LL", "UL"))
+        ##
+        #cat("\nBaseline hazard function components:\n")
+        output.h0           <- results[c(1:2),]
+        dimnames(output.h0) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("beta", "LL", "UL"))
+        ##
+        value <- list(coef=output.coef, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results))
+        class(value) <- c("summ.Freq_HReg", "Surv")
     }
     
-  }
-  
-  ##
-  return(value)
+    
+    ##
+    if(class(obj)[2] == "ID")
+    {
+        ##
+        nP.0 <- ifelse(obj$frailty, 7, 6)
+        nP.1 <- obj$nP[1]
+        nP.2 <- obj$nP[2]
+        nP.3 <- obj$nP[3]
+        ##
+        beta.names <- unique(obj$myLabels[-c(1:nP.0)])
+        nP         <- length(beta.names)
+        ##
+        #cat("\nRegression coefficients:\n")
+        output <- matrix(NA, nrow=nP, ncol=9)
+        dimnames(output) <- list(beta.names, c("beta1", "LL", "UL", "beta2", "LL", "UL", "beta3", "LL", "UL"))
+        for(i in 1:nP)
+        {
+            for(j in 1:nP.1) if(obj$myLabels[nP.0+j] == beta.names[i]) output[i,1:3] <- results[nP.0+j,]
+            for(j in 1:nP.2) if(obj$myLabels[nP.0+nP.1+j] == beta.names[i]) output[i,4:6] <- results[nP.0+nP.1+j,]
+            for(j in 1:nP.3) if(obj$myLabels[nP.0+nP.1+nP.2+j] == beta.names[i]) output[i,7:9] <- results[nP.0+nP.1+nP.2+j,]
+        }
+        output.coef <- output
+        ##
+        #cat("\nVariance of frailties:\n")
+        output <- matrix(NA, nrow=1, ncol=3)
+        dimnames(output) <- list(c("theta"), c("Estimate", "LL", "UL"))
+        if(obj$frailty == TRUE)  output[1,] <- exp(results[7,])
+        if(obj$frailty == FALSE) output[1,] <- rep(NA, 3)
+        output.theta <- output
+        ##
+        #cat("\nBaseline hazard function components:\n")
+        output <- matrix(NA, nrow=2, ncol=9)
+        dimnames(output) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("h1-PM", "LL", "UL", "h2-PM", "LL", "UL", "h3-PM", "LL", "UL"))
+        output[1,1:3] <- results[1,]
+        output[1,4:6] <- results[3,]
+        output[1,7:9] <- results[5,]
+        output[2,1:3] <- results[2,]
+        output[2,4:6] <- results[4,]
+        output[2,7:9] <- results[6,]
+        output.h0 <- output
+        ##
+        value <- list(coef=output.coef, theta=output.theta, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results))
+        if(class(obj)[5] == "semi-Markov")
+        {
+            class(value) <- c("summ.Freq_HReg", "ID", "semi-Markov")
+        }
+        if(class(obj)[5] == "Markov")
+        {
+            class(value) <- c("summ.Freq_HReg", "ID", "Markov")
+        }
+        
+    }
+    
+    ##
+    return(value)
 }
 
-summary.Bayes <- function(object, digits=3, ...)
+summary.Bayes_HReg <- function(object, digits=3, ...)
 {
     x <- object
-	nChain = x$setup$nChain
+    nChain = x$setup$nChain
     
     # convergence diagnostics
     
@@ -816,7 +1288,7 @@ summary.Bayes <- function(object, digits=3, ...)
             }
             psrftheta <- matrix(calcPSR(theta), 1, 1)
             dimnames(psrftheta) <- list("", "")
-
+            
             beta.names <- unique(c(x$chain1$covNames1, x$chain1$covNames2, x$chain1$covNames3))
             nP         <- length(beta.names)
             output <- matrix(NA, nrow=nP, ncol=3)
@@ -1003,7 +1475,7 @@ summary.Bayes <- function(object, digits=3, ...)
                     }
                     psrfLam3[j] <- calcPSR(lambda3)
                 }
-
+                
                 # mu_lam
                 
                 mu <- x$chain1$mu_lam1.p
@@ -1083,7 +1555,7 @@ summary.Bayes <- function(object, digits=3, ...)
                 
             }
             
-
+            
             
         }
         
@@ -1103,10 +1575,10 @@ summary.Bayes <- function(object, digits=3, ...)
                 psrfBeta <- rep(NA, p)
                 for(j in 1:p){
                     
-                    beta <- x$chain1$beta[,j]
+                    beta <- x$chain1$beta.p[,j]
                     for(i in 2:nChain){
                         nam <- paste("chain", i, sep = "")
-                        beta <- cbind(beta, x[[nam]]$beta[,j])
+                        beta <- cbind(beta, x[[nam]]$beta.p[,j])
                     }
                     psrfBeta[j] <- calcPSR(beta)
                 }
@@ -1209,7 +1681,7 @@ summary.Bayes <- function(object, digits=3, ...)
                 
                 psrf <- list(coef=psrfcoef, h0=bh, lambda=psrfLam)
             }
-
+            
             
         }
     }
@@ -1238,7 +1710,7 @@ summary.Bayes <- function(object, digits=3, ...)
         tbl_theta[,1]	<- theta.pMed
         tbl_theta[,2]	<- theta.pLb
         tbl_theta[,3]	<- theta.pUb
-
+        
         ##
         beta.names <- unique(c(x$chain1$covNames1, x$chain1$covNames2, x$chain1$covNames3))
         nP         <- length(beta.names)
@@ -1357,7 +1829,7 @@ summary.Bayes <- function(object, digits=3, ...)
                     alpha.p <- rbind(alpha.p, x[[nam]]$alpha1.p)
                 }
             }
-
+            
             alpha.pMed <- apply(log(alpha.p), 2, median)
             alpha.pUb <- apply(log(alpha.p), 2, quantile, prob = 0.975)
             alpha.pLb <- apply(log(alpha.p), 2, quantile, prob = 0.025)
@@ -1420,15 +1892,15 @@ summary.Bayes <- function(object, digits=3, ...)
                 for(i in 2:nChain){
                     nam <- paste("chain", i, sep="")
                     kappa.p <- rbind(kappa.p, x[[nam]]$kappa2.p)
-                }							
-            }	
+                }
+            }
             
             kappa.pMed <- apply(log(kappa.p), 2, median)
             kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = 0.975)
             kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = 0.025)
             
             tbl_k2 <- c(kappa.pMed, kappa.pLb, kappa.pUb)
-
+            
             ##
             kappa.p <- x$chain1$kappa3.p
             
@@ -1436,15 +1908,15 @@ summary.Bayes <- function(object, digits=3, ...)
                 for(i in 2:nChain){
                     nam <- paste("chain", i, sep="")
                     kappa.p <- rbind(kappa.p, x[[nam]]$kappa3.p)
-                }							
-            }	
+                }
+            }
             
             kappa.pMed <- apply(log(kappa.p), 2, median)
             kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = 0.975)
             kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = 0.025)
             
             tbl_k3 <- c(kappa.pMed, kappa.pLb, kappa.pUb)
-
+            
             bh  <- matrix(c(tbl_a1, tbl_a2, tbl_a3, tbl_k1, tbl_k2, tbl_k3), 2, 9, byrow = T)
             dimnames(bh) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("h1-PM", "LL", "UL", "h2-PM", "LL", "UL", "h3-PM", "LL", "UL"))
             
@@ -1462,13 +1934,13 @@ summary.Bayes <- function(object, digits=3, ...)
                     mu_lam.p <- rbind(mu_lam.p, x[[nam]]$mu_lam1.p)
                 }
             }
-
+            
             mu_lam.pMed <- apply(mu_lam.p, 2, median)
             mu_lam.pUb <- apply(mu_lam.p, 2, quantile, prob = 0.975)
             mu_lam.pLb <- apply(mu_lam.p, 2, quantile, prob = 0.025)
             
             tbl_m1 <- c(mu_lam.pMed, mu_lam.pLb, mu_lam.pUb)
-     
+            
             ##
             mu_lam.p <- x$chain1$mu_lam2.p
             
@@ -1556,12 +2028,12 @@ summary.Bayes <- function(object, digits=3, ...)
             if(nChain > 1){
                 for(i in 2:nChain){
                     nam <- paste("chain", i, sep="")
-                    J.p <- rbind(J.p, x[[nam]]$K1.p)											
-                }							
-            }	
-
+                    J.p <- rbind(J.p, x[[nam]]$K1.p)
+                }
+            }
+            
             J.pMed <- apply(J.p, 2, median)
-            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)		
+            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)
             J.pLb <- apply(J.p, 2, quantile, prob = 0.025)
             
             tbl_j1 <- c(J.pMed, J.pLb, J.pUb)
@@ -1572,12 +2044,12 @@ summary.Bayes <- function(object, digits=3, ...)
             if(nChain > 1){
                 for(i in 2:nChain){
                     nam <- paste("chain", i, sep="")
-                    J.p <- rbind(J.p, x[[nam]]$K2.p)											
-                }							
-            }	
+                    J.p <- rbind(J.p, x[[nam]]$K2.p)
+                }
+            }
             
             J.pMed <- apply(J.p, 2, median)
-            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)		
+            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)
             J.pLb <- apply(J.p, 2, quantile, prob = 0.025)
             
             tbl_j2 <- c(J.pMed, J.pLb, J.pUb)
@@ -1588,12 +2060,12 @@ summary.Bayes <- function(object, digits=3, ...)
             if(nChain > 1){
                 for(i in 2:nChain){
                     nam <- paste("chain", i, sep="")
-                    J.p <- rbind(J.p, x[[nam]]$K3.p)											
-                }							
+                    J.p <- rbind(J.p, x[[nam]]$K3.p)
+                }
             }
             
             J.pMed <- apply(J.p, 2, median)
-            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)		
+            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)
             J.pLb <- apply(J.p, 2, quantile, prob = 0.025)
             
             tbl_j3 <- c(J.pMed, J.pLb, J.pUb)
@@ -1960,25 +2432,726 @@ summary.Bayes <- function(object, digits=3, ...)
             
             value$sigma_V   <- tbl_sigV
         }
-
-
+        
+        
     }
     
     value$setup <- x$setup
+    
+    # if(class(x)[3] == "Cor")
+    # {
+    #     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Cor", as.vector(class(x)[4]), as.vector(class(x)[5]))
+    # }
+    # if(class(x)[3] == "Ind")
+    # {
+    #     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Ind", as.vector(class(x)[4]))
+    # }
+    
+    class(value) <- "summ.Bayes_HReg"
+    
+    return(value)
+    
+}
 
-# if(class(x)[3] == "Cor")
-# {
-#     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Cor", as.vector(class(x)[4]), as.vector(class(x)[5]))
-# }
-# if(class(x)[3] == "Ind")
-# {
-#     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Ind", as.vector(class(x)[4]))
-# }
-
-    class(value) <- "summ.Bayes"
- 
- return(value)
- 
+summary.Bayes_AFT <- function(object, digits=3, ...)
+{
+    x <- object
+    nChain = x$setup$nChain
+    
+    # convergence diagnostics
+    
+    psrf <- NULL
+    
+    if(nChain > 1){
+        if(class(x)[2] == "ID")
+        {
+            theta <- x$chain1$theta.p
+            for(i in 2:nChain){
+                nam <- paste("chain", i, sep = "")
+                theta <- cbind(theta, x[[nam]]$theta.p)
+            }
+            psrftheta <- matrix(calcPSR(theta), 1, 1)
+            dimnames(psrftheta) <- list("", "")
+            
+            beta.names <- unique(c(x$chain1$covNames1, x$chain1$covNames2, x$chain1$covNames3))
+            nP         <- length(beta.names)
+            output <- matrix(NA, nrow=nP, ncol=3)
+            dimnames(output) <- list(beta.names, c("beta1", "beta2", "beta3"))
+            
+            if(length(x$chain1$beta1.p) != 0){
+                
+                #beta1
+                
+                p1	= dim(x$chain1$beta1.p)[2]
+                
+                psrfBeta1 <- rep(NA, p1)
+                for(j in 1:p1){
+                    
+                    #namPara = paste("beta_", j, sep = "")
+                    
+                    beta1 <- x$chain1$beta1[,j]
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep = "")
+                        beta1 <- cbind(beta1, x[[nam]]$beta1[,j])
+                    }
+                    psrfBeta1[j] <- calcPSR(beta1)
+                }
+                
+                for(i in 1:nP)
+                {
+                    for(k in 1:p1) if(x$chain1$covNames1[k] == beta.names[i]) output[i,1] <- psrfBeta1[k]
+                }
+                
+            }
+            
+            if(length(x$chain1$beta2.p) != 0){
+                
+                #beta2
+                
+                p2	= dim(x$chain1$beta2.p)[2]
+                
+                psrfBeta2 <- rep(NA, p2)
+                for(j in 1:p2){
+                    
+                    #namPara = paste("beta_", j, sep = "")
+                    
+                    beta2 <- x$chain1$beta2[,j]
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep = "")
+                        beta2 <- cbind(beta2, x[[nam]]$beta2[,j])
+                    }
+                    psrfBeta2[j] <- calcPSR(beta2)
+                }
+                for(i in 1:nP)
+                {
+                    for(k in 1:p2) if(x$chain1$covNames2[k] == beta.names[i]) output[i,2] <- psrfBeta2[k]
+                }
+            }
+            
+            if(length(x$chain1$beta3.p) != 0){
+                
+                #beta3
+                
+                p3	= dim(x$chain1$beta3.p)[2]
+                
+                psrfBeta3 <- rep(NA, p3)
+                for(j in 1:p3){
+                    
+                    #namPara = paste("beta_", j, sep = "")
+                    
+                    beta3 <- x$chain1$beta3[,j]
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep = "")
+                        beta3 <- cbind(beta3, x[[nam]]$beta3[,j])
+                    }
+                    psrfBeta3[j] <- calcPSR(beta3)
+                }
+                for(i in 1:nP)
+                {
+                    for(k in 1:p3) if(x$chain1$covNames3[k] == beta.names[i]) output[i,3] <- psrfBeta3[k]
+                }
+            }
+            
+            psrfcoef <- NULL
+            if(nP > 0)
+            {
+                psrfcoef <- output
+            }
+            
+            if(class(x)[4] == "LN")
+            {
+                ##
+                # mu
+                mu <- x$chain1$mu1.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    mu <- cbind(mu, x[[nam]]$mu1.p)
+                }
+                psrfmu1 <- calcPSR(mu)
+                
+                mu <- x$chain1$mu2.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    mu <- cbind(mu, x[[nam]]$mu2.p)
+                }
+                psrfmu2 <- calcPSR(mu)
+                
+                mu <- x$chain1$mu3.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    mu <- cbind(mu, x[[nam]]$mu3.p)
+                }
+                psrfmu3 <- calcPSR(mu)
+                
+                # sigSq
+                
+                sigSq <- x$chain1$sigSq1.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    sigSq <- cbind(sigSq, x[[nam]]$sigSq1.p)
+                }
+                psrfSigSq1 <- calcPSR(sigSq)
+                
+                sigSq <- x$chain1$sigSq2.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    sigSq <- cbind(sigSq, x[[nam]]$sigSq2.p)
+                }
+                psrfSigSq2 <- calcPSR(sigSq)
+                
+                sigSq <- x$chain1$sigSq3.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    sigSq <- cbind(sigSq, x[[nam]]$sigSq3.p)
+                }
+                psrfSigSq3 <- calcPSR(sigSq)
+                
+                bh <- matrix(c(psrfmu1, psrfmu2, psrfmu3, psrfSigSq1, psrfSigSq2, psrfSigSq3), 2, 3, byrow = T)
+                dimnames(bh) <- list(c("mu", "sigmaSq"), c("g=1", "g=2", "g=3"))
+                
+                psrf <- list(theta=psrftheta, coef=psrfcoef, h0=bh)
+            }
+            
+            if(class(x)[4] == "DPM")
+            {
+                ##
+                # tau
+                tau <- x$chain1$tau1.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    tau <- cbind(tau, x[[nam]]$tau1.p)
+                }
+                psrfTau1 <- calcPSR(tau)
+                
+                tau <- x$chain1$tau2.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    tau <- cbind(tau, x[[nam]]$tau2.p)
+                }
+                psrfTau2 <- calcPSR(tau)
+                
+                tau <- x$chain1$tau3.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    tau <- cbind(tau, x[[nam]]$tau3.p)
+                }
+                psrfTau3 <- calcPSR(tau)
+                
+                
+                bh <- matrix(c(psrfTau1, psrfTau2, psrfTau3), 1, 3, byrow = T)
+                dimnames(bh) <- list(c("tau"), c("g=1", "g=2", "g=3"))
+                
+                psrf <- list(theta=psrftheta, coef=psrfcoef, h0=bh)
+                
+            }
+        }
+        
+        if(class(x)[2] == "Surv")
+        {
+            beta.names <- c(x$chain1$covNames)
+            nP         <- length(beta.names)
+            output <- matrix(NA, nrow=nP, ncol=1)
+            dimnames(output) <- list(beta.names, c("beta"))
+            
+            if(length(x$chain1$beta.p) != 0){
+                
+                #beta
+                
+                p	= dim(x$chain1$beta.p)[2]
+                
+                psrfBeta <- rep(NA, p)
+                for(j in 1:p){
+                    
+                    beta <- x$chain1$beta.p[,j]
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep = "")
+                        beta <- cbind(beta, x[[nam]]$beta.p[,j])
+                    }
+                    psrfBeta[j] <- calcPSR(beta)
+                }
+                
+                for(i in 1:nP)
+                {
+                    for(k in 1:p) if(x$chain1$covNames[k] == beta.names[i]) output[i,1] <- psrfBeta[k]
+                }
+                
+            }
+            
+            psrfcoef <- NULL
+            if(nP > 0)
+            {
+                psrfcoef <- output
+            }
+            
+            if(class(x)[4] == "LN")
+            {
+                ##
+                # mu
+                mu <- x$chain1$mu.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    mu <- cbind(mu, x[[nam]]$mu.p)
+                }
+                psrfmu <- calcPSR(mu)
+                
+                # sigSq
+                
+                sigSq <- x$chain1$sigSq.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    sigSq <- cbind(sigSq, x[[nam]]$sigSq.p)
+                }
+                psrfSigSq <- calcPSR(sigSq)
+                
+                
+                bh <- matrix(c(psrfmu, psrfSigSq), 2, 1, byrow = T)
+                dimnames(bh) <- list(c("mu", "sigmaSq"), c("h"))
+                
+                psrf <- list(coef=psrfcoef, h0=bh)
+            }
+            
+            if(class(x)[4] == "DPM")
+            {
+                ##
+                # tau
+                tau <- x$chain1$tau.p
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep = "")
+                    tau <- cbind(tau, x[[nam]]$tau.p)
+                }
+                psrfTau <- calcPSR(tau)
+                
+                
+                bh <- matrix(c(psrfTau), 1, 1, byrow = T)
+                dimnames(bh) <- list(c("tau"), c("h"))
+                psrf <- list(coef=psrfcoef, h0=bh)
+            }
+        }
+    }
+    
+    # estimates
+    
+    if(class(x)[2] == "ID")
+    {
+        ##
+        theta.p <- x$chain1$theta.p
+        
+        if(nChain > 1){
+            for(i in 2:nChain){
+                nam <- paste("chain", i, sep="")
+                theta.p <- rbind(theta.p, x[[nam]]$theta.p)
+            }
+        }
+        
+        theta.pMed <- apply(theta.p, 2, median)
+        theta.pUb <- apply(theta.p, 2, quantile, prob = 0.975)
+        theta.pLb <- apply(theta.p, 2, quantile, prob = 0.025)
+        
+        tbl_theta <- matrix(NA, 1, 3)
+        dimnames(tbl_theta) <- list("", c( "theta", "LL", "UL"))
+        
+        tbl_theta[,1]	<- theta.pMed
+        tbl_theta[,2]	<- theta.pLb
+        tbl_theta[,3]	<- theta.pUb
+        
+        ##
+        beta.names <- unique(c(x$chain1$covNames1, x$chain1$covNames2, x$chain1$covNames3))
+        nP         <- length(beta.names)
+        output <- matrix(NA, nrow=nP, ncol=9)
+        dimnames(output) <- list(beta.names, c("exp(beta1)", "LL", "UL", "exp(beta2)", "LL", "UL", "exp(beta3)", "LL", "UL"))
+        
+        if(length(x$chain1$beta1.p) != 0){
+            
+            #beta1
+            p1	= dim(x$chain1$beta1.p)[2]
+            beta.p <- x$chain1$beta1.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta1.p)
+                }
+            }
+            
+            beta.pMed <- apply(exp(beta.p), 2, median)
+            beta.pSd <- apply(exp(beta.p), 2, sd)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            
+            tbl1 <- matrix(NA, p1, 3)
+            rownames(tbl1) <- x$chain1$covNames1
+            
+            tbl1[,1]	<- beta.pMed
+            tbl1[,2]	<- beta.pLb
+            tbl1[,3]	<- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p1) if(x$chain1$covNames1[k] == beta.names[i]) output[i,1:3] <- tbl1[k,]
+            }
+            
+        }
+        if(length(x$chain1$beta2.p) != 0){
+            
+            #beta2
+            p2	= dim(x$chain1$beta2.p)[2]
+            beta.p <- x$chain1$beta2.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta2.p)
+                }
+            }
+            
+            beta.pMed <- apply(exp(beta.p), 2, median)
+            beta.pSd <- apply(exp(beta.p), 2, sd)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            
+            tbl2 <- matrix(NA, p2, 3)
+            rownames(tbl2) <- x$chain1$covNames2
+            
+            tbl2[,1]	<- beta.pMed
+            tbl2[,2]	<- beta.pLb
+            tbl2[,3]	<- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p2) if(x$chain1$covNames2[k] == beta.names[i]) output[i,4:6] <- tbl2[k,]
+            }
+            
+        }
+        if(length(x$chain1$beta3.p) != 0){
+            
+            #beta3
+            p3	= dim(x$chain1$beta3.p)[2]
+            beta.p <- x$chain1$beta3.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta3.p)
+                }
+            }
+            
+            beta.pMed <- apply(exp(beta.p), 2, median)
+            beta.pSd <- apply(exp(beta.p), 2, sd)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            
+            tbl3 <- matrix(NA, p3, 3)
+            rownames(tbl3) <- x$chain1$covNames3
+            
+            tbl3[,1]	<- beta.pMed
+            tbl3[,2]	<- beta.pLb
+            tbl3[,3]	<- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p3) if(x$chain1$covNames3[k] == beta.names[i]) output[i,7:9] <- tbl3[k,]
+            }
+        }
+        
+        output.coef <- NULL
+        if(nP > 0)
+        {
+            output.coef <- output
+        }
+        
+        if(class(x)[4] == "LN")
+        {
+            ##
+            sigSq.p <- x$chain1$sigSq1.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    sigSq.p <- rbind(sigSq.p, x[[nam]]$sigSq1.p)
+                }
+            }
+            
+            sigSq.pMed <- apply(sigSq.p, 2, median)
+            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = 0.975)
+            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = 0.025)
+            
+            tbl_s1 <- c(sigSq.pMed,sigSq.pLb, sigSq.pUb)
+            
+            ##
+            sigSq.p <- x$chain1$sigSq2.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    sigSq.p <- rbind(sigSq.p, x[[nam]]$sigSq2.p)
+                }
+            }
+            
+            sigSq.pMed <- apply(sigSq.p, 2, median)
+            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = 0.975)
+            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = 0.025)
+            
+            tbl_s2 <- c(sigSq.pMed,sigSq.pLb, sigSq.pUb)
+            
+            
+            ##
+            sigSq.p <- x$chain1$sigSq3.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    sigSq.p <- rbind(sigSq.p, x[[nam]]$sigSq3.p)
+                }
+            }
+            
+            sigSq.pMed <- apply(sigSq.p, 2, median)
+            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = 0.975)
+            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = 0.025)
+            
+            tbl_s3 <- c(sigSq.pMed,sigSq.pLb, sigSq.pUb)
+            
+            ##
+            mu.p <- x$chain1$mu1.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    mu.p <- rbind(mu.p, x[[nam]]$mu1.p)
+                }
+            }
+            
+            mu.pMed <- apply(mu.p, 2, median)
+            mu.pUb <- apply(mu.p, 2, quantile, prob = 0.975)
+            mu.pLb <- apply(mu.p, 2, quantile, prob = 0.025)
+            
+            tbl_b1 <- c(mu.pMed,mu.pLb, mu.pUb)
+            
+            ##
+            mu.p <- x$chain1$mu2.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    mu.p <- rbind(mu.p, x[[nam]]$mu2.p)
+                }
+            }
+            
+            mu.pMed <- apply(mu.p, 2, median)
+            mu.pUb <- apply(mu.p, 2, quantile, prob = 0.975)
+            mu.pLb <- apply(mu.p, 2, quantile, prob = 0.025)
+            
+            tbl_b2 <- c(mu.pMed,mu.pLb, mu.pUb)
+            
+            
+            ##
+            mu.p <- x$chain1$mu3.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    mu.p <- rbind(mu.p, x[[nam]]$mu3.p)
+                }
+            }
+            
+            mu.pMed <- apply(mu.p, 2, median)
+            mu.pUb <- apply(mu.p, 2, quantile, prob = 0.975)
+            mu.pLb <- apply(mu.p, 2, quantile, prob = 0.025)
+            
+            tbl_b3 <- c(mu.pMed,mu.pLb, mu.pUb)
+            
+            bh  <- matrix(c(tbl_b1, tbl_b2, tbl_b3, tbl_s1, tbl_s2, tbl_s3), 2, 9, byrow = T)
+            dimnames(bh) <- list(c("log-Normal: mu", "log-Normal: sigmaSq"), c("g=1: PM", "LL", "UL", "g=2: PM", "LL", "UL", "g=3: PM", "LL", "UL"))
+            
+            value <- list(classFit=class(x), psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
+            
+        }
+        if(class(x)[4] == "DPM")
+        {
+            ##
+            tau.p <- x$chain1$tau1.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    tau.p <- rbind(tau.p, x[[nam]]$tau1.p)
+                }
+            }
+            
+            tau.pMed <- apply(tau.p, 2, median)
+            tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
+            tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+            
+            tbl_t1 <- c(tau.pMed, tau.pLb, tau.pUb)
+            
+            ##
+            tau.p <- x$chain1$tau2.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    tau.p <- rbind(tau.p, x[[nam]]$tau2.p)
+                }
+            }
+            
+            tau.pMed <- apply(tau.p, 2, median)
+            tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
+            tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+            
+            tbl_t2 <- c(tau.pMed, tau.pLb, tau.pUb)
+            
+            ##
+            tau.p <- x$chain1$tau3.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    tau.p <- rbind(tau.p, x[[nam]]$tau3.p)
+                }
+            }
+            
+            tau.pMed <- apply(tau.p, 2, median)
+            tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
+            tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+            
+            tbl_t3 <- c(tau.pMed, tau.pLb, tau.pUb)
+            
+            
+            bh <- matrix(c(tbl_t1, tbl_t2, tbl_t3), 1, 9, byrow = T)
+            dimnames(bh) <- list(c("tau"), c("g=1: PM", "LL", "UL", "g=2: PM", "LL", "UL", "g=3: PM", "LL", "UL"))
+            
+            value <- list(classFit=class(x), psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
+        }
+        
+    }
+    
+    if(class(x)[2] == "Surv")
+    {
+        ##
+        beta.names <- c(x$chain1$covNames)
+        nP         <- length(beta.names)
+        output <- matrix(NA, nrow=nP, ncol=3)
+        dimnames(output) <- list(beta.names, c("exp(beta)", "LL", "UL"))
+        
+        
+        if(length(x$chain1$beta.p) != 0){
+            
+            #beta
+            p	= dim(x$chain1$beta.p)[2]
+            beta.p <- x$chain1$beta.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta.p)
+                }
+            }
+            
+            beta.pMed <- apply(exp(beta.p), 2, median)
+            beta.pSd <- apply(exp(beta.p), 2, sd)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            
+            tbl <- matrix(NA, p, 3)
+            rownames(tbl) <- x$chain1$covNames
+            
+            tbl[,1]	<- beta.pMed
+            tbl[,2]	<- beta.pLb
+            tbl[,3]	<- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p) if(x$chain1$covNames[k] == beta.names[i]) output[i,1:3] <- tbl[k,]
+            }
+        }
+        
+        output.coef <- NULL
+        if(nP > 0)
+        {
+            output.coef <- output
+        }
+        
+        if(class(x)[4] == "LN")
+        {
+            ##
+            sigSq.p <- x$chain1$sigSq.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    sigSq.p <- rbind(sigSq.p, x[[nam]]$sigSq.p)
+                }
+            }
+            
+            sigSq.pMed <- apply(sigSq.p, 2, median)
+            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = 0.975)
+            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = 0.025)
+            
+            tbl_s <- c(sigSq.pMed,sigSq.pLb, sigSq.pUb)
+            
+            ##
+            mu.p <- x$chain1$mu.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    mu.p <- rbind(mu.p, x[[nam]]$mu.p)
+                }
+            }
+            
+            mu.pMed <- apply(mu.p, 2, median)
+            mu.pUb <- apply(mu.p, 2, quantile, prob = 0.975)
+            mu.pLb <- apply(mu.p, 2, quantile, prob = 0.025)
+            
+            tbl_b <- c(mu.pMed,mu.pLb, mu.pUb)
+            
+            bh  <- matrix(c(tbl_b, tbl_s), 2, 3, byrow = T)
+            dimnames(bh) <- list(c("log-Normal: mu", "log-Normal: sigmaSq"), c("PM", "LL", "UL"))
+            
+            value <- list(coef=output.coef, h0=bh, psrf=psrf, classFit=class(x))
+            
+        }
+        if(class(x)[4] == "DPM")
+        {
+            ##
+            tau.p <- x$chain1$tau.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    tau.p <- rbind(tau.p, x[[nam]]$tau.p)
+                }
+            }
+            
+            tau.pMed <- apply(tau.p, 2, median)
+            tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
+            tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+            
+            tbl_t <- c(tau.pMed, tau.pLb, tau.pUb)
+            
+            bh <- matrix(c(tbl_t), 1, 3, byrow = T)
+            dimnames(bh) <- list(c("tau"), c("PM", "LL", "UL"))
+            
+            value <- list(coef=output.coef, h0=bh, psrf=psrf, classFit=class(x))
+            
+        }
+        
+    }
+    
+    value$setup <- x$setup
+    
+    # if(class(x)[3] == "Cor")
+    # {
+    #     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Cor", as.vector(class(x)[4]), as.vector(class(x)[5]))
+    # }
+    # if(class(x)[3] == "Ind")
+    # {
+    #     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Ind", as.vector(class(x)[4]))
+    # }
+    
+    class(value) <- "summ.Bayes_AFT"
+    
+    return(value)
+    
 }
 
 
@@ -1987,40 +3160,40 @@ summary.Bayes <- function(object, digits=3, ...)
 ## PRINT.SUMMARY METHOD
 ####
 ##
-print.summ.Freq <- function(x, digits=3, ...)
+print.summ.Freq_HReg <- function(x, digits=3, ...)
 {
-	obj <- x
-  ##
-  if(class(obj)[2] == "Surv")
-  {
-      ##
-      cat("\nAnalysis of independent univariate time-to-event data \n")
-  }
-  if(class(obj)[2] == "ID")
-  {
-      ##
-      cat("\nAnalysis of independent semi-competing risks data \n")
-      cat(class(obj)[3], "assumption for h3\n")
-  }
-  ##
-  #cat("\nRegression coefficients:\n")
-  #print(round(obj$coef, digits=digits))
-  ##
-  cat("\nHazard ratios:\n")
-  print(round(exp(obj$coef), digits=digits))
-  ##
-  if(class(obj)[2] == "ID"){
-    cat("\nVariance of frailties:\n")
-    print(round(obj$theta, digits=digits))
-  }
-  ##
-  cat("\nBaseline hazard function components:\n")
-  print(round(obj$h0, digits=digits))
-  ##
-  invisible()
+    obj <- x
+    ##
+    if(class(obj)[2] == "Surv")
+    {
+        ##
+        cat("\nAnalysis of independent univariate time-to-event data \n")
+    }
+    if(class(obj)[2] == "ID")
+    {
+        ##
+        cat("\nAnalysis of independent semi-competing risks data \n")
+        cat(class(obj)[3], "assumption for h3\n")
+    }
+    ##
+    #cat("\nRegression coefficients:\n")
+    #print(round(obj$coef, digits=digits))
+    ##
+    cat("\nHazard ratios:\n")
+    print(round(exp(obj$coef), digits=digits))
+    ##
+    if(class(obj)[2] == "ID"){
+        cat("\nVariance of frailties:\n")
+        print(round(obj$theta, digits=digits))
+    }
+    ##
+    cat("\nBaseline hazard function components:\n")
+    print(round(obj$h0, digits=digits))
+    ##
+    invisible()
 }
 
-print.summ.Bayes <- function(x, digits=3, ...)
+print.summ.Bayes_HReg <- function(x, digits=3, ...)
 {
     nChain = x$setup$nChain
     
@@ -2055,10 +3228,15 @@ print.summ.Bayes <- function(x, digits=3, ...)
     
     cat("\n#####\n")
     
-    ##
-    cat("\nHazard ratios:\n")
-    print(round(x$coef, digits=digits))
-
+    
+    if(!is.null(x$coef))
+    {
+        ##
+        cat("\nHazard ratios:\n")
+        print(round(x$coef, digits=digits))
+    }
+    
+    
     if(x$classFit[2] == "ID")
     {
         ##
@@ -2098,12 +3276,71 @@ print.summ.Bayes <- function(x, digits=3, ...)
 }
 
 
+print.summ.Bayes_AFT <- function(x, digits=3, ...)
+{
+    nChain = x$setup$nChain
+    
+    if(x$classFit[2] == "ID")
+    {
+        if(x$classFit[3] == "Cor")
+        {
+            ##
+            cat("\nAnalysis of cluster-correlated semi-competing risks data \n")
+        }
+        if(x$classFit[3] == "Ind")
+        {
+            ##
+            cat("\nAnalysis of independent semi-competing risks data \n")
+        }
+    }
+    if(x$classFit[2] == "Surv")
+    {
+        if(x$classFit[3] == "Cor")
+        {
+            ##
+            cat("\nAnalysis of cluster-correlated univariate time-to-event data \n")
+        }
+        if(x$classFit[3] == "Ind")
+        {
+            ##
+            cat("\nAnalysis of independent univariate time-to-event data \n")
+        }
+    }
+    
+    cat("\n#####\n")
+    
+    
+    if(!is.null(x$coef))
+    {
+        ##
+        cat("\nAcceleration factors:\n")
+        print(round(x$coef, digits=digits))
+    }
+    
+    
+    if(x$classFit[2] == "ID")
+    {
+        ##
+        cat("\nVariance of frailties:\n")
+        print(round(x$theta, digits=digits))
+    }
+    
+    ##
+    cat("\nBaseline survival function components:\n")
+    print(round(x$h0, digits=digits))
+    
+    
+    invisible()
+}
+
+
+
 
 ####
 ## PLOT METHOD
 ####
 ##
-plot.Freq <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+plot.Freq_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
 {
     obj <- x
     T2seq <- tseq
@@ -2143,8 +3380,8 @@ plot.Freq <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, 
         LLh0 <- h0 - qnorm(0.025)*se.h0
         ULh0 <- h0 + qnorm(0.025)*se.h0
         LLh0[LLh0 < 0] <- 0
-     
-     
+        
+        
         T2h <- T2
         if(T2[1] == 0)
         {
@@ -2280,7 +3517,7 @@ plot.Freq <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, 
         LLh0.3 <- h0.3 - qnorm(0.025)*se.h0.3
         ULh0.3 <- h0.3 + qnorm(0.025)*se.h0.3
         LLh0.3[LLh0.3 < 0] <- 0
-
+        
         T2h <- T2
         if(T2[1] == 0)
         {
@@ -2413,7 +3650,7 @@ plot.Freq <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, 
 }
 
 
-plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
 {
     nChain = x$setup$nChain
     
@@ -2588,7 +3825,7 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                 xlab <- c("Time", "Time", "Time")
                 if(x$setup$model == "semi-Markov")
                 {
-                   xlab[3] <- "Time since non-terminal event"
+                    xlab[3] <- "Time since non-terminal event"
                 }
             }
             
@@ -2631,7 +3868,7 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                 lines(time1hz, BH1Med, col="blue", lwd=3)
                 lines(time1hz, BH1Ub, col="blue", lwd=3, lty=3)
                 lines(time1hz, BH1Lb, col="blue", lwd=3, lty=3)
-
+                
                 ##
                 plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][2](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
@@ -2686,7 +3923,7 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                 lines(time3hz, BH3Med, col="red", lwd=3)
                 lines(time3hz, BH3Ub, col="red", lwd=3, lty=3)
                 lines(time3hz, BH3Lb, col="red", lwd=3, lty=3)
-
+                
             }
             
             if(plot.est == "BS")
@@ -2722,7 +3959,7 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                     lines(unique(c(0, time1)), c(1, BS1Ub), col="red", lwd=3, lty=3)
                     lines(unique(c(0, time1)), c(1, BS1Lb), col="red", lwd=3, lty=3)
                 }
-
+                
                 ##
                 plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][2](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
@@ -2746,7 +3983,7 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                     lines(unique(c(0, time2)), c(1, BS2Ub), col="red", lwd=3, lty=3)
                     lines(unique(c(0, time2)), c(1, BS2Lb), col="red", lwd=3, lty=3)
                 }
-
+                
                 ##
                 plot(c(0, max(time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][3](t), "")), axes=FALSE)
                 if(class(x)[4] == "PEM")
@@ -2906,7 +4143,7 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                 lines(timehz, BHMed, col="red", lwd=3)
                 lines(timehz, BHUb, col="red", lwd=3, lty=3)
                 lines(timehz, BHLb, col="red", lwd=3, lty=3)
-
+                
             }
             
             if(plot.est == "BS")
@@ -2927,6 +4164,324 @@ plot.Bayes <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL,
                 {
                     axis(1, at=tseq)
                 }
+                axis(2, at=ylim)
+                
+                if(time[1] == 0)
+                {
+                    lines(time, BSMed, col="red", lwd=3)
+                    lines(time, BSUb, col="red", lwd=3, lty=3)
+                    lines(time, BSLb, col="red", lwd=3, lty=3)
+                }else
+                {
+                    lines(unique(c(0, time)), c(1, BSMed), col="red", lwd=3)
+                    lines(unique(c(0, time)), c(1, BSUb), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time)), c(1, BSLb), col="red", lwd=3, lty=3)
+                }
+            }
+        }
+        if(plot == FALSE)
+        {
+            return(value)
+        }
+    }
+    invisible()
+}
+
+
+plot.Bayes_AFT <- function(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+{
+    nChain = x$setup$nChain
+    
+    if(class(x)[2] == "ID")
+    {
+        time1 <- time2 <- time3 <- time1hz <- time2hz<- time3hz <- time
+        
+        if(time[1] == 0){
+            time1hz <- time1hz[-1]
+            time2hz <- time2hz[-1]
+            time3hz <- time3hz[-1]
+        }
+        
+        if(class(x)[4] == "LN")
+        {
+            bsbhN.1 <- BSBH.N(x, time=time1hz, 1, time.trunc=min(time))
+            bsbhN.2 <- BSBH.N(x, time=time2hz, 2, time.trunc=min(time))
+            bsbhN.3 <- BSBH.N(x, time=time3hz, 3, time.trunc=min(time))
+            
+            basehaz1 <- bsbhN.1$BH
+            basehaz2 <- bsbhN.2$BH
+            basehaz3 <- bsbhN.3$BH
+            
+            bsbhN.1 <- BSBH.N(x, time=time1, 1, time.trunc=min(time))
+            bsbhN.2 <- BSBH.N(x, time=time2, 2, time.trunc=min(time))
+            bsbhN.3 <- BSBH.N(x, time=time3, 3, time.trunc=min(time))
+            
+            basesurv1 <- bsbhN.1$BS
+            basesurv2 <- bsbhN.2$BS
+            basesurv3 <- bsbhN.3$BS
+        }
+        
+        if(class(x)[4] == "DPM")
+        {
+            bsbhDP.1 <- BSBH.DP(x, time=time1hz, 1, time.trunc=min(time))
+            bsbhDP.2 <- BSBH.DP(x, time=time2hz, 1, time.trunc=min(time))
+            bsbhDP.3 <- BSBH.DP(x, time=time3hz, 1, time.trunc=min(time))
+            
+            basehaz1 <- bsbhDP.1$BH
+            basehaz2 <- bsbhDP.2$BH
+            basehaz3 <- bsbhDP.3$BH
+            
+            bsbhDP.1 <- BSBH.DP(x, time=time1, 1, time.trunc=min(time))
+            bsbhDP.2 <- BSBH.DP(x, time=time2, 1, time.trunc=min(time))
+            bsbhDP.3 <- BSBH.DP(x, time=time3, 1, time.trunc=min(time))
+            
+            basesurv1 <- bsbhDP.1$BS
+            basesurv2 <- bsbhDP.2$BS
+            basesurv3 <- bsbhDP.3$BS
+        }
+        
+        BH1Med <- apply(basehaz1, 2, median)
+        BH1Ub <- apply(basehaz1, 2, quantile, prob = 0.975)
+        BH1Lb <- apply(basehaz1, 2, quantile, prob = 0.025)
+        BH2Med <- apply(basehaz2, 2, median)
+        BH2Ub <- apply(basehaz2, 2, quantile, prob = 0.975)
+        BH2Lb <- apply(basehaz2, 2, quantile, prob = 0.025)
+        BH3Med <- apply(basehaz3, 2, median)
+        BH3Ub <- apply(basehaz3, 2, quantile, prob = 0.975)
+        BH3Lb <- apply(basehaz3, 2, quantile, prob = 0.025)
+        
+        BS1Med <- apply(basesurv1, 2, median)
+        BS1Ub <- apply(basesurv1, 2, quantile, prob = 0.975)
+        BS1Lb <- apply(basesurv1, 2, quantile, prob = 0.025)
+        BS2Med <- apply(basesurv2, 2, median)
+        BS2Ub <- apply(basesurv2, 2, quantile, prob = 0.975)
+        BS2Lb <- apply(basesurv2, 2, quantile, prob = 0.025)
+        BS3Med <- apply(basesurv3, 2, median)
+        BS3Ub <- apply(basesurv3, 2, quantile, prob = 0.975)
+        BS3Lb <- apply(basesurv3, 2, quantile, prob = 0.025)
+        
+        BH1_tbl <- cbind(time1hz, BH1Med, BH1Lb, BH1Ub)
+        dimnames(BH1_tbl) <- list(rep("", length(time1hz)), c("time", "h0.1", "LL.1", "UL.1"))
+        BH2_tbl <- cbind(time2hz, BH2Med, BH2Lb, BH2Ub)
+        dimnames(BH2_tbl) <- list(rep("", length(time2hz)), c("time", "h0.2", "LL.2", "UL.2"))
+        BH3_tbl <- cbind(time3hz, BH3Med, BH3Lb, BH3Ub)
+        dimnames(BH3_tbl) <- list(rep("", length(time3hz)), c("time", "h0.3", "LL.3", "UL.3"))
+        
+        BS1_tbl <- cbind(time1, BS1Med, BS1Lb, BS1Ub)
+        dimnames(BS1_tbl) <- list(rep("", length(time1)), c("time", "S0.1", "LL.1", "UL.1"))
+        BS2_tbl <- cbind(time2, BS2Med, BS2Lb, BS2Ub)
+        dimnames(BS2_tbl) <- list(rep("", length(time2)), c("time", "S0.2", "LL.2", "UL.2"))
+        BS3_tbl <- cbind(time3, BS3Med, BS3Lb, BS3Ub)
+        dimnames(BS3_tbl) <- list(rep("", length(time3)), c("time", "S0.3", "LL.3", "UL.3"))
+        
+        value <- list(h0.1=BH1_tbl, h0.2=BH2_tbl, h0.3=BH3_tbl, S0.1=BS1_tbl, S0.2=BS2_tbl, S0.3=BS3_tbl)
+        
+        if(plot == TRUE)
+        {
+            if(is.null(xlab))
+            {
+                xlab <- c("Time", "Time", "Time")
+                xlab[3] <- "Time since non-terminal event"
+            }
+            
+            if(plot.est == "BH")
+            {
+                if(is.null(ylab))
+                {
+                    ylab <- "Baseline hazard"
+                }
+                
+                ygrid <- (max(BH1Ub, BH2Ub, BH3Ub) - 0)/5
+                ylim <- seq(from=0, to=max(BH1Ub, BH2Ub, BH3Ub), by=ygrid)
+                
+                ##
+                par(mfrow=c(1,3))
+                ##
+                plot(c(0, max(time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][1](t), "")), axes=FALSE)
+                
+                axis(1, at=tseq)
+                axis(2, at=round(ylim, 4))
+                
+                lines(time1hz, BH1Med, col="blue", lwd=3)
+                lines(time1hz, BH1Ub, col="blue", lwd=3, lty=3)
+                lines(time1hz, BH1Lb, col="blue", lwd=3, lty=3)
+                
+                ##
+                plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][2](t), "")), axes=FALSE)
+                
+                axis(1, at=tseq)
+                axis(2, at=round(ylim, 4))
+                
+                lines(time2hz, BH2Med, col="red", lwd=3)
+                lines(time2hz, BH2Ub, col="red", lwd=3, lty=3)
+                lines(time2hz, BH2Lb, col="red", lwd=3, lty=3)
+                
+                
+                ##
+                plot(c(0, max(time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][3](t), "")), axes=FALSE)
+                
+                axis(1, at=tseq)
+                axis(2, at=round(ylim, 4))
+                
+                lines(time3hz, BH3Med, col="red", lwd=3)
+                lines(time3hz, BH3Ub, col="red", lwd=3, lty=3)
+                lines(time3hz, BH3Lb, col="red", lwd=3, lty=3)
+                
+            }
+            
+            if(plot.est == "BS")
+            {
+                if(is.null(ylab))
+                {
+                    ylab <- "Baseline survival"
+                }
+                ylim <- seq(from=0, to=1, by=0.2)
+                
+                ##
+                par(mfrow=c(1,3))
+                ##
+                plot(c(0, max(time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][1](t), "")), axes=FALSE)
+                axis(1, at=tseq)
+                axis(2, at=ylim)
+                
+                if(time1[1] == 0)
+                {
+                    lines(time1, BS1Med, col="blue", lwd=3)
+                    lines(time1, BS1Ub, col="blue", lwd=3, lty=3)
+                    lines(time1, BS1Lb, col="blue", lwd=3, lty=3)
+                }else
+                {
+                    lines(unique(c(0, time1)), c(1, BS1Med), col="red", lwd=3)
+                    lines(unique(c(0, time1)), c(1, BS1Ub), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time1)), c(1, BS1Lb), col="red", lwd=3, lty=3)
+                }
+                
+                ##
+                plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][2](t), "")), axes=FALSE)
+                axis(1, at=tseq)
+                axis(2, at=ylim)
+                
+                if(time2[1] == 0)
+                {
+                    lines(time2, BS2Med, col="blue", lwd=3)
+                    lines(time2, BS2Ub, col="blue", lwd=3, lty=3)
+                    lines(time2, BS2Lb, col="blue", lwd=3, lty=3)
+                }else
+                {
+                    lines(unique(c(0, time2)), c(1, BS2Med), col="red", lwd=3)
+                    lines(unique(c(0, time2)), c(1, BS2Ub), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time2)), c(1, BS2Lb), col="red", lwd=3, lty=3)
+                }
+                
+                ##
+                plot(c(0, max(time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][3](t), "")), axes=FALSE)
+                axis(1, at=tseq)
+                axis(2, at=ylim)
+                
+                if(time3[1] == 0)
+                {
+                    lines(time3, BS3Med, col="blue", lwd=3)
+                    lines(time3, BS3Ub, col="blue", lwd=3, lty=3)
+                    lines(time3, BS3Lb, col="blue", lwd=3, lty=3)
+                }else
+                {
+                    lines(unique(c(0, time3)), c(1, BS3Med), col="red", lwd=3)
+                    lines(unique(c(0, time3)), c(1, BS3Ub), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time3)), c(1, BS3Lb), col="red", lwd=3, lty=3)
+                }
+                
+            }
+        }
+        if(plot == FALSE)
+        {
+            return(value)
+        }
+        
+    }
+    
+    if(class(x)[2] == "Surv")
+    {
+        timehz <- time
+        
+        if(time[1] == 0){
+            timehz <- timehz[-1]
+        }
+        
+        if(class(x)[4] == "LN")
+        {
+            bsbhN.0 <- BSBH.N(x, time=timehz, 0, time.trunc=min(time))
+            basehaz <- bsbhN.0$BH
+            
+            bsbhN.0 <- BSBH.N(x, time=time, 0, time.trunc=min(time))
+            basesurv <- bsbhN.0$BS
+        }
+        
+        if(class(x)[4] == "DPM")
+        {
+            bsbhDP.0 <- BSBH.DP(x, time=timehz, 0, time.trunc=min(time))
+            basehaz <- bsbhDP.0$BH
+            
+            bsbhDP.0 <- BSBH.DP(x, time=time, 0, time.trunc=min(time))
+            basesurv <- bsbhDP.0$BS
+        }
+        
+        BHMed <- apply(basehaz, 2, median)
+        BHUb <- apply(basehaz, 2, quantile, prob = 0.975)
+        BHLb <- apply(basehaz, 2, quantile, prob = 0.025)
+        
+        BSMed <- apply(basesurv, 2, median)
+        BSUb <- apply(basesurv, 2, quantile, prob = 0.975)
+        BSLb <- apply(basesurv, 2, quantile, prob = 0.025)
+        
+        
+        BH_tbl <- cbind(timehz, BHMed, BHLb, BHUb)
+        dimnames(BH_tbl) <- list(rep("", length(timehz)), c("time", "h0", "LL", "UL"))
+        
+        BS_tbl <- cbind(time, BSMed, BSLb, BSUb)
+        dimnames(BS_tbl) <- list(rep("", length(time)), c("time", "S0", "LL", "UL"))
+        
+        value <- list(h0=BH_tbl, S0=BS_tbl)
+        
+        
+        if(plot == TRUE)
+        {
+            if(is.null(xlab))
+            {
+                xlab <- "Time"
+            }
+            
+            if(plot.est == "BH")
+            {
+                if(is.null(ylab))
+                {
+                    ylab <- "Baseline hazard"
+                }
+                
+                ygrid <- (max(BHUb) - 0)/5
+                ylim <- seq(from=0, to=max(BHUb), by=ygrid)
+                
+                ##
+                plot(c(0, max(time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", h[0](t), "")), axes=FALSE)
+                axis(1, at=tseq)
+                axis(2, at=round(ylim, 4))
+                
+                lines(timehz, BHMed, col="red", lwd=3)
+                lines(timehz, BHUb, col="red", lwd=3, lty=3)
+                lines(timehz, BHLb, col="red", lwd=3, lty=3)
+                
+            }
+            
+            if(plot.est == "BS")
+            {
+                if(is.null(ylab))
+                {
+                    ylab <- "Baseline survival"
+                }
+                ylim <- seq(from=0, to=1, by=0.2)
+                
+                ##
+                plot(c(0, max(time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", S[0](t), "")), axes=FALSE)
+                axis(1, at=tseq)
                 axis(2, at=ylim)
                 
                 if(time[1] == 0)

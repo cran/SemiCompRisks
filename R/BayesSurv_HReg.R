@@ -1,15 +1,15 @@
 
 
 
-BayesSurv <- function(Y,
-						lin.pred,
-						data,
-						 cluster=NULL,
-                        model = "Weibull",
-						hyperParams,
-						startValues,								
-						mcmc,
-                        path = NULL)
+BayesSurv_HReg <- function(Y,
+lin.pred,
+data,
+cluster=NULL,
+model = "Weibull",
+hyperParams,
+startValues,
+mcmc,
+path = NULL)
 {
     hyperP      <- hyperParams
     mcmcList    <- mcmc
@@ -260,32 +260,32 @@ BayesSurv <- function(Y,
                     }
                     
                     
-                    ret[[nam]] <- list(beta.p = beta.p, lambda.fin = lambda.fin, mu_lam.p = mu_lam.p, sigSq_lam.p = sigSq_lam.p, 
+                    ret[[nam]] <- list(beta.p = beta.p, lambda.fin = lambda.fin, mu_lam.p = mu_lam.p, sigSq_lam.p = sigSq_lam.p,
                     K.p = K.p, s.p = s.p, accept.beta = accept.beta, accept.BI = accept.BI, accept.DI = accept.DI,
                     covNames = covNames, time_lambda = time_lambda, hz.type = hz.type)
                     
                 }
                 
                 
-                chain = chain + 1	
-            }		
+                chain = chain + 1
+            }
             
             ret[["setup"]]	<- list(hyperParams = hyperParams, startValues = startValues, mcmcParams = mcmcParams, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, nChain = nChain)
             
             if(hz.type == "Weibull")
             {
-                class(ret) <- c("Bayes", "Surv", "Ind", "WB")
+                class(ret) <- c("Bayes_HReg", "Surv", "Ind", "WB")
             }
             if(hz.type == "PEM")
             {
-                class(ret) <- c("Bayes", "Surv", "Ind", "PEM")
+                class(ret) <- c("Bayes_HReg", "Surv", "Ind", "PEM")
             }
             
             return(ret)
-
+            
         }
-
-
+        
+        
         # for cluster-correlated univariate time-to-event data
         if(!is.null(cluster))
         {
@@ -692,7 +692,7 @@ BayesSurv <- function(Y,
                         if(p == 0){
                             covNames = NULL
                         }
-  
+                        
                         ret[[nam]] <- list(beta.p = beta.p, lambda.fin = lambda.fin, mu_lam.p = mu_lam.p, sigSq_lam.p = sigSq_lam.p, K.p = K.p, s.p = s.p, zeta.p = zeta.p, accept.beta = accept.beta, accept.BI = accept.BI, accept.DI = accept.DI, time_lambda = time_lambda, accept.V = accept.V, covNames = covNames, Vsum = Vsummary)
                         
                     }   ## end: if PEM-Normal
@@ -807,7 +807,7 @@ BayesSurv <- function(Y,
                 
                 
                 
-                chain = chain + 1	
+                chain = chain + 1
                 
             }## end: while(chain <= nChain)
             
@@ -819,36 +819,36 @@ BayesSurv <- function(Y,
             {
                 if(re.type == "Normal")
                 {
-                    class(ret) <- c("Bayes", "Surv", "Cor", "WB", "Normal")
+                    class(ret) <- c("Bayes_HReg", "Surv", "Cor", "WB", "Normal")
                 }
                 if(re.type == "DPM")
                 {
-                    class(ret) <- c("Bayes", "Surv", "Cor", "WB", "DPM")
+                    class(ret) <- c("Bayes_HReg", "Surv", "Cor", "WB", "DPM")
                 }
             }
             if(hz.type == "PEM")
             {
                 if(re.type == "Normal")
                 {
-                    class(ret) <- c("Bayes", "Surv", "Cor", "PEM", "Normal")
+                    class(ret) <- c("Bayes_HReg", "Surv", "Cor", "PEM", "Normal")
                 }
                 if(re.type == "DPM")
                 {
-                    class(ret) <- c("Bayes", "Surv", "Cor", "PEM", "DPM")
+                    class(ret) <- c("Bayes_HReg", "Surv", "Cor", "PEM", "DPM")
                 }
             }
             return(ret)
         }
-
-
-
+        
+        
+        
     }
     else{
-    	print(" (numReps * burninPerc) must be divisible by (thin)")
+        print(" (numReps * burninPerc) must be divisible by (thin)")
     }
     
-	
-
+    
+    
 }
 
 

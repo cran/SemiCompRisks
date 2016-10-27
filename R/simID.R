@@ -1,7 +1,7 @@
 
 simID <- function(cluster=NULL, x1, x2, x3, beta1.true, beta2.true, beta3.true,
-                    alpha1.true, alpha2.true, alpha3.true,
-                    kappa1.true, kappa2.true, kappa3.true, theta.true, SigmaV.true=NULL, cens)
+alpha1.true, alpha2.true, alpha3.true,
+kappa1.true, kappa2.true, kappa3.true, theta.true, SigmaV.true=NULL, cens)
 {
     if(!is.null(cluster) & is.null(SigmaV.true)){
         print("SigmaV.true must be given to simulate correated data")
@@ -79,4 +79,3 @@ simID <- function(cluster=NULL, x1, x2, x3, beta1.true, beta2.true, beta3.true,
 }
 
 
-	

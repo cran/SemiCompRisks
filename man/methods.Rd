@@ -1,44 +1,56 @@
 \name{methods}
-\alias{print.Bayes}
-\alias{print.summ.Bayes}
-\alias{print.Freq}
-\alias{print.summ.Freq}
-\alias{summary.Bayes}
-\alias{summary.Freq}
-\alias{plot.Bayes}
-\alias{plot.Freq}
+\alias{print.Bayes_HReg}
+\alias{print.Bayes_AFT}
+\alias{print.summ.Bayes_HReg}
+\alias{print.summ.Bayes_AFT}
+\alias{print.Freq_HReg}
+\alias{print.summ.Freq_HReg}
+\alias{summary.Bayes_HReg}
+\alias{summary.Bayes_AFT}
+\alias{summary.Freq_HReg}
+\alias{plot.Bayes_HReg}
+\alias{plot.Bayes_AFT}
+\alias{plot.Freq_HReg}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-    Methods for objects of classes, \code{Bayes}/\code{Freq}.
+    Methods for objects of classes, \code{Bayes_HReg}/\code{Bayes_AFT}/\code{Freq_HReg}.
 }
 \description{
-The \code{Bayes} class represents results from Bayesian analysis of semi-competing risks or univariate time-to-event data.\cr
-The \code{Freq} class represents results from Frequentist analysis of semi-competing risks or univariate time-to-event data.\cr
+The \code{Bayes_HReg} class represents results from Bayesian analysis of semi-competing risks or univariate time-to-event data in the context of hazard regression models.\cr
+The \code{Bayes_AFT} class represents results from Bayesian analysis of semi-competing risks or univariate time-to-event data in the context of AFT models.\cr
+The \code{Freq_HReg} class represents results from Frequentist analysis of semi-competing risks or univariate time-to-event data in the context of hazard regression models.\cr
 }
 \usage{
-\method{print}{Bayes}(x, digits=3, ...)
-\method{print}{summ.Bayes}(x, digits=3, ...)
-\method{print}{Freq}(x, digits=3, ...)
-\method{print}{summ.Freq}(x, digits=3, ...)
-\method{summary}{Bayes}(object, digits=3, ...)
-\method{summary}{Freq}(object, digits=3, ...)
-\method{plot}{Freq}(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
-\method{plot}{Bayes}(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+\method{print}{Bayes_HReg}(x, digits=3, ...)
+\method{print}{Bayes_AFT}(x, digits=3, ...)
+\method{print}{summ.Bayes_HReg}(x, digits=3, ...)
+\method{print}{summ.Bayes_AFT}(x, digits=3, ...)
+\method{print}{Freq_HReg}(x, digits=3, ...)
+\method{print}{summ.Freq_HReg}(x, digits=3, ...)
+\method{summary}{Bayes_HReg}(object, digits=3, ...)
+\method{summary}{Bayes_AFT}(object, digits=3, ...)
+\method{summary}{Freq_HReg}(object, digits=3, ...)
+\method{plot}{Freq_HReg}(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+\method{plot}{Bayes_HReg}(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+\method{plot}{Bayes_AFT}(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-    an object of class \code{Bayes} or \code{Freq}.
+    an object of class \code{Bayes_HReg} or \code{Bayes_AFT} or \code{Freq_HReg}.
 }
   \item{digits}{
     a numeric value indicating the number of digits to display.
 }
   \item{object}{
-    an object of class \code{Bayes} or \code{Freq}.
+    an object of class \code{Bayes_HReg} or \code{Bayes_AFT} or\code{Freq_HReg}.
+}
+\item{time}{
+    the points at which the baseline survival/hazard functions are evaluated.
 }
   \item{tseq}{
 	the points at which tick-marks are to be drawn. 
-	Required only if the object \code{x} is returned by parametric Weibull models. 
+	Required only if the object \code{x} is returned by parametric Weibull-HReg/log-Normal-AFT/DPM-AFT models.
 }
   \item{plot}{
 	If \code{TRUE} (the default) then either estimated baseline hazard functions or estimated baseline survival functions are produced depending on the value of \code{plot.est}. 
@@ -63,7 +75,7 @@ The \code{Freq} class represents results from Frequentist analysis of semi-compe
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-	\code{\link{BayesID}}, \code{\link{BayesSurv}}, \code{\link{FreqID}}, \code{\link{FreqSurv}}.
+	\code{\link{BayesID_HReg}}, \code{\link{BayesID_AFT}}, \code{\link{BayesSurv_HReg}}, \code{\link{BayesSurv_AFT}}, \code{\link{FreqID_HReg}}, \code{\link{FreqSurv_HReg}}.
 }
 
 

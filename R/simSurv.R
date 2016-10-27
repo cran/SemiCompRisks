@@ -41,5 +41,5 @@ simSurv	<- function(cluster=NULL, x, beta.true, alpha.true, kappa.true, sigmaV.t
         return(ret)
     }
 }
-		
+
 

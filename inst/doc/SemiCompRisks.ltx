@@ -1,0 +1,1630 @@
+\documentclass[8pt]{extarticle}
+%\VignetteIndexEntry{test}
+%\VignetteEngine{R.rsp::tex}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{ntheorem}
+\newtheorem{theorem}{Theorem}
+\usepackage{amsmath}
+\usepackage{bbm}
+\usepackage{listings}% http://ctan.org/pkg/listings
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
+
+\usepackage[top=0.5in, bottom=.25in, left=.35in, right=.35in]{geometry}
+\usepackage{amstext}
+\usepackage{amssymb}
+\DeclareMathOperator{\Res}{Res}
+\usepackage{booktabs,dcolumn} %?
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage{longtable}
+\usepackage[libertine]{newtxmath}
+\usepackage{fancyhdr}
+\pagestyle{empty}
+\fancyhf{}
+\newlength{\remaining}
+\newcommand{\titleline}[1]{%
+\setlength{\remaining}{\textwidth-\widthof{\textsc{#1}}}
+\noindent\underline{\textsc{#1}\hspace*{\remaining}}\par}
+
+\begin{document}
+
+
+\begin{enumerate}
+	\item {\large\texttt{BayesSurv\_HReg} : independent, univariate time-to-event data fit to a Cox PH model with Weibull baseline hazard}
+	\item {\large\texttt{BayesSurv\_HReg} : independent, univariate time-to-event data fit to a Cox PH model with PEM baseline hazard}
+	\item {\large\texttt{BayesSurv\_AFT} : independent, univariate time-to-event data fit to an AFT model with LN baseline survival distribution}
+	\item {\large\texttt{BayesSurv\_AFT} : independent, univariate time-to-event data fit to an AFT model with DPM baseline survival distribution}
+	\item {\large\texttt{BayesSurv\_HReg} : cluster-correlated, univariate time-to-event data fit to a Cox PH model with Weibull baseline hazard}
+	\item {\large\texttt{BayesSurv\_HReg} : cluster-correlated, univariate time-to-event data fit to a Cox PH model with PEM baseline hazard}
+	\item {\large\texttt{BayesID\_HReg} : independent semi-competing risks data using an illness-death model with Weibull baseline hazards}
+	\item {\large\texttt{BayesID\_HReg} : independent semi-competing risks data using an illness-death model with PEM baseline hazards}
+	\item {\large\texttt{BayesID\_AFT} : independent semi-competing risks data using an AFT illness-death model with LN baseline survival distribution}
+	\item {\large\texttt{BayesID\_AFT} : independent semi-competing risks data using an AFT illness-death model with DPM baseline survival distribution}
+	\item {\large\texttt{BayesID\_HReg} : cluster-correlated semi-competing risks data using an illness-death model with Weibull baseline hazards}
+	\item {\large\texttt{BayesID\_HReg} : cluster-correlated semi-competing risks data using an illness-death model with PEM baseline hazards}	
+\end{enumerate}
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 1
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large1. \texttt{BayesSurv\_HReg} }applied to independent, univariate time-to-event data fit to a Cox PH model with Weibull baseline hazard}\hrule
+
+\vspace{.5cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_i$ denote the time-to-event of interest for individuals $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_i,\delta_i,x_i)$ denote independent observations, where $y_i=\min\left(t_i,c_i \right)$, $\delta_i=\mathbbm{1}(y_i\le c_i)$, and $x_i$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
+\begin{equation*}
+h(t_i|x_i) = h_0(t_i)\exp\left(x_i^\top \beta \right),~t_i>0,
+\end{equation*}
+where the baseline hazard $h_0$ is defined parametrically by a Weibull hazard, $h_0(t) = \alpha \kappa t^{\alpha - 1}$. %The Weibull parameters, $\alpha$ and $\kappa$, which are both positive real numbers control the shape and scale of the hazard function, respectively.  The form of the hazard function shows that $\alpha=1$ corresponds to a constant risk of failure over time, $\alpha<1$ corresponds to a decrease in risk over time, and $\alpha>1$ corresponds to an increase in risk over time. The scaling effect of the parameter $\kappa$ can be seen by considering the expression for the median of the corresponding Weibull random variable which is given by $\left(\ln{2}/\kappa\right)^\alpha$. 
+
+In the Bayesian framework, priors must be specified for the regression parameter, $\beta$, and the shape and scale parameters of baseline hazard function, $\alpha$ and $\kappa$, respectively. The following specifications are made
+\begin{align*}
+\pi(\beta) & \propto 1,\\
+\pi(\alpha) & \sim Gamma(a,b),\\
+\pi(\kappa) & \sim Gamma(c,d).\\
+\end{align*}
+
+\noindent{\large\textbf{Hyperparameters}}\\
+The hyperparameters $a$ and $b$ must be specified for the prior distribution of $\alpha$ which is a Gamma distribution with mean $ab$ and variance $ab^2$. Similarly, the hyperparameters $c$ and $d$ must be specified for the Gamma prior of $\kappa$.\\
+
+\noindent{\large \textbf{Arguments to specify}}\\
+\noindent\begin{tabular}{p{.12in} p{1.20in} p{5.85in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 2)$-dimensional data.frame with columns $y$ and $\delta$, where $y=(y_1,\dots,y_n)^\top$ and $\delta=(\delta_1,\dots,\delta_n)^\top$.\\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred}\\
+&\texttt{lin.pred} &  a formula object that corresponds to the hazard $h(t_i|x_i)$. Example: \texttt{lin.pred <- as.formula(}$\sim$\texttt{ x1 + x2)}, where \texttt{x1} and \texttt{x2} are columns of \texttt{data}.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{WB.ab} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for the shape parameter $\alpha$ of the Weibull baseline hazard. Example: \texttt{WB.ab <- c(0.5, 0.01)}.  \\
+&\texttt{WB.cd} & a 2-vector of positive hyperparameters $c$ and $d$ of the prior distribution for the scale parameter $\kappa$ of the Weibull baseline hazard. Example: \texttt{WB.cd <- c(0.5, 0.05)}.   \\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\verb|mhProp_alpha_var| & the shape parameter $\alpha$ is updated using a Metropolis-Hastings random walk step generating proposals from a Gamma distribution with variance \verb|mhProp_alpha_var|.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_HReg(Y, lin.pred, data, model, beta = NULL, WB.alpha = NULL, WB.kappa = NULL)} which initiates starting values for $\beta$, $\alpha$ and $\kappa$ in the Metropolis-Hastings algorithm if left unspecified. Users may set non-null starting values for any of these parameters.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+\bottomrule
+\end{tabular}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(survData)
+Y <- survData[,c(1,2)]
+lin.pred <- as.formula( ~ cov1 + cov2)
+##    
+WB.ab <- c(0.5, 0.01) # prior parameters for alpha
+WB.cd <- c(0.5, 0.05) # prior parameters for kappa
+hyperParams <- list(WB=list(WB.ab=WB.ab, WB.cd=WB.cd))
+##
+numReps <- 2000
+burninPerc <- 0.5
+thin <- 10
+mhProp_alpha_var <- 0.01
+mcmc <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+             tuning=list(mhProp_alpha_var=mhProp_alpha_var))
+##
+myModel <- "Weibull"
+myPath  <- "Output/01-Results-WB/"
+startValues <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, WB.alpha=1.12)
+##
+fit_WB <- BayesSurv_HReg(Y, lin.pred, survData, cluster=NULL, model=myModel, hyperParams, startValues, mcmc, myPath)
+summary(fit_WB)
+plot(fit_WB, tseq=seq(from=0, to=30, by=5))
+plot(fit_WB, tseq=seq(from=0, to=30, by=5), plot.est="BH")
+\end{verbatim}
+
+
+
+
+
+
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 2
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large2. \texttt{BayesSurv\_HReg} }applied to independent, univariate time-to-event data fit to a Cox PH model with PEM baseline hazard}\hrule
+
+\vspace{.5cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_i$ denote the time-to-event of interest for individuals $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_i,\delta_i,x_i)$ denote independent observations, where $y_i=\min\left(t_i,c_i \right)$, $\delta_i=\mathbbm{1}(y_i\le c_i)$, and $x_i$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
+\begin{equation*}
+h(t_i|x_i) = h_0(t_i)\exp\left(x_i^\top \beta \right),~t_i>0.
+\end{equation*}
+The baseline hazard $h_0$ is defined non-parametrically by a mixture of piecewise exponential functions as follows
+$$\lambda_0(t) = \log{h_0(t)} = \displaystyle\sum_{k=1}^{K+1} \lambda_k \mathbbm{1}\left\{t\in (s_{k-1},s_k]\right\},$$
+where $\lambda_k$ is constant and the time interval between 0 and the largest observed failure time, denoted $s_k$, is partitioned into $K+1$ disjoint intervals: $0<s_1<\dots < s_{K+1}$.
+
+In the Bayesian framework, priors must be specified for the regression parameter, $\beta$, the number of intervals, $K$, and the partition points $(s_1,\dots,s_{K+1})$, respectively.
+The following specifications are made
+\begin{align*}
+\pi(\beta) & \propto 1,\\
+\lambda | K, \mu_\lambda, \sigma_\lambda^2 & \sim MVN_{K+1}(\mu_\lambda \mathbbm{1}, \sigma_\lambda^2 \Sigma_\lambda)\\
+K & \sim Poisson(\alpha),\\
+\pi(s|K) & \propto \displaystyle\frac{(2K+1)! \prod_{k=1}^{K+1} (s_k-s_{k-1})}{\left(s_{K+1} \right)^{(2K+1)}},\\
+\pi(\mu_\lambda) & \propto 1,\\
+\sigma_\lambda^{-2}& \sim Gamma(a,b).
+\end{align*}
+The prior specification for $\lambda$ follows a MVN-ICAR (see Supplemental Material to Lee, Haneuse, Schrag and Dominici, 2015). Note that $K$ and $s$ jointly form a time-homogeneous Poisson process prior for the partition.\\
+
+\noindent{\large\textbf{Hyperparameters}}\\
+The hyperparameter $\alpha$ must be specified for the prior distribution of $K$, as well as $a$ and $b$, the rate and shape of the Gamma distributed hyperprior for $\sigma_\lambda^{-2}$.\\
+
+
+\noindent{\large \textbf{Arguments to specify}}\\
+\noindent\begin{longtable}{p{.12in} p{1.20in} p{5.85in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 2)$-dimensional data.frame with columns $y$ and $\delta$, where $y=(y_1,\dots,y_n)^\top$ and $\delta=(\delta_1,\dots,\delta_n)^\top$.\\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred}\\
+&\texttt{lin.pred} &  a formula object that corresponds to the hazard $h(t_i|x_i)$. Example: \texttt{lin.pred <- as.formula(}$\sim$\texttt{ x1 + x2)}, where \texttt{x1} and \texttt{x2} are columns of \texttt{data}.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{PEM.ab} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for $\sigma_\lambda^{-2}$. Example: \texttt{PEM.ab <- c(0.7,0.7)}.   \\
+&\texttt{PEM.alpha} & hyperparameter $\alpha$ of the prior distribution for $K$, which is one less than the number of partition points. Example: \texttt{PEM.alpha <- 10}.   \\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\texttt{C} &  a numeric value for the proportion that determines the sum of probabilities choosing the birth and death moves.\footnote{See Section A in Supplemental Material to Lee et al. (2015)}\\
+&\texttt{delPert} &  the perturbation parameter in the birth updates; values must be between 0 and 0.5.\footnotemark[\value{footnote}] \\
+&\texttt{rj.scheme} &  \texttt{rj.scheme=1}: the birth update will draw the proposal time split from $1:s_{max}$; \texttt{rj.scheme=2}: the birth update will draw the proposal time split from uniquely ordered failure times in the data. \\
+&\verb|K_max| &  the number of splits allowed in each iteration of the Metropolis-Hastings-Green algorithm.\\
+&\verb|s_max| &  the largest observed failure time, given by \verb|s_max <- max(Y$time[Y$event==1])|\\
+&\verb|time_lambda| & time points at which the $\lambda$ is monitored for convergence. Example: \verb|time_lambda <- seq(1, s_max, 1)|. The chains for these monitoring points can be found in \texttt{lambda.fin} in the chains of the \texttt{BayesSurv\_HReg} object.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_HReg(Y, lin.pred, data, model, beta = NULL)} which initiates all necessary starting values in the Metropolis-Hastings-Green algorithm. Users may set non-null starting values for \texttt{beta}.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+\newpage
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(survData)
+Y <- survData[,c(1,2)]
+lin.pred <- as.formula( ~ cov1 + cov2)
+##   
+PEM.ab <- c(0.7, 0.7) # prior parameters for 1/sigma^2
+PEM.alpha <- 10 # prior parameters for K
+hyperParams <- list(PEM=list(PEM.ab, PEM.alpha))
+##
+numReps <- 2000
+burninPerc <- 0.5
+thin <- 10
+C <- 0.2
+delPert  <- 0.5
+rj.scheme <- 2
+K_max    <- 50
+s_max    <- max(Y$time[Y$event == 1])
+time_lambda <- seq(1, s_max, 0.5)
+mcmc <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+             tuning=list(C=C, delPert=delPert, rj.scheme=rj.scheme, 
+                         K_max=K_max, s_max=s_max, time_lambda=time_lambda) )
+##
+myModel <- "PEM"
+myPath  <- "Output/02-Results-PEM/"
+startValues      <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel,
+beta=rep(0.1,2))
+##
+fit_PEM <- BayesSurv_HReg(Y, lin.pred, survData, cluster=NULL, model=myModel,
+                   hyperParams, startValues, mcmc, path=myPath)
+summary(fit_PEM)
+plot(fit_PEM, tseq=seq(from=0, to=30, by=5))
+plot(fit_PEM, tseq=seq(from=0, to=30, by=5), plot.est="BH")
+\end{verbatim}
+
+
+
+
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 3
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large 3. \texttt{BayesSurv\_AFT} }applied to independent, univariate time-to-event data fit to an AFT model with log-Normal baseline survival distribution}\hrule
+
+\vspace{.5cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_i$ denote the time-to-event of interest for individuals $i=1,\dots,n$. In the presence of interval censoring, the time-to-event for the $i^{\textrm{th}}$ subject satisfies $c_{ij}\leq t_i <c_{ij+1}$. Let $(c_{ij}, c_{ij+1}, L_i, x_i)$ denote independent observations, where $L_i$ is the left-truncation time and $x_i$ is a vector of covariates for individual $i$. The following AFT model is assumed
+\begin{equation*}
+\log(t_i) =  x_i^{\top}\beta + \epsilon_i, ~t_i>0.
+\end{equation*}
+We take  $\epsilon_i$ to follow the Normal($\mu$, $\sigma^2$) distribution for $\epsilon_i$ for the parametric AFT model. In the Bayesian framework, priors must be specified for $\beta$, $\mu$, and $\sigma^2$. The following specifications are made
+\begin{align*}
+\pi(\beta, \mu) &\propto 1, \\
+\sigma^2 &\sim Inverse-Gamma(a_{\sigma}, b_{\sigma}).
+\end{align*}
+
+\noindent{\large\textbf{Hyperparameters}}\\
+The hyperparameters, $a_{\sigma}$ and $b_{\sigma}$, must be specified for the prior distribution of $\sigma^2$.\\
+
+
+
+\noindent{\large \textbf{Arguments to specify}}\\
+\noindent\begin{longtable}{p{.12in} p{1.20in} p{5.85in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 3)$-dimensional data.frame with columns $c_j$, $c_{j+1}$, and $L$, where $c_j=(c_{ij},\dots,c_{nj})^\top$, $c_{j+1}=(c_{ij+1},\dots,c_{nj+1})^\top$ and $L=(L_1,\dots,L_n)^\top$.\\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred}\\
+&\texttt{lin.pred} &  a formula object that corresponds to the hazard $\log(t_i)$. Example: \texttt{lin.pred <- as.formula(}$\sim$\texttt{ x1 + x2)}, where \texttt{x1} and \texttt{x2} are columns of \texttt{data}.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{LN.ab} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for $\sigma^2$. Example: \texttt{LN.ab <- c(0.7,0.7)}. \\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\texttt{beta.prop.var} &  the parameter $\beta$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|beta.prop.var|.\\
+&\texttt{mu.prop.var} &  the parameter $\mu$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|mu.prop.var|.\\
+&\texttt{zeta.prop.var} &  the parameter $\zeta=1/\sigma^2$ is updated using a Metropolis-Hastings random walk step generating proposals from a log-Normal distribution with variance \verb|zeta.prop.var|.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_AFT(Y, lin.pred, data, model, beta = NULL, y = NULL, LN.mu = NULL, LN.sigSq = NULL)} which initiates all necessary starting values in the Metropolis-Hastings algorithm. Users may set non-null starting values for \texttt{beta}, \texttt{y}, \texttt{LN.mu}, \texttt{LN.sigSq}.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(survData)
+Y <- matrix(NA, dim(survData)[1], 3)
+Y[,1] <- Y[,2] <- survData[,1]
+Y[which(scrData[,2] == 0),2] <- Inf
+Y[,3] <- rep(0, dim(survData)[1])
+lin.pred <- as.formula( ~ cov1 + cov2)
+##
+LN.ab <- c(0.3, 0.3)
+hyperParams <- list(LN=list(LN.ab=LN.ab))
+##
+numReps    <- 1000
+thin       <- 10
+burninPerc <- 0.5
+beta.prop.var	<- 0.01
+mu.prop.var	<- 0.1
+zeta.prop.var	<- 0.1
+mcmcParams	<- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+				tuning=list(beta.prop.var=beta.prop.var, mu.prop.var=mu.prop.var,
+						zeta.prop.var=zeta.prop.var))
+##
+myModel <- "LN"
+myPath  <- "Output/01-Results-LN/"
+startValues      <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_AFT(Y, lin.pred, survData, model=myModel)
+startValues[[2]] <- initiate.startValues_AFT(Y, lin.pred, survData, model=myModel,
+beta=c(0.05, -0.05))
+##
+fit_LN <- BayesSurv_AFT(Y, lin.pred, survData, model=myModel, hyperParams,
+startValues, mcmcParams, path=myPath)
+
+summary(fit_LN)
+plot(fit_LN, time = seq(0, 35, 1), tseq=seq(from=0, to=30, by=5))
+plot(fit_LN, time = seq(0, 35, 1), tseq=seq(from=0, to=30, by=5), plot.est = "BH")
+\end{verbatim}
+
+
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 4
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large 4. \texttt{BayesSurv\_AFT} }applied to independent, univariate time-to-event data fit to an AFT model with DPM baseline survival distribution}\hrule
+
+\vspace{.5cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_i$ denote the time-to-event of interest for individuals $i=1,\dots,n$. Considering interval censoring, the time-to-event for the $i^{\textrm{th}}$ subject satisfies $c_{ij}\leq t_i <c_{ij+1}$. Let $(c_{ij}, c_{ij+1}, L_i, x_i)$ denote independent observations, where $L_i$ is the left-truncation time and $x_i$ is a vector of covariates for individual $i$. The following AFT model is assumed
+\begin{equation*}
+\log(t_i) =  x_i^{\top}\beta + \epsilon_i, ~t_i>0,
+\end{equation*}
+where $\epsilon_i$ is assumed to be taken as draws from the DPM of normal distributions:
+\begin{align*}
+	\epsilon_{i} | r_{i} &\sim \textrm{Normal}(\mu_{r_{i}}, \sigma_{r_{i}}^2),\\
+	(\mu_{r}, \sigma_{r}^2) &\sim G_{0}, \textrm{ for } r=1,\ldots,M, \\
+	r_{i}|p &\sim Discrete(r_{i} | p_{1},\ldots,p_{M}), \\
+	p &\sim Dirichlet(\tau/M, \ldots, \tau/M).
+\end{align*}
+In the Bayesian framework, priors must be specified for the unknown parameters. We take the $G_{0}$ as a normal distribution centered at $\mu_{0}$ with a variance $\sigma_{0}^2$ for $\mu_{r}$ and an inverse-Gamma($a_{\sigma}$, $b_{\sigma}$) for $\sigma_{r}^2$. For $\beta$, we adopt non-informative flat priors on the real line. Finally, we specify a Gamma($a_{\tau}$, $b_{\tau}$) hyperprior for the precision parameter $\tau$.\\
+
+\noindent{\large\textbf{Hyperparameters}}\\
+The hyperparameter ($\mu_{0}$, $\sigma_{0}^2$, $a_{\sigma}$, $b_{\sigma}$) must be specified for the centering distribution $G_0$, as well as $a_{\tau}$ and $b_{\tau}$, the rate and shape of the Gamma distributed hyperprior for $\tau$.\\
+
+
+\noindent{\large \textbf{Arguments to specify}}\\
+\noindent\begin{longtable}{p{.12in} p{1.20in} p{5.85in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 3)$-dimensional data.frame with columns $c_j$, $c_{j+1}$, and $L$, where $c_j=(c_{ij},\dots,c_{nj})^\top$, $c_{j+1}=(c_{ij+1},\dots,c_{nj+1})^\top$ and $L=(L_1,\dots,L_n)^\top$.\\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred}\\
+&\texttt{lin.pred} &  a formula object that corresponds to the hazard $\log(t_i)$. Example: \texttt{lin.pred <- as.formula(}$\sim$\texttt{ x1 + x2)}, where \texttt{x1} and \texttt{x2} are columns of \texttt{data}.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{DPM.mu} & a hyperparameter $\mu_{0}$ of the centering distribution $G_0$.\\
+&\texttt{DPM.sigSq} & a positive-valued hyperparameter $\sigma_{0}^2$ of the centering distribution $G_0$.\\
+&\texttt{DPM.ab} & a 2-vector of positive hyperparameters $a_{\sigma}$ and $b_{\sigma}$ of the centering distribution $G_0$.\\
+&\texttt{Tau.ab} & a 2-vector of positive hyperparameters $a_{\tau}$ and $b_{\tau}$ of the hyperprior distribution for $\tau$. Example: \texttt{Tau.ab <- c(1.5, 0.0125)}. \\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\texttt{beta.prop.var} &  the parameter $\beta$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|beta.prop.var|.\\
+&\texttt{mu.prop.var} &  the parameter $\mu_r$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|mu.prop.var|.\\
+&\texttt{zeta.prop.var} &  the parameter $\zeta_r=1/\sigma_r^2$ is updated using a Metropolis-Hastings random walk step generating proposals from a log-Normal distribution with variance \verb|zeta.prop.var|.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_AFT(Y, lin.pred, data, model, beta = NULL, y = NULL, DPM.class = NULL, DPM.mu = NULL, DPM.zeta=NULL, DPM.tau=NULL)} which initiates all necessary starting values in the Metropolis-Hastings algorithm. Users may set non-null starting values for \texttt{beta}, \texttt{y}, \texttt{DPM.class}, \texttt{DPM.mu}, \texttt{DPM.zeta}, \texttt{DPM.tau}.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+
+
+\newpage
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(survData)
+Y <- matrix(NA, dim(survData)[1], 3)
+Y[,1] <- Y[,2] <- survData[,1]
+Y[which(scrData[,2] == 0),2] <- Inf
+Y[,3] <- rep(0, dim(survData)[1])
+lin.pred <- as.formula( ~ cov1 + cov2)
+##
+DPM.mu <- log(12)
+DPM.sigSq <- 100
+DPM.ab <-  c(2, 1)
+Tau.ab <- c(1.5, 0.0125)
+hyperParams <- list(DPM=list(DPM.mu=DPM.mu, DPM.sigSq=DPM.sigSq, DPM.ab=DPM.ab, Tau.ab=Tau.ab))
+##
+numReps    <- 1000
+thin       <- 10
+burninPerc <- 0.5
+beta.prop.var	<- 0.01
+mu.prop.var	<- 0.1
+zeta.prop.var	<- 0.1
+mcmcParams	<- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+				tuning=list(beta.prop.var=beta.prop.var, mu.prop.var=mu.prop.var,
+				zeta.prop.var=zeta.prop.var))
+##
+myModel <- "DPM"
+myPath  <- "Output/02-Results-DPM/"
+startValues      <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_AFT(Y, lin.pred, survData, model=myModel)
+startValues[[2]] <- initiate.startValues_AFT(Y, lin.pred, survData, model=myModel,
+								beta=c(0.05, -0.05))
+##
+fit_DPM <- BayesSurv_AFT(Y, lin.pred, survData, model=myModel, hyperParams,
+						startValues, mcmcParams, path=myPath)
+
+summary(fit_DPM)
+plot(fit_DPM, time = seq(0, 35, 1),  tseq=seq(from=0, to=30, by=5))
+plot(fit_DPM, time = seq(0, 35, 1),  tseq=seq(from=0, to=30, by=5), plot.est = "BH")
+\end{verbatim}
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 5
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large 5. \texttt{BayesSurv\_HReg} }applied to cluster-correlated, univariate time-to-event data fit to a Cox PH model with Weibull baseline hazard}\hrule
+
+\vspace{.5cm}
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_{ji}$ denote the time-to-event of interest for individuals $i=1,\dots,n_j$ in cluster $j=1,\dots J$, subject to right censoring at time $c_{ji}$. Let $(y_{ji},\delta_{ji},x_{ji})$ denote independent observations, where $y_{ji}=\min\left(t_{ji},c_{ji} \right)$, $\delta_{ji}=\mathbbm{1}(y_{ji}\le c_{ji})$, and $x_{ji}$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
+\begin{equation*}
+h(t_{ji}|x_{ji}) = h_0(t_{ji})\exp\left(x_{ji}^\top \beta + V_j \right),~t_{ji}>0,
+\end{equation*}
+where the $V_j$'s are cluster-specific random effects and the baseline hazard $h_0$ is defined parametrically by a Weibull hazard, $h_0(t) = \alpha \kappa t^{\alpha - 1}$. 
+
+In the Bayesian framework, priors must be specified for the regression parameter, $\beta$, the cluster-specific random effects, $V_j$, and the shape and scale parameters of baseline hazard function, $\alpha$ and $\kappa$, respectively. The prior distributions for $\beta$, $\alpha$ and $\kappa$ are given below.
+\begin{align*}
+\pi(\beta) & \propto 1,\\
+\pi(\alpha) & \sim Gamma(a,b),\\
+\pi(\kappa) & \sim Gamma(c,d).
+\end{align*}
+We provide two possible prior specifications for the cluster-specific random effects below. $$\begin{array}{rcl c rcl}
+%\multicolumn{3}{c}{\text{Normal prior}} &~~~~~~~~~~~~~~~~~~~~ &  \multicolumn{3}{c}{\text{Dirichlet process mixture (DPM) prior}}\\
+V_j&\sim&Normal(0,\sigma^2), &~~~~~~~~~~~~~~~~~~~~ &  V_j|m_j&\sim & Normal(\mu_m,\sigma^2_m),\\
+\zeta = \displaystyle\frac{1}{\sigma^2}&\sim&Gamma(a_N,b_N). & &  (\mu_m,\sigma_m^2)&\sim & G_0,~~\text{for}~~m=1,\dots M,\\
+& & & & m_j|p &\sim & Discrete(m_j|p_1,\dots,p_M), \\
+& & & & p &\sim & Dirichlet({\tau}/{M},\dots, {\tau}/{M}), \\
+& & & & \tau &\sim & Gamma(a_\tau,b_\tau). 
+\end{array}$$
+In the first column, the individual specific-random effects are assumed to be $\overset{iid}{\sim} N(0,\sigma^2)$. In the second column, the cluster-specific random effects are drawn from a mixture of $M$ normal distributions each with mean and variance $(\mu_m,\sigma_m^2)$ which are distributed as a multivariate Normal/Inverse-Gamma (NIG), denoted by $G_0$; we refer to this as the Dirichlet process mixture (DPM) prior.
+ The probability density of $G_0$ is defined by the product 
+$$f_{\text{NIG}}(\mu,\sigma^2|\mu_0,\zeta_0,a_0,b_0) = f_{\text{Normal}}(\mu|\mu_0,1/\zeta_0^2) \times f_{\text{Gamma}}(\zeta=1/\sigma^2|a_0,b_0).$$ We assume $\mu_0=0$ and $\zeta_0=1$. \\
+
+\noindent{\large\textbf{Hyperparameters}}\\
+\noindent\begin{tabular}{lcl}
+$a$, $b$ &: & shape and rate of Gamma prior for $\alpha$\\
+$c$, $d$ &: & shape and rate of Gamma prior for $\kappa$\\
+$a_N$,  $b_N$ & : & mean and variance of normal prior for $V_{j}$\\
+$a_0$, $b_0$ &: & shape and rate of Gamma component of the prior distribution, $G_0$, of $(\mu_m,\sigma_m^2)$ (DPM prior)\\
+$a_\tau$,  $b_\tau$ & : & shape and rate of Gamma hyperprior for $\tau$ (DPM prior)\\[0.5cm]
+\end{tabular}
+
+\noindent{\large \textbf{Arguments to specify}}
+\vspace{-0.35cm}
+\noindent\begin{longtable}{p{.15in} p{1.20in} p{5.85in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 2)$-dimensional data.frame with columns $y$ and $\delta$, where $y=(y_1,\dots,y_n)^\top$ and $\delta=(\delta_1,\dots,\delta_n)^\top$.\\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred}\\
+&\texttt{lin.pred} &  a formula object that corresponds to the hazard $h(t_{ji}|x_{ji})$. Example: \texttt{lin.pred <- as.formula(}$\sim$\texttt{ x1 + x2)}, where \texttt{x1} and \texttt{x2} are columns of \texttt{data}.   \\
+& \texttt{model}& a character vector that specifies the type of components in the model. Use \texttt{model <- c("Weibull", "Normal")} for Normal prior for $V_j$ and use \texttt{model <- c("Weibull", "DPM")} for DPM prior.\\
+&\texttt{cluster}& an $n$-vector of cluster information where cluster membership corresponds to one of the positive integers $1,\dots, J$. \\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{WB.ab} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for the shape parameter $\alpha$ of the Weibull baseline hazard. Example: \texttt{WB.ab <- c(0.5, 0.01)}.  \\
+&\texttt{WB.cd} & a 2-vector of positive hyperparameters $c$ and $d$ of the prior distribution for the scale parameter $\kappa$ of the Weibull baseline hazard. Example: \texttt{WB.cd <- c(0.5, 0.05)}.   \\[.12cm]
+\multicolumn{2}{l}{\hspace{0.35cm}\textbf{Normal prior for $V_j$} }& \\
+&\texttt{Normal.ab} & a 2-vector of positive hyperparameters $a_N$ and $b_N$ of the prior for $1/\sigma^2$, the precision of the normally distributed cluster-specific random effects. Example: \texttt{Normal.ab <- c(0.5, 0.01)}. \\
+\multicolumn{2}{l}{\hspace{0.35cm}\textbf{DPM prior for $V_j$} }& \\
+&\texttt{DPM.ab} & a 2-vector of positive hyperparameters $a_0$ and $b_0$ of the prior for $(\mu_m,\sigma_m^2)$, the parameters of the normally distributed cluster-specific random effects. Example: \texttt{DPM.ab <- c(0.5, 0.01)}. \\
+&\texttt{aTau} & a positive-valued hyperparameter corresponding to the shape parameter, $a_\tau$, of the Gamma prior of $\tau$.\\
+&\texttt{bTau} &  a positive-valued hyperparameter corresponding to the rate parameter, $b_\tau$, of the Gamma prior of $\tau$.\\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\verb|mhProp_alpha_var| & the shape parameter $\alpha$ is updated using a Metropolis-Hastings random walk algorithm which generates proposals from a Gamma distribution with variance \verb|mhProp_alpha_var|.  \\
+&\verb|mhProp_V_var| &  the cluster-specific random effects, $V_{ji}$, are updated using a Metropolis-Hastings random walk algorithm which generates proposals from a Normal distribution with variance \verb|mhProp_V_var| \\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\*
+&  \texttt{startValues}& use \texttt{initiate.startValues\_HReg(Y, lin.pred, data, model, cluster, beta = NULL, WB.alpha = NULL, WB.kappa = NULL, V.j = NULL, Normal.zeta = NULL, DPM.class = NULL, DPM.tau = NULL)} which initiates starting values for $\beta$, $\alpha$, $\kappa$, $V_j$, $\zeta$ (in the DPM model for $V_j$) and $\tau$ in the Metropolis-Hastings-Green algorithm if left unspecified;  \texttt{DPM.class} sets the starting value for class membership in the DPM model. Users may set non-null starting values for any of these parameters.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+& \texttt{storeV} & a \texttt{TRUE/FALSE} logical constant indicating storage of $V_{j}$ values. \\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(survData)
+Y <- survData[,c(1,2)]
+cluster <- survData[,3]
+lin.pred <- as.formula( ~ cov1 + cov2)
+##    
+WB.ab <- c(0.5, 0.01) # prior parameters for alpha
+WB.cd <- c(0.5, 0.05) # prior parameters for kappa
+Normal.ab  <- c(0.5, 0.01)  # for Normal random effects
+DPM.ab <- c(0.5, 0.01) # For DPM
+    aTau  <- 1.5
+    bTau  <- 0.0125
+hyperParams.WB.Normal <- list(WB=list(WB.ab=WB.ab, WB.cd=WB.cd),
+                        Normal=list(Normal.ab=Normal.ab))
+hyperParams.WB.DPM <- list(WB=list(WB.ab=WB.ab, WB.cd=WB.cd),
+                        DPM=list(DPM.ab=DPM.ab, aTau=aTau, bTau=bTau))
+##
+numReps <- 2000
+burninPerc <- 0.5
+thin <- 10
+mhProp_alpha_var <- 0.01
+mhProp_V_var     <- 0.05
+storeV <- TRUE
+mcmc.WB <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+             storage=list(storeV=storeV),
+             tuning=list(mhProp_alpha_var=mhProp_alpha_var, mhProp_V_var=mhProp_V_var))
+##
+myModel.WB.Normal <- c("Weibull","Normal")
+myPath.WB.Normal  <- "Output/03-Results-WB_Normal/"
+startValues.WB.Normal <- vector("list", 2)
+startValues.WB.Normal[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, cluster, model=myModel.WB.Normal)
+startValues.WB.Normal[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, cluster, model=myModel.WB.Normal, WB.alpha=1.12)
+##
+fit_WB_Normal <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel.WB.Normal, hyperParams.WB.Normal,
+ 		startValues.WB.Normal, mcmc.WB, myPath.WB.Normal)
+summary(fit_WB_Normal)
+plot(fit_WB_Normal, tseq=seq(from=0, to=30, by=5))
+plot(fit_WB_Normal, tseq=seq(from=0, to=30, by=5), plot.est="BH")
+## 
+myModel.WB.DPM <- c("Weibull","DPM")
+myPath.WB.DPM  <- "Output/04-Results-WB_DPM/"
+startValues.WB.DPM <- vector("list", 2)
+startValues.WB.DPM[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, cluster, model=myModel.WB.DPM)
+startValues.WB.DPM[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, cluster, model=myModel.WB.DPM, Normal.zeta=0.95)
+##
+fit_WB_DPM <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel.WB.DPM, hyperParams.WB.DPM,
+ 		startValues.WB.DPM, mcmc.WB, myPath.WB.DPM)
+summary(fit_WB_DPM)
+plot(fit_WB_DPM, tseq=seq(from=0, to=30, by=5))
+plot(fit_WB_DPM, tseq=seq(from=0, to=30, by=5), plot.est="BH")
+\end{verbatim}
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 6
+%%%%%%%%%%%%%%%%%%
+
+\par\hbox{{\large 6. \texttt{BayesSurv} }applied to cluster-correlated, univariate time-to-event data fit to a Cox PH model with PEM baseline hazard}\hrule
+
+\vspace{.25cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_{ji}$ denote the time-to-event of interest for individuals $i=1,\dots,n_j$ in cluster $j=1,\dots J$, subject to right censoring at time $c_{ji}$. Let $(y_{ji},\delta_{ji},x_{ji})$ denote independent observations, where $y_{ji}=\min\left(t_{ji},c_{ji} \right)$, $\delta_{ji}=\mathbbm{1}(y_{ji}\le c_{ji})$, and $x_{ji}$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
+\begin{equation*}
+h(t_{ji}|x_{ji}) = h_0(t_{ji})\exp\left(x_{ji}^\top \beta + V_j \right),~t_{ji}>0,
+\end{equation*}
+The baseline hazard $h_0$ is defined non-parametrically by a mixture of piecewise exponential functions as follows
+$$\lambda_0(t) = \log{h_0(t)} = \displaystyle\sum_{k=1}^{K+1} \lambda_k \mathbbm{1}\left\{t\in (s_{k-1},s_k]\right\},$$
+where $\lambda_k$ is constant and the time interval between 0 and the largest observed failure time, denoted $s_k$, is partitioned into $K+1$ disjoint intervals: $0<s_1<\dots < s_{K+1}$.
+
+In the Bayesian framework, priors must be specified for the regression parameter, $\beta$, the number of intervals, $K$, and the partition points $(s_1,\dots,s_{K+1})$, respectively.
+The following specifications are made
+\begin{align*}
+\pi(\beta) & \propto 1,\\
+\lambda | K, \mu_\lambda, \sigma_\lambda^2 & \sim MVN_{K+1}(\mu_\lambda \mathbbm{1}, \sigma_\lambda^2 \Sigma_\lambda)\\
+K & \sim Poisson(\alpha),\\
+\pi(s|K) & \propto \displaystyle\frac{(2K+1)! \prod_{k=1}^{K+1} (s_k-s_{k-1})}{\left(s_{K+1} \right)^{(2K+1)}},\\
+\pi(\mu_\lambda) & \propto 1,\\
+\sigma_\lambda^{-2}& \sim Gamma(a,b).
+\end{align*}
+The prior specification for $\lambda$ follows a MVN-ICAR (see Supplemental Material to Lee, Haneuse, Schrag and Dominici, 2015). Note that $K$ and $s$ jointly form a time-homogeneous Poisson process prior for the partition.\\
+
+We provide two possible prior specifications for the cluster-specific random effects below. $$\begin{array}{rcl c rcl}
+%\multicolumn{3}{c}{\text{Normal prior}} &~~~~~~~~~~~~~~~~~~~~ &  \multicolumn{3}{c}{\text{Dirichlet process mixture (DPM) prior}}\\
+V_j&\sim&Normal(0,\sigma^2), &~~~~~~~~~~~~~~~~~~~~ &  V_j|m_j&\sim & Normal(\mu_m,\sigma^2_m),\\
+\zeta = \displaystyle\frac{1}{\sigma^2}&\sim&Gamma(a_N,b_N). & &  (\mu_m,\sigma_m^2)&\sim & G_0,~~\text{for}~~m=1,\dots M,\\
+& & & & m_j|p &\sim & Discrete(m_j|p_1,\dots,p_M), \\
+& & & & p &\sim & Dirichlet({\tau}/{M},\dots, {\tau}/{M}), \\
+& & & & \tau &\sim & Gamma(a_\tau,b_\tau). 
+\end{array}$$
+In the first column, the individual specific-random effects are assumed to be $\overset{iid}{\sim} N(0,\sigma^2)$. In the second column, the cluster-specific random effects are drawn from a mixture of $M$ normal distributions each with mean and variance $(\mu_m,\sigma_m^2)$ which are distributed as a multivariate Normal/Inverse-Gamma (NIG), denoted by $G_0$; we refer to this as the Dirichlet process mixture (DPM) prior.
+ The probability density of $G_0$ is defined by the product 
+$$f_{\text{NIG}}(\mu,\sigma^2|\mu_0,\zeta_0,a_0,b_0) = f_{\text{Normal}}(\mu|\mu_0,1/\zeta_0^2) \times f_{\text{Gamma}}(\zeta=1/\sigma^2|a_0,b_0).$$ We assume $\mu_0=0$ and $\zeta_0=1$. \\
+
+\noindent{\large\textbf{Hyperparameters}}\\
+\noindent\begin{tabular}{lcl}
+$\alpha$ &: & hyperparameter of $K$\\
+$a$, $b$ &: & shape and rate of Gamma prior for $\sigma_\lambda^{-2}$\\
+$a_N$,  $b_N$ & : & mean and variance of normal prior for $V_{j}$\\
+$a_0$, $b_0$ &: & shape and rate of Gamma component of the prior distribution, $G_0$, of $(\mu_m,\sigma_m^2)$\\
+$a_\tau$,  $b_\tau$ & : & shape and rate of Gamma hyperprior for $\tau$\\[0.25cm]
+\end{tabular}
+
+\noindent{\large \textbf{Arguments to specify}}
+\vspace{-0.35cm}
+\noindent\begin{longtable}{p{.15in} p{1.20in} p{5.85in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 2)$-dimensional data.frame with columns $y$ and $\delta$, where $y=(y_1,\dots,y_n)^\top$ and $\delta=(\delta_1,\dots,\delta_n)^\top$.\\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred}\\
+&\texttt{lin.pred} &  a formula object that corresponds to the hazard $h(t_{ji}|x_{ji})$. Example: \texttt{lin.pred <- as.formula(}$\sim$\texttt{ x1 + x2)}, where \texttt{x1} and \texttt{x2} are columns of \texttt{data}.   \\
+& \texttt{model}& a character vector that specifies the type of components in the model. Use \texttt{model <- c("PEM", "DPM")}.\\
+&\texttt{cluster}& an $n$-vector of cluster information where cluster membership corresponds to one of the positive integers $1,\dots, J$. \\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{PEM.ab} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for $\sigma_\lambda^{-2}$. Example: \texttt{PEM.ab <- c(0.7,0.7)}.   \\
+&\texttt{PEM.alpha} & hyperparameter $\alpha$ of the prior distribution for $K$, which is one less than the number of partition points. Example: \texttt{PEM.alpha <- 10}.   \\[.12cm]\multicolumn{2}{l}{\hspace{0.35cm}\textbf{Normal prior for $V_j$} }& \\
+&\texttt{Normal.ab} & a 2-vector of positive hyperparameters $a_N$ and $b_N$ of the prior for $1/\sigma^2$, the precision of the normally distributed cluster-specific random effects. Example: \texttt{Normal.ab <- c(0.5, 0.01)}. \\
+\multicolumn{2}{l}{\hspace{0.35cm}\textbf{DPM prior for $V_j$} }& \\
+&\texttt{DPM.ab} & a 2-vector of positive hyperparameters $a_0$ and $b_0$ of the prior for $(\mu_m,\sigma_m^2)$, the parameters of the normally distributed cluster-specific random effects. Example: \texttt{DPM.ab <- c(0.5, 0.01)}. \\
+&\texttt{aTau} & a positive-valued hyperparameter corresponding to the shape parameter, $a_\tau$, of the Gamma prior of $\tau$.\\
+&\texttt{bTau} &  a positive-valued hyperparameter corresponding to the rate parameter, $b_\tau$, of the Gamma prior of $\tau$.\\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\*
+&\texttt{numReps} & total number of scans\\*
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\*
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\verb|mhProp_V_var| &  the cluster-specific random effects, $V_{ji}$, are updated using a Metropolis-Hastings random walk algorithm which generates proposals from a Normal distribution with variance \verb|mhProp_V_var| \\
+&\texttt{C} &  a numeric value for the proportion that determines the sum of probabilities choosing the birth and death moves.\footnote{See Section A in Supplemental Material to Lee et al. (2015)}\\
+&\texttt{delPert} &  the perturbation parameter in the birth updates; values must be between 0 and 0.5.\footnotemark[\value{footnote}] \\
+&\texttt{rj.scheme} &  \texttt{rj.scheme=1}: the birth update will draw the proposal time split from $1:s_{max}$; \texttt{rj.scheme=2}: the birth update will draw the proposal time split from uniquely ordered failure times in the data. \\&\verb|K_max| &  the number of splits allowed in each iteration of the Metropolis-Hastings-Green algorithm.\\
+&\verb|s_max| &  the largest observed failure time, given by \verb|s_max <- max(Y$time[Y$event==1])|\\
+&\verb|time_lambda| & time points at which the $\lambda$ is monitored for convergence. Example: \verb|time_lambda <- seq(1, s_max, 1)|. The chains for these monitoring points can be found in \texttt{lambda.fin} in the chains of the \texttt{BayesSurv} object.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\*
+&  \texttt{startValues}& use \texttt{initiate.startValues\_HReg(Y, lin.pred, data, model, beta = NULL, V.j=NULL, Normal.zeta=NULL, DPM.class=NULL, DPM.tau=NULL)} which initiates starting values for $\beta$, $V_j$, $\zeta$ (in the DPM model for $V_j$) and $\tau$ in the Metropolis-Hastings-Green algorithm if left unspecified;  \texttt{DPM.class} sets the starting value for class membership in the DPM model. Users may set non-null starting values for any of these parameters.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+& \texttt{storeV} & a \texttt{TRUE/FALSE} logical constant indicating storage of $V_{j}$ values.\\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.05cm}
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(survData)
+Y <- survData[,c(1,2)]
+cluster <- survData[,3]
+lin.pred <- as.formula( ~ cov1 + cov2)
+##   
+PEM.ab <- c(0.7, 0.7) # prior parameters for 1/sigma^2
+PEM.alpha <- 10 # prior parameters for K
+Normal.ab  <- c(0.5, 0.01)  # for Normal random effects
+DPM.ab <- c(0.5, 0.01) # For DPM
+    aTau  <- 1.5
+    bTau  <- 0.0125
+hyperParams.PEM.Normal <- list(PEM=list(PEM.ab=PEM.ab, PEM.alpha=PEM.alpha),
+                        Normal=list(Normal.ab=Normal.ab))
+hyperParams.PEM.DPM <- list(PEM=list(PEM.ab=PEM.ab, PEM.alpha=PEM.alpha),
+                        DPM=list(DPM.ab=DPM.ab, aTau=aTau, bTau=bTau))
+##
+numReps <- 2000
+burninPerc <- 0.5
+thin <- 10
+mhProp_V_var     <- 0.05
+storeV <- TRUE
+C <- 0.2
+delPert  <- 0.5
+rj.scheme <- 2
+K_max    <- 50
+s_max    <- max(Y$time[Y$event == 1])
+time_lambda <- seq(1, s_max, 0.5)
+mcmc.PEM <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+	       storage=list(storeV=storeV),
+             tuning=list(mhProp_V_var=mhProp_V_var, C=C, delPert=delPert, rj.scheme=rj.scheme, 
+                         K_max=K_max, s_max=s_max, time_lambda=time_lambda) )
+##
+myModel.PEM.Normal <- c("PEM","Normal")
+myPath.PEM.Normal  <- "Output/05-Results-PEM_Normal/"
+startValues.PEM.Normal <- vector("list", 2)
+startValues.PEM.Normal[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, cluster, model=myModel.PEM.Normal)
+startValues.PEM.Normal[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, cluster, model=myModel.PEM.Normal, Normal.zeta=0.95)
+##
+fit_PEM_Normal <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel.PEM.Normal, hyperParams.PEM.Normal,
+ 		startValues.PEM.Normal, mcmc.PEM, path=myPath.PEM.Normal)
+summary(fit_PEM_Normal)
+plot(fit_PEM_Normal, tseq=seq(from=0, to=30, by=5))
+plot(fit_PEM_Normal, tseq=seq(from=0, to=30, by=5), plot.est="BH")
+## 
+myModel.PEM.DPM <- c("PEM","DPM")
+myPath.PEM.DPM  <- "Output/06-Results-PEM_DPM/"
+startValues.PEM.DPM <- vector("list", 2)
+startValues.PEM.DPM[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, cluster, model=myModel.PEM.DPM)
+startValues.PEM.DPM[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, cluster, model=myModel.PEM.DPM, Normal.zeta=0.95)
+##
+fit_PEM_DPM <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel.PEM.DPM, hyperParams.PEM.DPM,
+ 		startValues.PEM.DPM, mcmc.PEM, path=myPath.PEM.DPM)
+summary(fit_PEM_DPM)
+plot(fit_PEM_DPM, tseq=seq(from=0, to=30, by=5))
+plot(fit_PEM_DPM, tseq=seq(from=0, to=30, by=5), plot.est="BH")
+\end{verbatim}
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 7
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large 7. \texttt{BayesID\_HReg} }to analyze independent semi-competing risks data using an illness-death model with Weibull baseline hazards}\hrule
+
+\vspace{.25cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_{i1}$ and $t_{i2}$ denote the time to nonterminal event and terminal event from subject $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_{i1},y_{i2},\delta_{i1},\delta_{i2},x_{i})$ denote independent observations, where $y_{i1}=\min\left(t_{i1},t_{i2},c_i \right)$, $\delta_{i1}=\mathbbm{1}\left\{t_{i1}\le \min\left(t_{i2},c_i \right) \right\}$, $y_{i2}=\min\left(t_{i2},c_i \right)$, $\delta_{i2}=\mathbbm{1}\left\{t_{i2}\le c_i \right\}$, and $x_i$ is a vector of covariates for individual $i$. The independent semi-competing risks data are assumed to arise from an illness-death model system with transitions that are modeled through the following three hazard functions:
+\begin{eqnarray}
+h_1(t_{i1}|\gamma_{ji}, x_{i1}) & = \gamma_{ji} h_{01}(t_{i1})\exp\left(x_{i1}^\top\beta_1 \right),~t_{i1}>0,\label{1}\\
+h_2(t_{i2}|\gamma_{ji}, x_{i2}) & = \gamma_{ji} h_{02}(t_{i2})\exp\left(x_{i2}^\top\beta_2 \right),~t_{i2}>0,\label{2}\\
+h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2})\exp\left(x_{i3}^\top\beta_3 \right),~t_{i2}>0,\label{Markov}
+\end{eqnarray}
+where $\gamma_{ji}$ is a subject-specific frailty with vectors of covariates $x_{i1}$,  $x_{i2}$ and  $x_{i3}$ which are subsets of $x_i$. The baseline hazard functions are defined parametrically by Weibull hazards of the form $h_{0g}(t)=\alpha_g \kappa_g t^{\alpha_g-1}$, for $g\in\{1,2,3 \}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{i1}$; we will refer to the set of conditional hazard functions in  (\ref{1})-(\ref{Markov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
+\begin{eqnarray}
+h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2}-t_{i1})\exp\left(x_{i3}^\top\beta_3 \right),~0<t_{i1}<t_{i2}.\label{semiMarkov}
+\end{eqnarray} 
+We will refer to the set of conditional hazard functions in (\ref{1}), (\ref{2}) and (\ref{semiMarkov}) as the semi-Markov model.
+
+In the Bayesian framework, priors must be specified for the regression parameter, $\beta_g$, the shape and scale parameters of baseline hazard function, $\alpha_g$ and $\kappa_g$, and the frailty parameter, $\gamma_{ji}$, respectively, for $g\in\{1,2,3 \}$. The following specifications are made
+\begin{align*}
+\pi(\beta_g) & \propto 1,\\
+\alpha_g & \sim Gamma(a_g,b_g),\\
+\kappa_g & \sim Gamma(c_g,d_g),\\
+\gamma_{ji}|\theta & \sim Gamma(\theta^{-1},\theta^{-1}),\\
+\theta^{-1} & \sim Gamma(\psi, \omega).
+\end{align*}
+
+\noindent{\large\textbf{Hyperparameters}}\\
+\noindent\begin{tabular}{lcl}
+$a_g$, $b_g$ &: & shape and rate of Gamma prior for $\alpha_g$ for $g\in\{1,2,3 \}$\\
+$c_g$, $d_g$ &: & shape and rate of Gamma prior for $\kappa_g$ for $g\in\{1,2,3 \}$\\
+$\psi$ & : & the shape of Gamma prior for $\theta^{-1}$ \\
+$\omega$ & : & the rate of Gamma prior for $\theta^{-1}$\\[0.5cm]
+\end{tabular}
+
+
+\noindent{\large \textbf{Arguments to specify}}
+\vspace{-0.35cm}
+\noindent\begin{longtable}{p{.12in} p{1.20in} p{5.85in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 4)$-dimensional data.frame with columns $y_1$, $\delta_1$, $y_2$, $\delta_2$.\\
+& \texttt{model}& \verb|c("Markov","Weibull")| for Markov definition of $h_3$ in (\ref{Markov}); \verb|c("semi-Markov","Weibull")| for semi-Markov definition of $h_3$ in (\ref{semiMarkov}). \\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred} below. \\&\texttt{lin.pred} &  a list of three formula objects that correspond to $h_g$, for $g\in\{1,2,3\}$. Example: \verb|form1 <- as.formula(~ x1 + x2 + x3)|, \verb|form2 <- as.formula(~ x1)|, \verb|form3 <- as.formula(~ x1 + x4)|, \verb|lin.pred <- list(form1, form2, form3)|.\\
+[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{WB.ab1} & a 2-vector of positive hyperparameters $a_1$ and $b_1$ of the prior distribution for the shape parameter $\alpha_1$ of the Weibull baseline hazard. Example: \texttt{WB.ab1 <- c(0.5, 0.01)}.  \\
+&\texttt{WB.ab2} & a 2-vector of positive hyperparameters $a_2$ and $b_2$ of the prior for $\alpha_2$.\\
+&\texttt{WB.ab3} & a 2-vector of positive hyperparameters $a_3$ and $b_3$ of the prior for $\alpha_3$.\\
+&\texttt{WB.cd1} & a 2-vector of positive hyperparameters $c_1$ and $d_1$ of the prior distribution for the scale parameter $\kappa_1$ of the Weibull baseline hazard. Example: \texttt{WB.cd1 <- c(0.5, 0.05)}.   \\
+&\texttt{WB.cd2} & a 2-vector of positive hyperparameters $c_2$ and $d_2$ of the prior for $\kappa_2$.\\
+&\texttt{WB.cd3} & a 2-vector of positive hyperparameters $c_3$ and $d_3$ of the prior for $\kappa_3$.\\
+&\texttt{theta} & a 2-vector of positive hyperparameters $\psi$ and $\omega$ for the hyperprior $\theta$.\\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\.
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\verb|mhProp_theta_var| & the parameter $\theta$ is updated using a Metropolis-Hastings random walk step generating proposals from a Gamma distribution with variance \verb|mhProp_theta_var|.\\
+&\verb|mhProp_alphag_var| & a 3-vector which specifies the variances of the three random walk Metropolis-Hastings Gamma proposal distributions corresponding to $\alpha_1,~\alpha_2,~\alpha_3$.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_HReg(Y, lin.pred, data, model, beta1 = NULL, beta2 = NULL, beta3 = NULL, gamma.ji=NULL, theta = NULL, WB.alpha = NULL, WB.kappa = NULL)} which initiates starting values for $\beta_g$, $\gamma_{ji}$, $\theta$, $\alpha_g$, and $\kappa_g$ in the Metropolis-Hastings algorithm if left unspecified. Users may set non-null starting values for any of these parameters.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+&\verb|nGam_save| & the number of $\gamma$ to be stored. \\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(scrData)
+Y <- scrData[,c(1,2,3,4)]
+form1 <- as.formula( ~ x1 + x2 + x3)
+form2 <- as.formula( ~ x1 + x2)
+form3 <- as.formula( ~ x1 + x2)
+lin.pred <- list(form1, form2, form3)
+##
+WB.ab1 <- c(0.5, 0.01) 
+WB.ab2 <- c(0.5, 0.01) 
+WB.ab3 <- c(0.5, 0.01) 
+WB.cd1 <- c(0.5, 0.05)
+WB.cd2 <- c(0.5, 0.05)
+WB.cd3 <- c(0.5, 0.05)
+theta <- c(0.7, 0.7) # prior params for 1/theta
+hyperParams <- list(theta=theta,
+                WB=list(WB.ab1=WB.ab1, WB.ab2=WB.ab2, WB.ab3=WB.ab3,
+                       WB.cd1=WB.cd1, WB.cd2=WB.cd2, WB.cd3=WB.cd3))
+##
+numReps    <- 2000
+thin       <- 10
+burninPerc <- 0.25
+mhProp_theta_var  <- 0.05
+mhProp_alphag_var <- c(0.01, 0.01, 0.01)
+nGam_save <- 0
+mcmc.WB  <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+                    storage=list(nGam_save=nGam_save),
+                    tuning=list(mhProp_theta_var=mhProp_theta_var, mhProp_alphag_var=mhProp_alphag_var))
+##
+myModel <- c("semi-Markov", "Weibull")
+myPath  <- "Output/01-Results-WB/"
+startValues <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel) 
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, theta = 0.23) 
+##
+fit_WB <- BayesID_HRegY, lin.pred, scrData, cluster=NULL, model=myModel,
+                hyperParams, startValues, mcmc.WB, path=myPath)
+fit_WB
+summary(fit_WB)
+plot(fit_WB, tseq=seq(from=0, to=30, by=5))
+plot(fit_WB, tseq=seq(from=0, to=30, by=5), plot.est = "BH")
+\end{verbatim}
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 8
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large 8. \texttt{BayesID\_HReg} }to analyze independent semi-competing risks data using an illness-death model with PEM baseline hazards}
+\hrule
+
+\vspace{.25cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_{i1}$ and $t_{i2}$ denote the time to nonterminal event and terminal event from subject $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_{i1},y_{i2},\delta_{i1},\delta_{i2},x_{i})$ denote independent observations, where $y_{i1}=\min\left(t_{i1},t_{i2},c_i \right)$, $\delta_{i1}=\mathbbm{1}\left\{t_{i1}\le \min\left(t_{i2},c_i \right) \right\}$, $y_{i2}=\min\left(t_{i2},c_i \right)$, $\delta_{i2}=\mathbbm{1}\left\{t_{i2}\le c_i \right\}$, and $x_i$ is a vector of covariates for individual $i$. The independent semi-competing risks data are assumed to arise from an illness-death model system with transitions that are modeled through the following three hazard functions:
+\begin{eqnarray}
+h_1(t_{i1}|\gamma_{ji}, x_{i1}) & = \gamma_{ji} h_{01}(t_{i1})\exp\left(x_{i1}^\top\beta_1 \right),~t_{i1}>0,\label{1}\\
+h_2(t_{i2}|\gamma_{ji}, x_{i2}) & = \gamma_{ji} h_{02}(t_{i2})\exp\left(x_{i2}^\top\beta_2 \right),~t_{i2}>0,\label{2}\\
+h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2})\exp\left(x_{i3}^\top\beta_3 \right),~t_{i2}>0,\label{Markov}
+\end{eqnarray}
+where $\gamma_{ji}$ is a subject-specific frailty with vectors of covariates $x_{i1}$,  $x_{i2}$ and  $x_{i3}$ which are subsets of $x_i$. The baseline hazard $h_0$ is defined non-parametrically by a mixture of piecewise exponential functions as follows
+$$\lambda_0(t) = \log{h_0(t)} = \displaystyle\sum_{k=1}^{K+1} \lambda_k \mathbbm{1}\left\{t\in (s_{k-1},s_k]\right\},$$
+where $\lambda_k$ is constant and the time interval between 0 and the largest observed failure time, denoted $s_k$, is partitioned into $K+1$ disjoint intervals: $0<s_1<\dots < s_{K+1}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{i1}$; we will refer to the set of conditional hazard functions in  (\ref{1})-(\ref{Markov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
+\begin{eqnarray}
+h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2}-t_{i1})\exp\left(x_{i3}^\top\beta_3 \right),~0<t_{i1}<t_{i2}.\label{semiMarkov}
+\end{eqnarray} 
+We will refer to the set of conditional hazard functions in (\ref{1}), (\ref{2}) and (\ref{semiMarkov}) as the semi-Markov model.
+
+In the Bayesian framework, priors must be specified for the regression parameter, $\beta$, the number of intervals, $K$, the partition points $(s_1,\dots,s_{K+1})$, and the frailty, $\gamma_{ji}$,  respectively.
+The following specifications are made
+\begin{align*}
+\pi(\beta) & \propto 1,\\
+\lambda | K, \mu_\lambda, \sigma_\lambda^2 & \sim MVN_{K+1}(\mu_\lambda \mathbbm{1}, \sigma_\lambda^2 \Sigma_\lambda) \\
+K & \sim Poisson(\alpha),\\
+\pi(s|K) & \propto \displaystyle\frac{(2K+1)! \prod_{k=1}^{K+1} (s_k-s_{k-1})}{\left(s_{K+1} \right)^{(2K+1)}},\\
+\pi(\mu_\lambda) & \propto 1,\\
+\sigma_\lambda^{-2}& \sim Gamma(a,b),\\
+\gamma_{ji}|\theta & \sim Gamma(\theta^{-1},\theta^{-1}),\\
+\theta^{-1} & \sim Gamma(\psi, \omega).
+\end{align*}
+The prior specification for $\lambda$ follows a MVN-ICAR (see Supplemental Material to Lee, Haneuse, Schrag and Dominici, 2015). Note that $K$ and $s$ jointly form a time-homogeneous Poisson process prior for the partition.\\
+
+\noindent{\large\textbf{Hyperparameters}}\\
+\noindent\begin{tabular}{lcl}
+$\alpha$ &: & parameter corresponding to the Poisson prior of $K$\\
+$a$, $b$ &: & shape and rate of Gamma prior for $\sigma_\lambda^{-2}$\\
+$\psi$ & : & the shape of Gamma prior for $\theta^{-1}$ \\
+$\omega$ & : & the rate of Gamma prior for $\theta^{-1}$\\[0.5cm]
+\end{tabular}
+
+
+\noindent{\large \textbf{Arguments to specify}}
+\vspace{-0.35cm}
+\noindent\begin{longtable}{p{.12in} p{1.0in} p{6.05in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 4)$-dimensional data.frame with columns $y_1$, $\delta_1$, $y_2$, $\delta_2$.\\
+& \texttt{model}& \verb|c("Markov","PEM")| for Markov definition of $h_3$ in (\ref{Markov}); \verb|c("semi-Markov","PEM")| for semi-Markov definition of $h_3$ in (\ref{semiMarkov}). \\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred} below. \\&\texttt{lin.pred} &  a list of three formula objects that correspond to $h_g$, for $g\in\{1,2,3\}$. Example: \verb|form1 <- as.formula(~ x1 + x2 + x3)|, \verb|form2 <- as.formula(~ x1)|, \verb|form3 <- as.formula(~ x1 + x4)|, \verb|lin.pred <- list(form1, form2, form3)|.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{PEM.ab1} & a 2-vector of positive hyperparameters $a_1$ and $b_1$ which represent the shape and rate of the Gamma prior for $\sigma_{\lambda,1}^{-2}$. Example: \texttt{PEM.ab1 <- c(0.7,0.7)}.   \\
+&\texttt{PEM.ab2} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for $\sigma_{\lambda,2}^{-2}$.   \\
+&\texttt{PEM.ab3} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for $\sigma_{\lambda,3}^{-2}$.    \\
+&\texttt{PEM.alpha1} & hyperparameter $\alpha$ of the prior distribution for $K_1$, which is one less than the number of partition points.\\
+&\texttt{PEM.alpha2} & hyperparameter $\alpha$ of the prior distribution for $K_2$, which is one less than the number of partition points.\\
+&\texttt{PEM.alpha3} & hyperparameter $\alpha$ of the prior distribution for $K_3$, which is one less than the number of partition points.    \\
+&\texttt{theta} & a 2-vector of positive hyperparameters $\psi$ and $\omega$ for the hyperprior $\theta$.\\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\verb|mhProp_theta_var| & the parameter $\theta$ is updated using a Metropolis-Hastings random walk step generating proposals from a Gamma distribution with variance \verb|mhProp_theta_var|.\\
+&\texttt{Cg} &  a 3-vector for the proportion that determines the sum of probabilities choosing the birth and death moves for each of the baseline hazards, $h_{0g}$, for $g\in\{1,2,3\}$.\footnote{See Section A in Supplemental Material to Lee et al. (2015)}\\
+&\texttt{delPertg} &  a 3-vector for the perturbation parameter in the birth updates for all three baseline hazard functions; values must be between 0 and 0.5.\footnotemark[\value{footnote}]\\
+&\texttt{rj.scheme} &   \texttt{rj.scheme=1}: the birth update will draw the proposal time split from $1:s_{max}$; \texttt{rj.scheme=2}: the birth update will draw the proposal time split from uniquely ordered failure times in the data. \\
+&\verb|Kg_max| &  a 3-vector for the number of splits allowed in each iteration of the Metropolis-Hastings-Green algorithm for the three baseline hazard functions.\\
+&\verb|sg_max| &  the largest observed failure time, given by \verb|sg_max <- c( max(Y$time1[Y$event1==1]), |\\
+ & &                                    \verb|                max(Y$time2[Y$event1==0 & Y$event2==1]), | \\
+       & & \verb|               max(Y$time2[Y$event1==1] & Y$event2==1]))|\\
+&\verb|time_lambda1| & time points at which the $\lambda_1$ is monitored for convergence. Example: \verb|time_lambda1 <- seq(1, sg_max[1], 1)|. The chains for these monitoring points can be found in \texttt{lambda.fin} in the chains of the \texttt{BayesID} object.\\
+&\verb|time_lambda2| & time points at which the $\lambda_2$ is monitored for convergence. Example: \verb|time_lambda2 <- seq(1, sg_max[2], 1)|. \\
+&\verb|time_lambda3| & time points at which the $\lambda_3$ is monitored for convergence. Example: \verb|time_lambda3 <- seq(1, sg_max[3], 1)|. \\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_HReg(Y, lin.pred, data, model)} which initiates all necessary starting values. Users may set non-null starting values for any of the following: \verb|beta1, beta2, beta3, gamma.ji, theta|. \\[.12cm]
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+&\verb|nGam_save| & the number of $\gamma$ to be stored. \\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(scrData)
+Y <- scrData[,c(1,2,3,4)]
+form1 <- as.formula( ~ x1 + x2 + x3)
+form2 <- as.formula( ~ x1 + x2)
+form3 <- as.formula( ~ x1 + x2)
+lin.pred <- list(form1, form2, form3)
+##
+theta <- c(0.7, 0.7)
+PEM.ab1 <- c(0.7, 0.7) # prior parameters for 1/sigma_1^2
+PEM.ab2 <- c(0.7, 0.7) # prior parameters for 1/sigma_2^2
+PEM.ab3 <- c(0.7, 0.7) # prior parameters for 1/sigma_3^2
+PEM.alpha1 <- 10 # prior parameters for K1
+PEM.alpha2 <- 10 # prior parameters for K2
+PEM.alpha3 <- 10 # prior parameters for K3
+hyperParams <- list(theta=theta,
+  		        PEM=list(PEM.ab1=PEM.ab1, PEM.ab2=PEM.ab2, PEM.ab3=PEM.ab3, 
+  		                 PEM.alpha1=PEM.alpha1, PEM.alpha2=PEM.alpha2, PEM.alpha3=PEM.alpha3))
+##
+numReps    <- 2000
+thin       <- 10
+burninPerc <- 0.25
+mhProp_theta_var  <- 0.05
+Cg        <- c(0.2, 0.2, 0.2)
+delPertg  <- c(0.5, 0.5, 0.5)
+rj.scheme <- 1
+Kg_max    <- c(50, 50, 50)
+sg_max    <- c(max(Y$time1[Y$event1 == 1]),
+               max(Y$time2[Y$event1 == 0 & Y$event2 == 1]),
+               max(Y$time2[Y$event1 == 1 & Y$event2 == 1]))
+time_lambda1 <- seq(1, sg_max[1], 1)
+time_lambda2 <- seq(1, sg_max[2], 1)
+time_lambda3 <- seq(1, sg_max[3], 1)
+nGam_save <- 0
+mcmc.PEM <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+                 storage=list(nGam_save=nGam_save),
+                 tuning=list(mhProp_theta_var=mhProp_theta_var,
+                             Cg=Cg, delPertg=delPertg,
+                             rj.scheme=rj.scheme, Kg_max=Kg_max, sg_max=sg_max,
+                             time_lambda1=time_lambda1, time_lambda2=time_lambda2,
+                             time_lambda3=time_lambda3))
+##
+myModel <- c("semi-Markov", "PEM")
+myPath  <- "Output/02-Results-PEM/"
+startValues <- vector("list", 2) 
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, theta = 0.23) 
+##
+fit_PEM <- BayesID_HReg(Y, lin.pred, scrData, cluster=NULL, model=myModel,
+                 hyperParams, startValues, mcmc.PEM, path=myPath)
+fit_PEM
+summ.fit_PEM <- summary(fit_PEM); names(summ.fit_PEM)
+summ.fit_PEM
+plot(fit_PEM)
+plot(fit_PEM, plot.est = "BH")
+names(fit_PEM.plot <- plot(fit_PEM, plot=FALSE))
+\end{verbatim}
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 9
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large 9. \texttt{BayesID\_AFT} }to analyze independent semi-competing risks data using an illness-death model with log-Normal baseline survival distribution}
+\hrule
+
+\vspace{.25cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_{i1}$, $t_{i2}$ denote time to non-terminal and terminal event from subject $i=1,...,n$. The independent semi-competing risks data are assumed to arise from an illness-death model system with transitions that are modeled through the following three hazard functions:
+\begin{eqnarray}
+	\log(t_{i1}) &=& x_{i1}^\top\beta_1 + \gamma_i + \epsilon_{i1},  ~~ t_{i1} > 0, \nonumber\\ 
+	\log(t_{i2}) &=& x_{i2}^\top\beta_2 + \gamma_i + \epsilon_{i2},  ~~ t_{i2} > 0, \nonumber\\ 
+	\log(t_{i2} - t_{i1}) &=& x_{i3}^\top\beta_3 + \gamma_i + \epsilon_{i3},  ~~ t_{i2} >  t_{i1}, \nonumber
+\end{eqnarray}
+where $\gamma_i$ is a study participant-specific random effect, $x_{ig}$ is a vector of transition-specific covariates, $\beta_g$ is a corresponding vector of transition-specific regression parameters, and $\epsilon_{ig}$ is a transition-specific random variable whose distribution determines that of the corresponding transition time, $g \in \{1,2,3\}$. In the presence of interval censoring, the times-to-event for the $i^{\textrm{th}}$ subject satisfy $c_{ij}\leq t_{i1} <c_{ij+1}$ for some $j$ and $c_{ik}\leq t_{i2} <c_{ik+1}$ for some $k$. Let $\{c_{ij}, c_{ij+1},c_{ik}, c_{ik+1}, L_i, x_{i1}, x_{i2}, x_{i3}\}$ denote independent observations, where $L_i$ is the left-truncation time.
+
+For the parametric AFT illness-death model, we build on the log-Normal formulation and take the $\epsilon_{ig}$ to follow independent Normal($\mu_g$, $\sigma_g^2$) distributions, $g$=1,2,3. In the Bayesian framework, priors must be specified for the unknown parameters. The following specifications are made
+\begin{align*}
+\pi(\beta_g, \mu_g) & \propto 1,\\
+\sigma_g^2& \sim inverse-Gamma(a_{\sigma_g},b_{\sigma_g}),\\
+\gamma_{i}|\theta & \sim Normal(0,\theta),\\
+\theta^{-1} & \sim inverse-Gamma(a_{\theta},b_{\theta}).
+\end{align*}
+
+\noindent{\large\textbf{Hyperparameters}}\\
+The hyperparameters $a_{\sigma_g}$ and $b_{\sigma_g}$ must be specified for the prior of $\sigma_g^2$, as well as $a_{\theta}$ and $b_{\theta}$, the rate and shape of the inverse-Gamma distributed hyperprior for $\theta$.\\
+
+
+\noindent{\large \textbf{Arguments to specify}}
+\vspace{-0.35cm}
+\noindent\begin{longtable}{p{.12in} p{1.0in} p{6.05in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 5)$-dimensional data.frame with columns $c_{ij}, c_{ij+1},c_{ik}, c_{ik+1}, L_i$.\\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred} below. \\&\texttt{lin.pred} &  a list of three formula objects that correspond to $h_g$, for $g\in\{1,2,3\}$. \\
+&&Example: \verb|form1 <- as.formula(~ x1 + x2 + x3)|, \verb|form2 <- as.formula(~ x1)|, \verb|form3 <- as.formula(~ x1 + x4)|, \verb|lin.pred <- list(form1, form2, form3)|.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{theta} & a 2-vector of positive hyperparameters $a_{\theta}$ and $b_{\theta}$ for the hyperprior $\theta$.\\
+&\texttt{LN.ab1} & a 2-vector of positive hyperparameters $a_{\sigma_1}$ and $b_{\sigma_1}$ which represent the shape and rate of the inverse-Gamma prior for $\sigma_{1}^{2}$. Example: \texttt{LN..ab1 <- c(0.3,0.3)}.   \\
+&\texttt{LN.ab2} & a 2-vector of positive hyperparameters $a_{\sigma_2}$ and $b_{\sigma_2}$ which represent the shape and rate of the inverse-Gamma prior for $\sigma_{2}^{2}$. Example: \texttt{LN..ab2 <- c(0.3,0.3)}.   \\
+&\texttt{LN.ab3} & a 2-vector of positive hyperparameters $a_{\sigma_3}$ and $b_{\sigma_3}$ which represent the shape and rate of the inverse-Gamma prior for $\sigma_{3}^{2}$. Example: \texttt{LN..ab3 <- c(0.3,0.3)}.   \\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\texttt{betag.prop.var} &  the parameter $\beta_g$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|betag.prop.var|.\\
+&\texttt{gamma.prop.var} &  the parameter $\gamma$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|gamma.prop.var|.\\
+&\texttt{mug.prop.var} &  the parameter $\mu_g$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|mug.prop.var|.\\
+&\texttt{zetag.prop.var} &  the parameter $\zeta_g=1/\sigma_g^2$ is updated using a Metropolis-Hastings random walk step generating proposals from a log-Normal distribution with variance \verb|zetag.prop.var|.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_AFT(Y, lin.pred, data, model)} which initiates all necessary starting values. Users may set non-null starting values for any of the following: \verb|beta1, beta2, beta3, gamma, theta, y1, y2, LN.mu, LN.sigSq|. \\[.12cm] 
+\multicolumn{3}{l}{\textbf{Storage}}\\
+&\texttt{nGam\_save} & the number of $\gamma$ to be stored\\
+&\texttt{nY1\_save} & the number of $\log(t_{1})$ to be stored\\
+&\texttt{nY2\_save} & the number of $\log(t_{2})$ to be stored\\
+&\texttt{nY1.NA\_save} & the number of $\mathbbm{1}\left\{t_1 > t_2\right\}$ to be stored\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(scrData)
+Y <- matrix(NA, dim(scrData)[1], 5)
+Y[,1] <- Y[,2] <- scrData[,1]
+Y[,3] <- Y[,4] <- scrData[,3]
+Y[which(scrData[,2] == 0),2] <- Inf
+Y[which(scrData[,4] == 0),4] <- Inf
+Y[,5] <- rep(0, dim(scrData)[1])
+form1 <- as.formula( ~ x1 + x2 + x3)
+form2 <- as.formula( ~ x1 + x2)
+form3 <- as.formula( ~ x1 + x2)
+lin.pred <- list(form1, form2, form3)
+##
+theta.ab <- c(0.5, 0.05)
+LN.ab1 <- c(0.3, 0.3)
+LN.ab2 <- c(0.3, 0.3)
+LN.ab3 <- c(0.3, 0.3)
+hyperParams <- list(theta=theta.ab,
+				LN=list(LN.ab1=LN.ab1, LN.ab2=LN.ab2, LN.ab3=LN.ab3))
+##
+numReps    <- 300
+thin       <- 3
+burninPerc <- 0.5
+nGam_save <- 10
+nY1_save <- 10
+nY2_save <- 10
+nY1.NA_save <- 10
+betag.prop.var	<- c(0.01,0.01,0.01)
+mug.prop.var	<- c(0.1,0.1,0.1)
+zetag.prop.var	<- c(0.1,0.1,0.1)
+gamma.prop.var	<- 0.01
+mcmcParams	<- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+				storage=list(nGam_save=nGam_save, nY1_save=nY1_save, nY2_save=nY2_save, nY1.NA_save=nY1.NA_save),
+				tuning=list(betag.prop.var=betag.prop.var, mug.prop.var=mug.prop.var,zetag.prop.var=zetag.prop.var, 
+						gamma.prop.var=gamma.prop.var))
+##
+myModel <- "LN"
+myPath  <- "Output/01-Results-LN/"
+startValues      <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_AFT(Y, lin.pred, scrData, model=myModel)
+startValues[[2]] <- initiate.startValues_AFT(Y, lin.pred, scrData, model=myModel, theta = 0.20)
+##
+fit_LN <- BayesID_AFT(Y, lin.pred, scrData, model=myModel, hyperParams,
+					startValues, mcmcParams, path=myPath)
+summary(fit_LN)
+plot(fit_LN, time = seq(0, 35, 1), tseq=seq(from=0, to=30, by=5))
+plot(fit_LN, time = seq(0, 35, 1), tseq=seq(from=0, to=30, by=5), plot.est = "BH")
+\end{verbatim}
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 10
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large 10. \texttt{BayesID\_AFT} }to analyze independent semi-competing risks data using an illness-death model with DPM baseline survival distribution}
+\hrule
+
+\vspace{.25cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_{i1}$, $t_{i2}$ denote time to non-terminal and terminal event from subject $i=1,...,n$. The independent semi-competing risks data are assumed to arise from an illness-death model system with transitions that are modeled through the following three hazard functions:
+\begin{eqnarray}
+	\log(t_{i1}) &=& x_{i1}^\top\beta_1 + \gamma_i + \epsilon_{i1},  ~~ t_{i1} > 0, \nonumber\\ 
+	\log(t_{i2}) &=& x_{i2}^\top\beta_2 + \gamma_i + \epsilon_{i2},  ~~ t_{i2} > 0, \nonumber\\ 
+	\log(t_{i2} - t_{i1}) &=& x_{i3}^\top\beta_3 + \gamma_i + \epsilon_{i3},  ~~ t_{i2} >  t_{i1}, \nonumber
+\end{eqnarray}
+where $\gamma_i$ is a study participant-specific random effect, $x_{ig}$ is a vector of transition-specific covariates, $\beta_g$ is a corresponding vector of transition-specific regression parameters, and $\epsilon_{ig}$ is a transition-specific random variable whose distribution determines that of the corresponding transition time, $g \in \{1,2,3\}$. In the presence of interval censoring, the times-to-event for the $i^{\textrm{th}}$ subject satisfy $c_{ij}\leq t_{i1} <c_{ij+1}$ for some $j$ and $c_{ik}\leq t_{i2} <c_{ik+1}$ for some $k$. Let $\{c_{ij}, c_{ij+1},c_{ik}, c_{ik+1}, L_i, x_{i1}, x_{i2}, x_{i3}\}$ denote independent observations, where $L_i$ is the left-truncation time.
+
+For our semi-parametric AFT illness-death model, $\epsilon_{ig}$ is assumed to be taken as draws from the independent DPM of normal distributions:
+\begin{align*}
+	\epsilon_{ig} | r_{i} &\sim Normal(\mu_{r_{i}}, \sigma_{r_{i}}^2), \nonumber \\
+	(\mu_{gr}, \sigma_{gr}^2) &\sim G_{g0}, \textrm{ for } r=1,\ldots,M_g, \nonumber \\
+	r_{i}|p_g &\sim Discrete(r_{i} | p_{g1},\ldots,p_{gM_g}), \nonumber \\
+	p_g &\sim Dirichlet(\tau_g/M_g, \ldots, \tau_g/M_g). \nonumber
+\end{align*}
+In the Bayesian framework, priors must be specified for the unknown parameters. We take the $G_{g0}$ as a normal distribution centered at $\mu_{g0}$ with a variance $\sigma_{g0}^2$ for $\mu_{gr}$ and an IG($a_{\sigma_g}$, $b_{\sigma_g}$) for $\sigma_{gr}^2$. For regression parameters $\{\beta_1, \beta_2, \beta_3\}$, we adopt non-informative flat priors on the real line. For $\gamma$, we assume that each $\gamma_i$ is an independent random draw from a Normal(0, $\theta$) distribution. In the absence of prior knowledge on the variance component $\theta$, we adopt a conjugate inverse-Gamma hyperprior, IG($a_\theta$, $b_\theta$). Finally, we specify a Gamma($a_{\tau_g}$, $b_{\tau_g}$) hyperprior for the precision parameter $\tau_g$.\\
+
+\noindent{\large\textbf{Hyperparameters}}\\
+\noindent\begin{tabular}{lcl}
+$a_\theta$, $b_\theta$ & : & the shape and rate of inverse-Gamma prior for $\theta$ \\
+$\mu_{g0}$, $\sigma_{g0}^2$, $a_{\sigma_g}$, $b_{\sigma_g}$&: & hyperparameters for $G_{g0}$\\
+$a_{\tau_g}$, $b_{\tau_g}$ & : & shape and rate of Gamma hyperprior for $\tau_g$\\[0.5cm]
+\end{tabular}
+
+
+\noindent{\large \textbf{Arguments to specify}}
+\vspace{-0.35cm}
+\noindent\begin{longtable}{p{.12in} p{1.0in} p{6.05in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 5)$-dimensional data.frame with columns $c_{ij}, c_{ij+1},c_{ik}, c_{ik+1}, L_i$.\\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred} below. \\&\texttt{lin.pred} &  a list of three formula objects that correspond to $h_g$, for $g\in\{1,2,3\}$. \\
+&&Example: \verb|form1 <- as.formula(~ x1 + x2 + x3)|, \verb|form2 <- as.formula(~ x1)|, \verb|form3 <- as.formula(~ x1 + x4)|, \verb|lin.pred <- list(form1, form2, form3)|.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{theta} & a 2-vector of positive hyperparameters $a_{\theta}$ and $b_{\theta}$ for the hyperprior $\theta$.\\
+&\texttt{DPM.mu1} & a hyperparameter $\mu_{10}$ \\
+&\texttt{DPM.mu2} & a hyperparameter $\mu_{20}$ \\
+&\texttt{DPM.mu3} & a hyperparameter $\mu_{30}$ \\
+&\texttt{DPM.sigSq1} & a hyperparameter $\sigma_{10}^2$ \\
+&\texttt{DPM.sigSq2} & a hyperparameter $\sigma_{20}^2$ \\
+&\texttt{DPM.sigSq3} & a hyperparameter $\sigma_{30}^2$ \\
+&\texttt{DPM.ab1} & a 2-vector of positive hyperparameters $a_{\sigma_1}$, $b_{\sigma_1}$  \\
+&\texttt{DPM.ab2} & a 2-vector of positive hyperparameters $a_{\sigma_2}$, $b_{\sigma_2}$  \\
+&\texttt{DPM.ab3} & a 2-vector of positive hyperparameters $a_{\sigma_3}$, $b_{\sigma_3}$  \\
+&\texttt{Tau.ab1} & a 2-vector of positive hyperparameters $a_{\tau_1}$, $b_{\tau_1}$\\
+&\texttt{Tau.ab2} & a 2-vector of positive hyperparameters $a_{\tau_2}$, $b_{\tau_2}$\\
+&\texttt{Tau.ab3} & a 2-vector of positive hyperparameters $a_{\tau_3}$, $b_{\tau_3}$ \\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\texttt{betag.prop.var} &  the parameter $\beta_g$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|betag.prop.var|.\\
+&\texttt{gamma.prop.var} &  the parameter $\gamma$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|gamma.prop.var|.\\
+&\texttt{mug.prop.var} &  the parameter $\mu_{gr}$ is updated using a Metropolis-Hastings random walk step generating proposals from a Normal distribution with variance \verb|mug.prop.var|.\\
+&\texttt{zetag.prop.var} &  the parameter $\zeta_{gr}=1/\sigma_{gr}^2$ is updated using a Metropolis-Hastings random walk step generating proposals from a log-Normal distribution with variance \verb|zetag.prop.var|.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_AFT(Y, lin.pred, data, model)} which initiates all necessary starting values. Users may set non-null starting values for any of the following: \\
+&& \verb|beta1, beta2, beta3, gamma, theta, y1, y2, DPM.class1, DPM.class2, DPM.class3, DPM.mu1, DPM.mu2, DPM.mu3|, \verb|DPM.zeta1, DPM.zeta2, DPM.zeta3, DPM.tau|. \\[.12cm] 
+\multicolumn{3}{l}{\textbf{Storage}}\\
+&\texttt{nGam\_save} & the number of $\gamma$ to be stored\\
+&\texttt{nY1\_save} & the number of $\log(t_{1})$ to be stored\\
+&\texttt{nY2\_save} & the number of $\log(t_{2})$ to be stored\\
+&\texttt{nY1.NA\_save} & the number of $\mathbbm{1}\left\{t_1 > t_2\right\}$ to be stored\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+
+                            
+
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(scrData)
+Y <- matrix(NA, dim(scrData)[1], 5)
+Y[,1] <- Y[,2] <- scrData[,1]
+Y[,3] <- Y[,4] <- scrData[,3]
+Y[which(scrData[,2] == 0),2] <- Inf
+Y[which(scrData[,4] == 0),4] <- Inf
+Y[,5] <- rep(0, dim(scrData)[1])
+form1 <- as.formula( ~ x1 + x2 + x3)
+form2 <- as.formula( ~ x1 + x2)
+form3 <- as.formula( ~ x1 + x2)
+lin.pred <- list(form1, form2, form3)
+##
+theta.ab <- c(0.5, 0.05)
+##
+DPM.mu1 <- log(12)
+DPM.mu2 <- log(12)
+DPM.mu3 <- log(12)
+DPM.sigSq1 <- 100
+DPM.sigSq2 <- 100
+DPM.sigSq3 <- 100
+DPM.ab1 <-  c(2, 1)
+DPM.ab2 <-  c(2, 1)
+DPM.ab3 <-  c(2, 1)
+Tau.ab1 <- c(1.5, 0.0125)
+Tau.ab2 <- c(1.5, 0.0125)
+Tau.ab3 <- c(1.5, 0.0125)
+hyperParams <- list(theta=theta.ab,
+				DPM=list(DPM.mu1=DPM.mu1, DPM.mu2=DPM.mu2, DPM.mu3=DPM.mu3, DPM.sigSq1=DPM.sigSq1,
+						DPM.sigSq2=DPM.sigSq2, DPM.sigSq3=DPM.sigSq3, DPM.ab1=DPM.ab1, DPM.ab2=DPM.ab2,
+						DPM.ab3=DPM.ab3, Tau.ab1=Tau.ab1, Tau.ab2=Tau.ab2, Tau.ab3=Tau.ab3))
+##
+numReps    <- 300
+thin       <- 3
+burninPerc <- 0.5
+nGam_save <- 10
+nY1_save <- 10
+nY2_save <- 10
+nY1.NA_save <- 10
+betag.prop.var	<- c(0.01,0.01,0.01)
+mug.prop.var	<- c(0.1,0.1,0.1)
+zetag.prop.var	<- c(0.1,0.1,0.1)
+gamma.prop.var <- 0.01
+mcmcParams	<- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+				storage=list(nGam_save=nGam_save, nY1_save=nY1_save, nY2_save=nY2_save, nY1.NA_save=nY1.NA_save),
+				tuning=list(betag.prop.var=betag.prop.var, mug.prop.var=mug.prop.var,
+						zetag.prop.var=zetag.prop.var, gamma.prop.var=gamma.prop.var))
+##
+myModel <- "DPM"
+myPath  <- "Output/02-Results-DPM/"
+startValues      <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_AFT(Y, lin.pred, scrData, model=myModel)
+startValues[[2]] <- initiate.startValues_AFT(Y, lin.pred, scrData, model=myModel, theta = 0.23)
+##
+fit_DPM <- BayesID_AFT(Y, lin.pred, scrData, model=myModel, hyperParams,
+					startValues, mcmcParams, path=myPath)
+summary(fit_DPM);
+plot(fit_DPM, time = seq(0, 35, 1),  tseq=seq(from=0, to=30, by=5))
+plot(fit_DPM, time = seq(0, 35, 1),  tseq=seq(from=0, to=30, by=5), plot.est = "BH")
+\end{verbatim}
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 11
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large 11. \texttt{BayesID\_HReg} }to analyze cluster-correlated semi-competing risks data using an illness-death model with Weibull baseline hazards}\hrule
+
+\vspace{.25cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_{ji1}$ and $t_{ji2}$ denote the time to nonterminal event and terminal event from subject $i=1,\dots,n_j$ in cluster $j=1,\dots, J$, subject to right censoring at time $c_{ji}$. Let $(y_{ji1},y_{ji2},\delta_{ji1},\delta_{ji2},x_{ji})$ denote independent observations, where $y_{ji1}=\min\left(t_{ji1},t_{ji2},c_{ji} \right)$, $\delta_{ji1}=\mathbbm{1}\left\{t_{ji1}\le \min\left(t_{ji2},c_{ji} \right) \right\}$, $y_{ji2}=\min\left(t_{ji2},c_{ji} \right)$, $\delta_{ji2}=\mathbbm{1}\left\{t_{ji2}\le c_{ji} \right\}$, and $x_{ji}$ is a vector of covariates for individual $i$. The independent semi-competing risks data are assumed to arise from an illness-death model system with transitions that are modeled through the following three hazard functions:
+\begin{eqnarray}
+h_1(t_{ji1}|\gamma_{ji}, x_{ji1}, V_{j1}) & = \gamma_{ji} h_{01}(t_{ji1})\exp\left(x_{ji1}^\top\beta_1 +  V_{j1}\right),~t_{ji1}>0,\label{1}\\
+h_2(t_{ji2}|\gamma_{ji}, x_{ji2}, V_{j2}) & = \gamma_{ji} h_{02}(t_{ji2})\exp\left(x_{ji2}^\top\beta_2 +  V_{j2} \right),~t_{ji2}>0,\label{2}\\
+h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2})\exp\left(x_{ji3}^\top\beta_3 +  V_{j3}\right),~t_{ji2}>0,\label{Markov}
+\end{eqnarray}
+where $\gamma_{ji}$ is a subject-specific frailty, $V_j=(V_{j1}, V_{j2}, V_{j3})$ is a vector of cluster-specific random effects, and$x_{ji1}$,  $x_{ji2}$ and  $x_{ji3}$ which are subsets of $x_i$ are vectors of covariates. The baseline hazard functions are defined parametrically by Weibull hazards of the form $h_{0g}(t)=\alpha_g \kappa_g t^{\alpha_g-1}$, for $g\in\{1,2,3 \}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{ji1}$; we will refer to the set of conditional hazard functions in  (\ref{1})-(\ref{Markov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
+\begin{eqnarray}
+h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2}-t_{ji1})\exp\left(x_{ji3}^\top\beta_3 +  V_{j3}\right),~0<t_{ji1}<t_{ji2}.\label{semiMarkov}
+\end{eqnarray} 
+We will refer to the set of conditional hazard functions in (\ref{1}), (\ref{2}) and (\ref{semiMarkov}) as the semi-Markov model.
+
+In the Bayesian framework, priors must be specified for the regression parameter, $\beta_g$, the shape and scale parameters of baseline hazard function, $\alpha_g$ and $\kappa_g$, and the frailty parameter, $\gamma_{ji}$, respectively, for $g\in\{1,2,3 \}$. The following specifications are made
+\begin{align*}
+\pi(\beta_g) & \propto 1,\\
+\alpha_g & \sim Gamma(a_g,b_g),\\
+\kappa_g & \sim Gamma(c_g,d_g),\\
+\gamma_{ji}|\theta & \sim Gamma(\theta^{-1},\theta^{-1}),\\
+\theta^{-1} & \sim Gamma(\psi, \omega).
+\end{align*}
+
+We provide two possible prior specifications for the cluster-specific random effects below. $$\begin{array}{rcl c rcl}
+%\multicolumn{3}{c}{\text{Normal prior}} &~~~~~~~~~~~~~~~~~~~~ &  \multicolumn{3}{c}{\text{Dirichlet process mixture (DPM) prior}}\\
+V_j&\sim&MVN(0,\Sigma_V), &~~~~~~~~~~~~~~~~~~~~ &  V_j|m_j&\sim & MVN(\mu_{m_j},\Sigma_{m_j}),\\
+\Sigma_V &\sim&Inverse-Wishart(\Psi_v,\rho_v). & &  (\mu_m,\Sigma_m)&\sim & G_0,~~\text{for}~~m=1,\dots M,\\
+& & & & m_j|p &\sim & Discrete(m_j|p_1,\dots,p_M), \\
+& & & & p &\sim & Dirichlet({\tau}/{M},\dots, {\tau}/{M}), \\
+& & & & \tau &\sim & Gamma(a_\tau,b_\tau). 
+\end{array}$$
+In the first column, the individual specific-random effects are assumed to be $\overset{iid}{\sim} MVN(0,\Sigma_V)$. In the second column, the cluster-specific random effects are drawn from a mixture of $M$ multivariate normal distributions each with mean vector and covariance matrix $(\mu_m,\Sigma_m)$ which are distributed as a multivariate Normal/Inverse-Wishart (NIW), denoted by $G_0$; we refer to this as the Dirichlet process mixture (DPM) prior.
+ The probability density of $G_0$ is defined by the product 
+$$f_{\text{NIW}}(\mu,\Sigma|\Psi_0,\rho_0) = f_{\text{MVN}}(\mu|0,\Sigma) \times f_{\text{Inv-Wish}}(\Sigma|\Psi_0,\rho_0).$$  \\
+
+
+\noindent{\large\textbf{Hyperparameters}}\\
+\noindent\begin{tabular}{lcl}
+$a_g$, $b_g$ &: & shape and rate of Gamma prior for $\alpha_g$ for $g\in\{1,2,3 \}$\\
+$c_g$, $d_g$ &: & shape and rate of Gamma prior for $\kappa_g$ for $g\in\{1,2,3 \}$\\
+$\psi$ & : & the shape of Gamma prior for $\theta^{-1}$ \\
+$\omega$ & : & the rate of Gamma prior for $\theta^{-1}$\\
+$\Psi_0$, $\rho_0$ &: & shape and scale of Inverse-Wishart component of the prior distribution, $G_0$, of $(\mu_m,\Sigma_m)$ (DPM prior)\\
+$a_\tau$,  $b_\tau$ & : & shape and rate of Gamma hyperprior for $\tau$ (DPM prior)\\[0.5cm]
+\end{tabular}
+
+
+\noindent{\large \textbf{Arguments to specify}}
+\vspace{-0.35cm}
+\noindent\begin{longtable}{p{.12in} p{1.20in} p{5.85in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 4)$-dimensional data.frame with columns $y_1$, $\delta_1$, $y_2$, $\delta_2$.\\
+& \texttt{model}& \verb|c("Markov","Weibull")| for Markov definition of $h_3$ in (\ref{Markov}); \verb|c("semi-Markov","Weibull")| for semi-Markov definition of $h_3$ in (\ref{semiMarkov}). \\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred} below. \\&\texttt{lin.pred} &  a list of three formula objects that correspond to $h_g$, for $g\in\{1,2,3\}$. Example: \verb|form1 <- as.formula(~ x1 + x2 + x3)|, \verb|form2 <- as.formula(~ x1)|, \verb|form3 <- as.formula(~ x1 + x4)|, \verb|lin.pred <- list(form1, form2, form3)|.\\
+&\texttt{cluster}& an $n$-vector of cluster information where cluster membership corresponds to one of the positive integers $1,\dots, J$. \\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{WB.ab1} & a 2-vector of positive hyperparameters $a_1$ and $b_1$ of the prior distribution for the shape parameter $\alpha_1$ of the Weibull baseline hazard. Example: \texttt{WB.ab1 <- c(0.5, 0.01)}.  \\
+&\texttt{WB.ab2} & a 2-vector of positive hyperparameters $a_2$ and $b_2$ of the prior for $\alpha_2$.\\
+&\texttt{WB.ab3} & a 2-vector of positive hyperparameters $a_3$ and $b_3$ of the prior for $\alpha_3$.\\
+&\texttt{WB.cd1} & a 2-vector of positive hyperparameters $c_1$ and $d_1$ of the prior distribution for the scale parameter $\kappa_1$ of the Weibull baseline hazard. Example: \texttt{WB.cd1 <- c(0.5, 0.05)}.   \\*
+&\texttt{WB.cd2} & a 2-vector of positive hyperparameters $c_2$ and $d_2$ of the prior for $\kappa_2$.\\*
+&\texttt{WB.cd3} & a 2-vector of positive hyperparameters $c_3$ and $d_3$ of the prior for $\kappa_3$.\\*
+&\texttt{theta} & a 2-vector of positive hyperparameters $\psi$ and $\omega$ for the hyperprior $\theta$.\\*
+\multicolumn{2}{l}{\hspace{0.35cm}\textbf{MVN prior for $V_{ji}$} }& \\*
+&\verb|Psi_v| & a positive-definite scale matrix of the Inverse-Wishart prior for the cluster random effects, $V_{ji}$ . Example: \verb|Psi_v <- diag(1,3)|. \\
+&\verb|rho_v| & the degrees of freedom of the Inverse-Wishart prior for $V_{ji}$. Example: \verb|rho_v <- 100|. \\
+\multicolumn{2}{l}{\hspace{0.35cm}\textbf{DPM prior for $V_{ji}$} }& \\
+&\texttt{Psi0} & a positive-definite scale matrix of the Inverse-Wishart component of $G_0$. Example: \verb|Psi0 <- diag(1,3)|. \\
+&\texttt{rho0} &  the degrees of freedom of the Inverse-Wishart component of $G_0$. Example: \verb|rho0 <- 10|. \\
+&\texttt{aTau} & a positive-valued hyperparameter corresponding to the shape parameter, $a_\tau$, of the Gamma prior of $\tau$.\\
+&\texttt{bTau} &  a positive-valued hyperparameter corresponding to the rate parameter, $b_\tau$, of the Gamma prior of $\tau$.\\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\.
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\verb|mhProp_theta_var| & the parameter $\theta$ is updated using a Metropolis-Hastings random walk step generating proposals from a Gamma distribution with variance \verb|mhProp_theta_var|.\\
+&\verb|mhProp_alphag_var| & a 3-vector which specifies the variances of the three random walk Metropolis-Hastings Gamma proposal distributions corresponding to $\alpha_1,~\alpha_2,~\alpha_3$.  \\
+&\verb|mhProp_Vg_var| & a 3-vector which specifies the variances of the three random walk Metropolis-Hastings proposals from normal distributions with the same variance \verb|mhProp_Vg_var|.\\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_HReg(Y, lin.pred, data, model, cluster)} which initiates all necessary starting values. Users may set non-null starting values for: \texttt{beta1, beta2, beta3, theta, WB.alpha, WB.kappa, gamma.ji, V.j1, V.j2, V.j3, MVN.SigmaV, DPM.tau, DPM.class}.  \\[.12cm]
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+&\verb|nGam_save| & the number of $\gamma$ to be stored. \\
+&\verb|storeV| & a 3-vector of \texttt{TRUE/FALSE} logical constants indicating storage of $V_{ji}$ values for $g=1,2,3$. Example: \texttt{storeV <- rep(TRUE, 3)}.\\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(scrData)
+Y <- scrData[,c(1,2,3,4)]
+cluster <- scrData[,5]
+form1 <- as.formula( ~ x1 + x2 + x3)
+form2 <- as.formula( ~ x1 + x2)
+form3 <- as.formula( ~ x1 + x2)
+lin.pred <- list(form1, form2, form3)
+##
+WB.ab1 <- c(0.5, 0.01) 
+WB.ab2 <- c(0.5, 0.01) 
+WB.ab3 <- c(0.5, 0.01) 
+WB.cd1 <- c(0.5, 0.05)
+WB.cd2 <- c(0.5, 0.05)
+WB.cd3 <- c(0.5, 0.05)
+theta <- c(0.7, 0.7) # prior params for 1/theta
+Psi_v <- diag(1, 3) # MVN cluster-specific random effects
+rho_v <- 100
+Psi0  <- diag(1, 3) # DPM cluster-specific random effects
+rho0  <- 10
+aTau  <- 1.5
+bTau  <- 0.0125
+hyperParams.WB.MVN <- list(theta=theta,
+                		   WB=list(WB.ab1=WB.ab1, WB.ab2=WB.ab2, WB.ab3=WB.ab3,
+                           WB.cd1=WB.cd1, WB.cd2=WB.cd2, WB.cd3=WB.cd3),
+                           MVN=list(Psi_v=Psi_v, rho_v=rho_v))
+hyperParams.WB.DPM <- list(theta=theta,
+                		   WB=list(WB.ab1=WB.ab1, WB.ab2=WB.ab2, WB.ab3=WB.ab3,
+                           WB.cd1=WB.cd1, WB.cd2=WB.cd2, WB.cd3=WB.cd3),
+                           DPM=list(Psi0=Psi0, rho0=rho0, aTau=aTau, bTau=bTau))
+##
+numReps    <- 2000
+thin       <- 10
+burninPerc <- 0.25
+mhProp_theta_var  <- 0.05
+mhProp_alphag_var <- c(0.01, 0.01, 0.01)
+mhProp_Vg_var     <- c(0.05, 0.05, 0.05)
+nGam_save <- 0
+storeV    <- rep(TRUE, 3)
+mcmc.WB  <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+                    storage=list(nGam_save=nGam_save, storeV=storeV),
+                    tuning=list(mhProp_theta_var=mhProp_theta_var, mhProp_alphag_var=mhProp_alphag_var,
+                    mhProp_Vg_var =mhProp_Vg_var))
+##
+Sigma_V <- diag(0.1, 3)
+Sigma_V[1,2] <- Sigma_V[2,1] <- -0.05
+Sigma_V[1,3] <- Sigma_V[3,1] <- -0.06
+Sigma_V[2,3] <- Sigma_V[3,2] <- 0.07
+##
+myModel <- c("semi-Markov", "Weibull", "MVN")
+myPath  <- "Output/03-Results-WB_MVN/ "
+startValues      <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster,
+    MVN.SigmaV=Sigma_V)
+##
+fit_WB_MVN <- BayesID_HReg(Y, lin.pred, scrData, cluster, model=myModel,
+                        hyperParams.WB.MVN, startValues, mcmc.WB, path=myPath)
+fit_WB_MVN
+summ.fit_WB_MVN <- summary(fit_WB_MVN); names(summ.fit_WB_MVN)
+summ.fit_WB_MVN
+plot(fit_WB_MVN, tseq=seq(from=0, to=30, by=5))
+plot(fit_WB_MVN, tseq=seq(from=0, to=30, by=5), plot.est = "BH")
+names(fit_WB_MVN.plot <- plot(fit_WB_MVN, tseq=seq(0, 30, 5), plot=FALSE))
+##
+myModel <- c("semi-Markov", "Weibull", "DPM")
+myPath  <- "Output/04-Results-WB_DPM/"
+startValues      <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster,
+                        MVN.SigmaV=Sigma_V)
+fit_WB_DPM <- BayesID_HReg(Y, lin.pred, scrData, cluster, model=myModel,
+                        hyperParams.WB.DPM, startValues, mcmc.WB, path=myPath)
+fit_WB_DPM
+summ.fit_WB_DPM <- summary(fit_WB_DPM); names(summ.fit_WB_DPM)
+summ.fit_WB_DPM
+plot(fit_WB_DPM, tseq=seq(from=0, to=30, by=5))
+plot(fit_WB_DPM, tseq=seq(from=0, to=30, by=5), plot.est = "BH")
+names(fit_WB_DPM.plot <- plot(fit_WB_DPM, tseq=seq(0, 30, 5), plot=FALSE))
+\end{verbatim}
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%
+%%%%%%% 12
+%%%%%%%%%%%%%%%%%%
+\par\hbox{{\large 12. \texttt{BayesID\_HReg} }to analyze cluster-correlated semi-competing risks data using an illness-death model with PEM baseline hazards}
+\hrule
+
+\vspace{.25cm}
+
+\noindent{\large \textbf{Definition of the survival model}}\\
+\noindent Let $t_{ji1}$ and $t_{ji2}$ denote the time to nonterminal event and terminal event from subject $i=1,\dots,n_j$ in cluster $j=1,\dots, J$, subject to right censoring at time $c_{ji}$. Let $(y_{ji1},y_{ji2},\delta_{ji1},\delta_{ji2},x_{ji})$ denote independent observations, where $y_{ji1}=\min\left(t_{ji1},t_{ji2},c_{ji} \right)$, $\delta_{ji1}=\mathbbm{1}\left\{t_{ji1}\le \min\left(t_{ji2},c_{ji} \right) \right\}$, $y_{ji2}=\min\left(t_{ji2},c_{ji} \right)$, $\delta_{ji2}=\mathbbm{1}\left\{t_{ji2}\le c_{ji} \right\}$, and $x_{ji}$ is a vector of covariates for individual $i$. The independent semi-competing risks data are assumed to arise from an illness-death model system with transitions that are modeled through the following three hazard functions:
+\begin{eqnarray}
+h_1(t_{ji1}|\gamma_{ji}, x_{ji1}, V_{j1}) & = \gamma_{ji} h_{01}(t_{ji1})\exp\left(x_{ji1}^\top\beta_1 +  V_{j1}\right),~t_{ji1}>0,\label{1}\\
+h_2(t_{ji2}|\gamma_{ji}, x_{ji2}, V_{j2}) & = \gamma_{ji} h_{02}(t_{ji2})\exp\left(x_{ji2}^\top\beta_2 +  V_{j2} \right),~t_{ji2}>0,\label{2}\\
+h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2})\exp\left(x_{ji3}^\top\beta_3 +  V_{j3}\right),~t_{ji2}>0,\label{Markov}
+\end{eqnarray}
+where $\gamma_{ji}$ is a subject-specific frailty, $V_j=(V_{j1}, V_{j2}, V_{j3})$ is a vector of cluster-specific random effects, and$x_{ji1}$,  $x_{ji2}$ and  $x_{ji3}$ which are subsets of $x_i$ are vectors of covariates. The baseline hazard $h_0$ is defined non-parametrically by a mixture of piecewise exponential functions as follows
+$$\lambda_0(t) = \log{h_0(t)} = \displaystyle\sum_{k=1}^{K+1} \lambda_k \mathbbm{1}\left\{t\in (s_{k-1},s_k]\right\},$$
+where $\lambda_k$ is constant and the time interval between 0 and the largest observed failure time, denoted $s_k$, is partitioned into $K+1$ disjoint intervals: $0<s_1<\dots < s_{K+1}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{i1}$; we will refer to the set of conditional hazard functions in  (\ref{1})-(\ref{Markov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
+\begin{eqnarray}
+h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2}-t_{ji1})\exp\left(x_{ji3}^\top\beta_3 +  V_{j3}\right),~0<t_{ji1}<t_{ji2}.\label{semiMarkov}
+\end{eqnarray} 
+We will refer to the set of conditional hazard functions in (\ref{1}), (\ref{2}) and (\ref{semiMarkov}) as the semi-Markov model.
+
+In the Bayesian framework, priors must be specified for the regression parameter, $\beta$, the number of intervals, $K$, the partition points $(s_1,\dots,s_{K+1})$, and the frailty, $\gamma_{ji}$,  respectively.
+The following specifications are made
+\begin{align*}
+\pi(\beta) & \propto 1,\\
+\lambda | K, \mu_\lambda, \sigma_\lambda^2 & \sim MVN_{K+1}(\mu_\lambda \mathbbm{1}, \sigma_\lambda^2 \Sigma_\lambda) \\
+K & \sim Poisson(\alpha),\\
+\pi(s|K) & \propto \displaystyle\frac{(2K+1)! \prod_{k=1}^{K+1} (s_k-s_{k-1})}{\left(s_{K+1} \right)^{(2K+1)}},\\
+\pi(\mu_\lambda) & \propto 1,\\
+\sigma_\lambda^{-2}& \sim Gamma(a,b),\\
+\gamma_{ji}|\theta & \sim Gamma(\theta^{-1},\theta^{-1}),\\
+\theta^{-1} & \sim Gamma(\psi, \omega).
+\end{align*}
+The prior specification for $\lambda$ follows a MVN-ICAR (see Supplemental Material to Lee, Haneuse, Schrag and Dominici, 2015). Note that $K$ and $s$ jointly form a time-homogeneous Poisson process prior for the partition.
+
+We provide two possible prior specifications for the cluster-specific random effects below. $$\begin{array}{rcl c rcl}
+%\multicolumn{3}{c}{\text{Normal prior}} &~~~~~~~~~~~~~~~~~~~~ &  \multicolumn{3}{c}{\text{Dirichlet process mixture (DPM) prior}}\\
+V_j&\sim&MVN(0,\Sigma_V), &~~~~~~~~~~~~~~~~~~~~ &  V_j|m_j&\sim & MVN(\mu_{m_j},\Sigma_{m_j}),\\
+\Sigma_V &\sim&Inverse-Wishart(\Psi_v,\rho_v). & &  (\mu_m,\Sigma_m)&\sim & G_0,~~\text{for}~~m=1,\dots M,\\
+& & & & m_j|p &\sim & Discrete(m_j|p_1,\dots,p_M), \\
+& & & & p &\sim & Dirichlet({\tau}/{M},\dots, {\tau}/{M}), \\
+& & & & \tau &\sim & Gamma(a_\tau,b_\tau). 
+\end{array}$$
+In the first column, the individual specific-random effects are assumed to be $\overset{iid}{\sim} MVN(0,\Sigma_V)$. In the second column, the cluster-specific random effects are drawn from a mixture of $M$ multivariate normal distributions each with mean vector and covariance matrix $(\mu_m,\Sigma_m)$ which are distributed as a multivariate Normal/Inverse-Wishart (NIW), denoted by $G_0$; we refer to this as the Dirichlet process mixture (DPM) prior.
+ The probability density of $G_0$ is defined by the product 
+$$f_{\text{NIW}}(\mu,\Sigma|\Psi_0,\rho_0) = f_{\text{MVN}}(\mu|0,\Sigma) \times f_{\text{Inv-Wish}}(\Sigma|\Psi_0,\rho_0).$$  \\
+
+
+\noindent{\large\textbf{Hyperparameters}}\\
+\noindent\begin{tabular}{lcl}
+$\alpha$ &: & parameter corresponding to the Poisson prior of $K$\\
+$a$, $b$ &: & shape and rate of Gamma prior for $\sigma_\lambda^{-2}$\\
+$\psi$ & : & the shape of Gamma prior for $\theta^{-1}$ \\
+$\omega$ & : & the rate of Gamma prior for $\theta^{-1}$\\
+$\Psi_0$, $\rho_0$ &: & shape and scale of Inverse-Wishart component of the prior distribution, $G_0$, of $(\mu_m,\Sigma_m)$ (DPM prior)\\
+$a_\tau$,  $b_\tau$ & : & shape and rate of Gamma hyperprior for $\tau$ (DPM prior)\\[0.5cm]
+\end{tabular}
+
+
+\noindent{\large \textbf{Arguments to specify}}
+\vspace{-0.35cm}
+\noindent\begin{longtable}{p{.12in} p{1.0in} p{6.05in}}
+\toprule
+\multicolumn{3}{l}{\textbf{Model-related}}\\
+& \texttt{Y} & an $(n\times 4)$-dimensional data.frame with columns $y_1$, $\delta_1$, $y_2$, $\delta_2$.\\
+& \texttt{model}& \verb|c("Markov","PEM")| for Markov definition of $h_3$ in (\ref{Markov}); \verb|c("semi-Markov","PEM")| for semi-Markov definition of $h_3$ in (\ref{semiMarkov}). \\
+&\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{lin.pred} below. \\&\texttt{lin.pred} &  a list of three formula objects that correspond to $h_g$, for $g\in\{1,2,3\}$. \\
+&&Example: \verb|form1 <- as.formula(~ x1 + x2 + x3)|, \verb|form2 <- as.formula(~ x1)|, \verb|form3 <- as.formula(~ x1 + x4)|, \verb|lin.pred <- list(form1, form2, form3)|.\\ 
+&\texttt{cluster}& an $n$-vector of cluster information where cluster membership corresponds to one of the positive integers $1,\dots, J$. \\[.12cm]
+\multicolumn{3}{l}{\textbf{Hyperparameters}}\\
+&\texttt{PEM.ab1} & a 2-vector of positive hyperparameters $a_1$ and $b_1$ which represent the shape and rate of the Gamma prior for $\sigma_{\lambda,1}^{-2}$. Example: \texttt{PEM.ab1 <- c(0.7,0.7)}.   \\
+&\texttt{PEM.ab2} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for $\sigma_{\lambda,2}^{-2}$.   \\
+&\texttt{PEM.ab3} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for $\sigma_{\lambda,3}^{-2}$.    \\
+&\texttt{PEM.alpha1} & hyperparameter $\alpha$ of the prior distribution for $K_1$, which is one less than the number of partition points.\\
+&\texttt{PEM.alpha2} & hyperparameter $\alpha$ of the prior distribution for $K_2$, which is one less than the number of partition points.\\
+&\texttt{PEM.alpha3} & hyperparameter $\alpha$ of the prior distribution for $K_3$, which is one less than the number of partition points.    \\
+&\texttt{theta} & a 2-vector of positive hyperparameters $\psi$ and $\omega$ for the hyperprior $\theta$.\\
+\multicolumn{2}{l}{\hspace{0.35cm}\textbf{MVN prior for $V_{ji}$} }& \\
+&\verb|Psi_v| & a positive-definite scale matrix of the Inverse-Wishart prior for the cluster random effects, $V_{ji}$ .\\
+&& Example: \verb|Psi_v <- diag(1,3)|. \\
+&\verb|rho_v| & the degrees of freedom of the Inverse-Wishart prior for $V_{ji}$. Example: \verb|rho_v <- 100|. \\
+\multicolumn{2}{l}{\hspace{0.35cm}\textbf{DPM prior for $V_{ji}$} }& \\
+&\texttt{Psi0} & a positive-definite scale matrix of the Inverse-Wishart component of $G_0$. Example: \verb|Psi0 <- diag(1,3)|. \\
+&\texttt{rho0} &  the degrees of freedom of the Inverse-Wishart component of $G_0$. Example: \verb|rho0 <- 10|. \\
+&\texttt{aTau} & a positive-valued hyperparameter corresponding to the shape parameter, $a_\tau$, of the Gamma prior of $\tau$.\\
+&\texttt{bTau} &  a positive-valued hyperparameter corresponding to the rate parameter, $b_\tau$, of the Gamma prior of $\tau$.\\[.12cm]
+\multicolumn{3}{l}{\textbf{MCMC Settings}}\\
+&\texttt{numReps} & total number of scans\\
+&\texttt{thin} & extent of thinning, e.g. if \texttt{thin=10} retain every 10$^{th}$ sample.  \\
+&\texttt{burninPerc} & the proportion of burn-in (samples to be discarded before analyzing the data). \\
+&\verb|mhProp_theta_var| & the parameter $\theta$ is updated using a Metropolis-Hastings random walk step generating proposals from a Gamma distribution with variance \verb|mhProp_theta_var|.\\
+&\verb|mhProp_Vg_var| & 3-vector which specifies the variances of the three random walk Metropolis-Hastings proposals from normal distributions with the same variance \verb|mhProp_Vg_var|.\\
+&\texttt{Cg} &  a 3-vector for the proportion that determines the sum of probabilities choosing the birth and death moves for each of the baseline hazards, $h_{0g}$, for $g\in\{1,2,3\}$. \footnote{See Section A in Supplemental Material to Lee et al. (2015)}\\
+&\texttt{delPertg} &  a 3-vector for the perturbation parameter in the birth updates for all three baseline hazard functions; values must be between 0 and 0.5.\footnotemark[\value{footnote}] \\
+&\texttt{rj.scheme} & \texttt{rj.scheme=1}: the birth update will draw the proposal time split from $1:s_{max}$; \texttt{rj.scheme=2}: the birth update will draw the proposal time split from uniquely ordered failure times in the data. \\
+&\verb|Kg_max| &  a 3-vector for the number of splits allowed in each iteration of the Metropolis-Hastings-Green algorithm for the three baseline hazard functions.\\
+&\verb|sg_max| &  the largest observed failure time, given by \\
+&& \verb|sg_max <- c( max(Y$time1[Y$event1==1]), |\\
+ & &                                    \verb|                max(Y$time2[Y$event1==0 & Y$event2==1]), | \\
+       & & \verb|               max(Y$time2[Y$event1==1] & Y$event2==1]))|\\
+&\verb|time_lambda1| & time points at which the $\lambda_1$ is monitored for convergence. Example: \verb|time_lambda1 <- seq(1, sg_max[1], 1)|. The chains for these monitoring points can be found in \texttt{lambda.fin} in the chains of the \texttt{BayesID\_HReg} object.\\
+&\verb|time_lambda2| & time points at which the $\lambda_2$ is monitored for convergence. Example: \verb|time_lambda2 <- seq(1, sg_max[2], 1)|. \\
+&\verb|time_lambda3| & time points at which the $\lambda_3$ is monitored for convergence. Example: \verb|time_lambda3 <- seq(1, sg_max[3], 1)|. \\[.12cm]
+\multicolumn{3}{l}{\textbf{Starting Values}}\\
+&  \texttt{startValues}& use \texttt{initiate.startValues\_HReg(Y, lin.pred, data, model)} which initiates all necessary starting values. Users may set non-null starting values for any of the following: \verb|beta1, beta2, beta3, gamma.ji, theta, V.j1, V.j2, V.j3, MVN.SigmaV, DPM.tau, DPM.class|. \\[.12cm] 
+\multicolumn{3}{l}{\textbf{Storage}}\\
+& \texttt{path} & name of the directory where results are stored. Can leave unspecified.\\
+&\verb|nGam_save| & the number of $\gamma$ to be stored. \\
+&\verb|storeV| & a 3-vector of \texttt{TRUE/FALSE} logical constants indicating storage of $V_{ji}$ values for $g=1,2,3$. Example: \texttt{storeV <- rep(TRUE, 3)}.\\
+\bottomrule
+\end{longtable}
+% \rule{0pt}{0.5ex} & &\\
+\vspace{.5cm}
+
+\noindent{\large \textbf{Implementation}}
+\begin{verbatim}
+data(scrData)
+Y <- scrData[,c(1,2,3,4)]
+form1 <- as.formula( ~ x1 + x2 + x3)
+form2 <- as.formula( ~ x1 + x2)
+form3 <- as.formula( ~ x1 + x2)
+cluster <- scrData[,5]
+lin.pred <- list(form1, form2, form3)
+##
+theta <- c(0.7, 0.7)
+PEM.ab1 <- c(0.7, 0.7) # prior parameters for 1/sigma_1^2
+PEM.ab2 <- c(0.7, 0.7) # prior parameters for 1/sigma_2^2
+PEM.ab3 <- c(0.7, 0.7) # prior parameters for 1/sigma_3^2
+PEM.alpha1 <- 10 # prior parameters for K1
+PEM.alpha2 <- 10 # prior parameters for K2
+PEM.alpha3 <- 10 # prior parameters for K3
+Psi_v <- diag(1, 3) # MVN cluster-specific random effects
+rho_v <- 100
+Psi0  <- diag(1, 3) # DPM cluster-specific random effects
+rho0  <- 10
+aTau  <- 1.5
+bTau  <- 0.0125
+hyperParams.PEM.MVN <- list(theta=theta,
+  		        PEM=list(PEM.ab1=PEM.ab1, PEM.ab2=PEM.ab2, PEM.ab3=PEM.ab3, 
+  		                 PEM.alpha1=PEM.alpha1, PEM.alpha2=PEM.alpha2, PEM.alpha3=PEM.alpha3),
+  		        MVN=list(Psi_v=Psi_v, rho_v=rho_v))
+hyperParams.PEM.DPM <- list(theta=theta,
+  		        PEM=list(PEM.ab1=PEM.ab1, PEM.ab2=PEM.ab2, PEM.ab3=PEM.ab3, 
+  		                 PEM.alpha1=PEM.alpha1, PEM.alpha2=PEM.alpha2, PEM.alpha3=PEM.alpha3),
+  		        DPM=list(Psi0=Psi0, rho0=rho0, aTau=aTau, bTau=bTau))
+		                 
+##
+numReps    <- 2000
+thin       <- 10
+burninPerc <- 0.25
+mhProp_theta_var  <- 0.05
+mhProp_Vg_var     <- c(0.05, 0.05, 0.05)
+Cg        <- c(0.2, 0.2, 0.2)
+delPertg  <- c(0.5, 0.5, 0.5)
+rj.scheme <- 1
+Kg_max    <- c(50, 50, 50)
+sg_max    <- c(max(Y$time1[Y$event1 == 1]),
+               max(Y$time2[Y$event1 == 0 & Y$event2 == 1]),
+               max(Y$time2[Y$event1 == 1 & Y$event2 == 1]))
+time_lambda1 <- seq(1, sg_max[1], 1)
+time_lambda2 <- seq(1, sg_max[2], 1)
+time_lambda3 <- seq(1, sg_max[3], 1)
+nGam_save <- 0
+storeV <- rep(TRUE, 3)
+mcmc.PEM <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
+                 storage=list(nGam_save=nGam_save, storeV=storeV),
+                 tuning=list(mhProp_theta_var=mhProp_theta_var, mhProp_Vg_var=mhProp_Vg_var,
+                             Cg=Cg, delPertg=delPertg,
+                             rj.scheme=rj.scheme, Kg_max=Kg_max, sg_max=sg_max,
+                             time_lambda1=time_lambda1, time_lambda2=time_lambda2,
+                             time_lambda3=time_lambda3))
+##
+Sigma_V <- diag(0.1, 3)
+Sigma_V[1,2] <- Sigma_V[2,1] <- -0.05
+Sigma_V[1,3] <- Sigma_V[3,1] <- -0.06
+Sigma_V[2,3] <- Sigma_V[3,2] <- 0.07
+##
+myModel <- c("semi-Markov", "PEM", "MVN")
+myPath  <- "Output/05-Results-PEM_MVN/"
+startValues      <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster, MVN.SigmaV=Sigma_V)
+##
+fit_PEM_MVN <- BayesID_HReg(Y, lin.pred, scrData, cluster, model=myModel,
+                    hyperParams.PEM.MVN, startValues, mcmc.PEM, path=myPath)
+fit_PEM_MVN
+summ.fit_PEM_MVN <- summary(fit_PEM_MVN); names(summ.fit_PEM_MVN)
+summ.fit_PEM_MVN
+plot(fit_PEM_MVN)
+plot(fit_PEM_MVN, plot.est = "BH")
+names(fit_PEM_MVN.plot <- plot(fit_PEM_MVN, plot=FALSE))
+##
+myModel <- c("semi-Markov", "PEM", "DPM")
+myPath  <- "Output/06-Results-PEM_DPM/"
+startValues      <- vector("list", 2)
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster,
+                      MVN.SigmaV=Sigma_V)
+##
+fit_PEM_DPM <- BayesID_HReg(Y, lin.pred, scrData, cluster, model=myModel,
+                      hyperParams.PEM.DPM, startValues, mcmc.PEM, path=myPath)
+fit_PEM_DPM
+summ.fit_PEM_DPM <- summary(fit_PEM_DPM); names(summ.fit_PEM_DPM)
+summ.fit_PEM_DPM
+plot(fit_PEM_DPM)
+plot(fit_PEM_DPM, plot.est = "BH")
+names(fit_PEM_DPM.plot <- plot(fit_PEM_DPM, plot=FALSE))
+\end{verbatim}
+
+
+
+
+
+
+
+
+
+
+\end{document}

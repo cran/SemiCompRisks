@@ -1,15 +1,15 @@
 
 
 
-BayesID <- function(Y,
-                    lin.pred,
-                    data,
-                    cluster = NULL,
-                    model = c("semi-Markov", "Weibull"),
-                    hyperParams,
-                    startValues,
-                    mcmc,
-                    path = NULL)
+BayesID_HReg <- function(Y,
+lin.pred,
+data,
+cluster = NULL,
+model = c("semi-Markov", "Weibull"),
+hyperParams,
+startValues,
+mcmc,
+path = NULL)
 {
     hyperP      <- hyperParams
     mcmcList    <- mcmc
@@ -247,7 +247,7 @@ BayesID <- function(Y,
                     # model_h3 = "semi-Markov"
                     
                     if(model_h3 == "semi-Markov"){
-            
+                        
                         ###
                         
                         mcmcRet <- .C("BweibScrSMmcmc",
@@ -580,7 +580,7 @@ BayesID <- function(Y,
                             covNames3 = NULL
                         }
                         
-
+                        
                         
                         
                         ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, theta.p = theta.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3)
@@ -751,11 +751,11 @@ BayesID <- function(Y,
             
             if(hz.type == "Weibull")
             {
-                class(ret) <- c("Bayes", "ID", "Ind", "WB")
+                class(ret) <- c("Bayes_HReg", "ID", "Ind", "WB")
             }
             if(hz.type == "PEM")
             {
-                class(ret) <- c("Bayes", "ID", "Ind", "PEM")
+                class(ret) <- c("Bayes_HReg", "ID", "Ind", "PEM")
             }
             
             
@@ -1094,7 +1094,7 @@ BayesID <- function(Y,
                             pD          <- Dbar - (-2*mcmcRet$logLH_fin)
                             
                             DIC <- pD + Dbar
-                         
+                            
                             
                             ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
                             
@@ -1533,7 +1533,7 @@ BayesID <- function(Y,
                             pD          <- Dbar - (-2*mcmcRet$logLH_fin)
                             
                             DIC <- pD + Dbar
-      
+                            
                             
                             
                             ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, V1.p = V1.p, V2.p = V2.p, V3.p = V3.p, class.p = c.p, mu.p = mu.p, Sigma.p = Sigma.p, tau.p = tau.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V = accept.V, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
@@ -1766,7 +1766,7 @@ BayesID <- function(Y,
                     } ## end: if Weibull-DPM
                     
                 } ## end: if Weibull
-  
+                
                 
                 
                 # hz.type = "PEM"
@@ -2025,7 +2025,7 @@ BayesID <- function(Y,
                             accept.V2       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+J+1):(p1+p2+p3+10+n+n+J+J)])/sum(as.vector(mcmcRet$moveVec)==19)
                             accept.V3       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+J+J+1):(p1+p2+p3+10+n+n+J+J+J)])/sum(as.vector(mcmcRet$moveVec)==20)
                             
-
+                            
                             
                             
                             V1summary <- as.matrix(apply(V1.p, 2, summary))
@@ -2541,7 +2541,7 @@ BayesID <- function(Y,
                             accept.DI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
                             accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7)])/sum(as.vector(mcmcRet$moveVec)==11)
                             accept.V       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+1):(p1+p2+p3+10+n+n+J)])/sum(as.vector(mcmcRet$moveVec)==18)/3
-   
+                            
                             
                             V1summary <- as.matrix(apply(V1.p, 2, summary))
                             V1summary <- rbind(V1summary, apply(V1.p, 2, quantile, prob = 0.975))
@@ -2643,7 +2643,7 @@ BayesID <- function(Y,
                         if(model_h3 == "semi-Markov"){
                             
                             ###
-   
+                            
                             K_1 <- K1
                             K_2 <- K2
                             K_3 <- K3
@@ -2816,7 +2816,7 @@ BayesID <- function(Y,
                             V3summary <- rbind(V3summary, apply(V3.p, 2, quantile, prob = 0.975))
                             V3summary <- rbind(V3summary, apply(V3.p, 2, quantile, prob = 0.025))
                             V3summary <- rbind(V3summary, apply(V3.p, 2, sd))
-                            rownames(V3summary)[7:9] <- c("0.975", "0.025", "sd")			
+                            rownames(V3summary)[7:9] <- c("0.975", "0.025", "sd")
                             
                             if(storeV[1] == TRUE & !is.null(path))
                             {
@@ -2862,7 +2862,7 @@ BayesID <- function(Y,
                             
                             ## 1. log pseudo-marginal likelihood
                             
-                            invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)		
+                            invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
                             
                             cpo     <- 1/invLH.p
                             
@@ -2870,18 +2870,18 @@ BayesID <- function(Y,
                             
                             # or
                             
-                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)    
+                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)
                             
                             
                             
                             ## 2. deviance information criterion
                             
                             gamma_mean <- matrix(mcmcRet$gammaP, nrow = n, byrow = TRUE)
-                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)	
+                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
                             Dbar        <- mean(dev.p)
                             pD          <- Dbar - (-2*mcmcRet$logLH_fin)
                             
-                            DIC <- pD + Dbar              
+                            DIC <- pD + Dbar
                             
                             
                             
@@ -2898,7 +2898,7 @@ BayesID <- function(Y,
                 }   ## end: if PEM
                 
                 
-                chain = chain + 1	
+                chain = chain + 1
                 
                 
             }	## end: while(chain <= nChain)
@@ -2910,31 +2910,31 @@ BayesID <- function(Y,
             {
                 if(re.type == "MVN")
                 {
-                    class(ret) <- c("Bayes", "ID", "Cor", "WB", "MVN")
+                    class(ret) <- c("Bayes_HReg", "ID", "Cor", "WB", "MVN")
                 }
                 if(re.type == "DPM")
                 {
-                    class(ret) <- c("Bayes", "ID", "Cor", "WB", "DPM")
+                    class(ret) <- c("Bayes_HReg", "ID", "Cor", "WB", "DPM")
                 }
             }
             if(hz.type == "PEM")
             {
                 if(re.type == "MVN")
                 {
-                    class(ret) <- c("Bayes", "ID", "Cor", "PEM", "MVN")
+                    class(ret) <- c("Bayes_HReg", "ID", "Cor", "PEM", "MVN")
                 }
                 if(re.type == "DPM")
                 {
-                    class(ret) <- c("Bayes", "ID", "Cor", "PEM", "DPM")
+                    class(ret) <- c("Bayes_HReg", "ID", "Cor", "PEM", "DPM")
                 }
             }
-
-
+            
+            
             return(ret)
             
             
             
-            #}  ## end: if(class(startValues) == "list" & length(startValues) == nChain)	
+            #}  ## end: if(class(startValues) == "list" & length(startValues) == nChain)
             
             
             
@@ -2942,15 +2942,15 @@ BayesID <- function(Y,
             #	print("The 'startValues' should be the list of length equal to 'nChain'.")
             #}
         }
-
+        
         
     }
     else{
-    	print(" (numReps * burninPerc) must be divisible by (thin)")
+        print(" (numReps * burninPerc) must be divisible by (thin)")
     }
     
     
-
+    
 }# end of function "BayesID"
 
 

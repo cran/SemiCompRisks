@@ -1,5 +1,5 @@
-\name{FreqSurv}
-\alias{FreqSurv}
+\name{FreqSurv_HReg}
+\alias{FreqSurv_HReg}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 The function to fit parametric Weibull models for the frequentist analysis of univariate survival data.
@@ -8,7 +8,7 @@ The function to fit parametric Weibull models for the frequentist analysis of un
 Independent univariate right-censored survival data can be analyzed using hierarchical models.
 }
 \usage{
-FreqSurv(Y, lin.pred, data)
+FreqSurv_HReg(Y, lin.pred, data)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,10 +23,10 @@ FreqSurv(Y, lin.pred, data)
 }
 }
 \details{
-	See \code{\link{BayesSurv}} for a detailed description of the models.
+	See \code{\link{BayesSurv_HReg}} for a detailed description of the models.
 }
 \value{
-	\code{FreqSurv} returns an object of class \code{Freq}. \cr 
+	\code{FreqSurv_HReg} returns an object of class \code{Freq_HReg}. \cr 
 }
 \references{
 Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015), 
@@ -44,7 +44,7 @@ Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-	\code{\link{print.Freq}}, \code{\link{summary.Freq}}, \code{\link{plot.Freq}}, \code{\link{BayesSurv}}.
+	\code{\link{print.Freq_HReg}}, \code{\link{summary.Freq_HReg}}, \code{\link{plot.Freq_HReg}}, \code{\link{BayesSurv_HReg}}.
 }
 \examples{
 \dontrun{	
@@ -53,7 +53,7 @@ data(survData)
 Y <- survData[,c(1,2)]
 lin.pred <- as.formula( ~ cov1 + cov2)
 
-fit_WB <- FreqSurv(Y, lin.pred, data=survData)
+fit_WB <- FreqSurv_HReg(Y, lin.pred, data=survData)
 fit_WB
 summ.fit_WB <- summary(fit_WB); names(summ.fit_WB)
 summ.fit_WB
@@ -65,4 +65,5 @@ names(fit_WB.plot <- plot(fit_WB, tseq=seq(0, 30, 5), plot=FALSE))
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ frequentist framework }
-\keyword{ univariate analysis }% __ONLY ONE__ keyword per line
+\keyword{ univariate analysis }
+\keyword{ hazard regression models }% __ONLY ONE__ keyword per line

@@ -658,14 +658,6 @@ extern void BpeDpCorScrSM_updateCP(gsl_vector *beta1,
 
 
 
-
-
-
-
-
-
-
-
 extern void BpeDpCorScrSM_updatePP(int *n,
                                    double *tau,
                                    double aTau,

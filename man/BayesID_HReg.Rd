@@ -1,14 +1,14 @@
-\name{BayesID}
-\alias{BayesID}
+\name{BayesID_HReg}
+\alias{BayesID_HReg}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-The function to implement Bayesian parametric and semi-parametric analyses for semi-competing risks data.
+The function to implement Bayesian parametric and semi-parametric analyses for semi-competing risks data in the context of hazard regression (HReg) models.
 }
 \description{
-Independent/cluster-correlated semi-competing risks data can be analyzed using hierarchical models. The priors for baseline hazard functions can be specified by either parametric (Weibull) model or non-parametric mixture of piecewise exponential models (PEM). The option to choose between parametric multivariate normal (MVN) and non-parametric Dirichlet process mixture of multivariate normals (DPM) is available for the prior of cluster-specific random effects distribution. The conditional hazard function for time to the terminal event given time to non-terminal event can be modeled based on either Markov (it does not depend on the timing of the non-terminal event) or semi-Markov assumption (it does depend on the timing).
+Independent/cluster-correlated semi-competing risks data can be analyzed using HReg models that have a hierarchical structure. The priors for baseline hazard functions can be specified by either parametric (Weibull) model or non-parametric mixture of piecewise exponential models (PEM). The option to choose between parametric multivariate normal (MVN) and non-parametric Dirichlet process mixture of multivariate normals (DPM) is available for the prior of cluster-specific random effects distribution. The conditional hazard function for time to the terminal event given time to non-terminal event can be modeled based on either Markov (it does not depend on the timing of the non-terminal event) or semi-Markov assumption (it does depend on the timing).
 }
 \usage{
-BayesID(Y, lin.pred, data, cluster=NULL, model=c("semi-Markov", "Weibull"), 
+BayesID_HReg(Y, lin.pred, data, cluster=NULL, model=c("semi-Markov", "Weibull"), 
         hyperParams, startValues, mcmc, path=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -42,7 +42,7 @@ BayesID(Y, lin.pred, data, cluster=NULL, model=c("semi-Markov", "Weibull"),
 	See Details and Examples below.
 }
   \item{startValues}{
-  	a list containing vectors of starting values for model parameters. It can be specified as the object returned by the function \code{\link{initiate.startValues}}.
+  	a list containing vectors of starting values for model parameters. It can be specified as the object returned by the function \code{\link{initiate.startValues_HReg}}.
 }
   \item{mcmc}{
 	a list containing variables required for MCMC sampling. Components include,
@@ -60,7 +60,7 @@ BayesID(Y, lin.pred, data, cluster=NULL, model=c("semi-Markov", "Weibull"),
 	If \code{rj.scheme}=1, the birth update will draw the proposal time split from \eqn{1:s_{max}}.
 	If \code{rj.scheme}=2, the birth update will draw the proposal time split from uniquely ordered failure times in the data. Only required for PEM models;
 	\code{Kg_max}, the maximum number of splits allowed at each iteration in MHG algorithm for PEM models;
-	\code{time_lambda1}, \code{time_lambda2}, \code{time_lambda3} - time points at which the log-hazard functions are calculated for \code{\link{plot.Bayes}}, Only required for PEM models).
+	\code{time_lambda1}, \code{time_lambda2}, \code{time_lambda3} - time points at which the log-hazard functions are calculated for \code{\link{plot.Bayes_HReg}}, Only required for PEM models).
 	See Details and Examples below.
 }
   \item{path}{
@@ -116,17 +116,15 @@ BayesID(Y, lin.pred, data, cluster=NULL, model=c("semi-Markov", "Weibull"),
 
 
 \value{
-\code{BayesID} returns an object of class \code{Bayes}. \cr
+\code{BayesID_HReg} returns an object of class \code{Bayes_HReg}. \cr
 }
 \references{
 Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015), 
 Bayesian semiparametric analysis of semicompeting risks data: 
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
 Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S. (2016),
-Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, in press. \cr
+Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, 111, 515, 1075-1095. \cr
 }
-
-
 \author{
 Kyu Ha Lee and Sebastien Haneuse\cr
 Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
@@ -138,7 +136,7 @@ For a dataset with large \eqn{n}, \code{nGam_save} should be carefully specified
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-	\code{\link{initiate.startValues}}, \code{\link{print.Bayes}}, \code{\link{summary.Bayes}}, \code{\link{plot.Bayes}}
+	\code{\link{initiate.startValues_HReg}}, \code{\link{print.Bayes_HReg}}, \code{\link{summary.Bayes_HReg}}, \code{\link{plot.Bayes_HReg}}
 }
 \examples{
 
@@ -277,11 +275,11 @@ myModel <- c("semi-Markov", "Weibull")
 myPath  <- "Output/01-Results-WB/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, theta = 0.23)
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, theta = 0.23)
                 
 ##
-fit_WB <- BayesID(Y, lin.pred, scrData, cluster=NULL, model=myModel, 
+fit_WB <- BayesID_HReg(Y, lin.pred, scrData, cluster=NULL, model=myModel,
                 hyperParams, startValues, mcmc.WB, path=myPath)
 				
 fit_WB
@@ -300,11 +298,11 @@ myModel <- c("semi-Markov", "PEM")
 myPath  <- "Output/02-Results-PEM/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, theta = 0.23)
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, theta = 0.23)
                                                            
 ##
-fit_PEM <- BayesID(Y, lin.pred, scrData, cluster=NULL, model=myModel, 
+fit_PEM <- BayesID_HReg(Y, lin.pred, scrData, cluster=NULL, model=myModel, 
                  hyperParams, startValues, mcmc.PEM, path=myPath)
 				
 fit_PEM
@@ -327,12 +325,12 @@ myModel <- c("semi-Markov", "Weibull", "MVN")
 myPath  <- "Output/03-Results-WB_MVN/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, cluster,
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster,
 MVN.SigmaV=Sigma_V)
 
 ##
-fit_WB_MVN <- BayesID(Y, lin.pred, scrData, cluster, model=myModel,
+fit_WB_MVN <- BayesID_HReg(Y, lin.pred, scrData, cluster, model=myModel,
                     hyperParams, startValues, mcmc.WB, path=myPath)
                     
 fit_WB_MVN
@@ -351,12 +349,12 @@ myModel <- c("semi-Markov", "Weibull", "DPM")
 myPath  <- "Output/04-Results-WB_DPM/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, cluster,
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster,
                     MVN.SigmaV=Sigma_V)
 
 ##
-fit_WB_DPM <- BayesID(Y, lin.pred, scrData, cluster, model=myModel,
+fit_WB_DPM <- BayesID_HReg(Y, lin.pred, scrData, cluster, model=myModel,
                     hyperParams, startValues, mcmc.WB, path=myPath)
 
 fit_WB_DPM
@@ -375,12 +373,12 @@ myModel <- c("semi-Markov", "PEM", "MVN")
 myPath  <- "Output/05-Results-PEM_MVN/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, cluster,
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster,
                     MVN.SigmaV=Sigma_V)
 
 ##
-fit_PEM_MVN <- BayesID(Y, lin.pred, scrData, cluster, model=myModel,
+fit_PEM_MVN <- BayesID_HReg(Y, lin.pred, scrData, cluster, model=myModel,
                     hyperParams, startValues, mcmc.PEM, path=myPath)
                     
 fit_PEM_MVN
@@ -399,12 +397,12 @@ myModel <- c("semi-Markov", "PEM", "DPM")
 myPath  <- "Output/06-Results-PEM_DPM/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, scrData, model=myModel, cluster,
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, scrData, model=myModel, cluster,
                     MVN.SigmaV=Sigma_V)
                     
 ##
-fit_PEM_DPM <- BayesID(Y, lin.pred, scrData, cluster, model=myModel,
+fit_PEM_DPM <- BayesID_HReg(Y, lin.pred, scrData, cluster, model=myModel,
                     hyperParams, startValues, mcmc.PEM, path=myPath)
                     
 fit_PEM_DPM
@@ -420,5 +418,6 @@ names(fit_PEM_DPM.plot <- plot(fit_PEM_DPM, plot=FALSE))
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Bayesian framework }
-\keyword{ semi-competing risks analysis }% __ONLY ONE__ keyword per line
+\keyword{ semi-competing risks analysis }
+\keyword{ hazard regression models }% __ONLY ONE__ keyword per line
 

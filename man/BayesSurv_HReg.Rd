@@ -1,14 +1,14 @@
-\name{BayesSurv}
-\alias{BayesSurv}
+\name{BayesSurv_HReg}
+\alias{BayesSurv_HReg}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-The function to implement Bayesian parametric and semi-parametric regression analyses for univariate time-to-event data.
+The function to implement Bayesian parametric and semi-parametric regression analyses for univariate time-to-event data in the context of hazard regression (HReg) models.
 }
 \description{
 Independent/cluster-correlated univariate right-censored survival data can be analyzed using hierarchical models. The prior for the baseline hazard function can be specified by either parametric (Weibull) model or non-parametric mixture of piecewise exponential models (PEM).
 }
 \usage{
-BayesSurv(Y, lin.pred, data, cluster=NULL, model="Weibull", 
+BayesSurv_HReg(Y, lin.pred, data, cluster=NULL, model="Weibull", 
           hyperParams, startValues, mcmc, path=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -40,7 +40,7 @@ BayesSurv(Y, lin.pred, data, cluster=NULL, model="Weibull",
 	See Details and Examples below.
 }
   \item{startValues}{
-	a list containing vectors of starting values for model parameters. It can be specified as the object returned by the function \code{\link{initiate.startValues}}.
+	a list containing vectors of starting values for model parameters. It can be specified as the object returned by the function \code{\link{initiate.startValues_HReg}}.
 }
   \item{mcmc}{
 	a list containing variables required for MCMC sampling. Components include,
@@ -57,7 +57,7 @@ BayesSurv(Y, lin.pred, data, cluster=NULL, model="Weibull",
 	If \code{rj.scheme}=1, the birth update will draw the proposal time split from \eqn{1:s_{max}}.
 	If \code{rj.scheme}=2, the birth update will draw the proposal time split from uniquely ordered failure times in the data. Only required for PEM models;
 	\code{K_max}, the maximum number of splits allowed at each iteration in MHG algorithm for PEM models;
-	\code{time_lambda} - time points at which the log-hazard function is calculated for \code{\link{plot.Bayes}}, Only required for PEM models).
+	\code{time_lambda} - time points at which the log-hazard function is calculated for \code{\link{plot.Bayes_HReg}}, Only required for PEM models).
 	See Details and Examples below.
 }
   \item{path}{
@@ -66,7 +66,7 @@ BayesSurv(Y, lin.pred, data, cluster=NULL, model="Weibull",
 }
 
 \details{
-  The function \code{BayesSurv} implements Bayesian semi-parametric (piecewise exponential mixture) and parametric (Weibull) models to univariate time-to-event data. Let \eqn{t_{ji}} denote time to event of interest from subject \eqn{i=1,...,n_j} in cluster \eqn{j=1,...,J}. The covariates \eqn{x_{ji}} are incorporated via Cox proportional hazards model:
+  The function \code{BayesSurv_HReg} implements Bayesian semi-parametric (piecewise exponential mixture) and parametric (Weibull) models to univariate time-to-event data. Let \eqn{t_{ji}} denote time to event of interest from subject \eqn{i=1,...,n_j} in cluster \eqn{j=1,...,J}. The covariates \eqn{x_{ji}} are incorporated via Cox proportional hazards model:
     \deqn{h(t_{ji} | x_{ji}) = h_{0}(t_{ji})\exp(x_{ji}^{\top}\beta + V_{j}), t_{ji}>0,}
     
     where \eqn{h_0} is an unspecified baseline hazard function and \eqn{\beta} is a vector of \eqn{p} log-hazard ratio regression parameters. \eqn{V_j}'s are cluster-specific random effects.
@@ -106,7 +106,7 @@ BayesSurv(Y, lin.pred, data, cluster=NULL, model="Weibull",
 }
 
 \value{
-	\code{BayesSurv} returns an object of class \code{Bayes}. \cr 
+	\code{BayesSurv_HReg} returns an object of class \code{Bayes_HReg}. \cr 
 }
 
 \references{
@@ -114,7 +114,7 @@ Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015),
 Bayesian semiparametric analysis of semicompeting risks data: 
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
 Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S. (2016),
-Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, in press. \cr
+Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, 111, 515, 1075-1095. \cr
 }
 \author{
 Kyu Ha Lee and Sebastien Haneuse \cr
@@ -127,7 +127,7 @@ The posterior samples of \eqn{V_g} are saved separately in \code{working directo
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-	\code{\link{initiate.startValues}}, \code{\link{print.Bayes}}, \code{\link{summary.Bayes}}, \code{\link{plot.Bayes}}
+	\code{\link{initiate.startValues_HReg}}, \code{\link{print.Bayes_HReg}}, \code{\link{summary.Bayes_HReg}}, \code{\link{plot.Bayes_HReg}}
 }
 
 \examples{
@@ -224,12 +224,12 @@ myModel <- "Weibull"
 myPath  <- "Output/01-Results-WB/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, survData, model=myModel)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, 
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, 
 WB.alpha=1.12)
                 
 ##
-fit_WB <- BayesSurv(Y, lin.pred, survData, cluster=NULL, model=myModel, 
+fit_WB <- BayesSurv_HReg(Y, lin.pred, survData, cluster=NULL, model=myModel, 
                   hyperParams, startValues, mcmc.WB, path=myPath)
                   
 fit_WB
@@ -248,12 +248,12 @@ myModel <- "PEM"
 myPath  <- "Output/02-Results-PEM/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, survData, model=myModel)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, 
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, 
 beta=rep(0.1,2))                                
                 
 ##
-fit_PEM <- BayesSurv(Y, lin.pred, survData, cluster=NULL, model=myModel,
+fit_PEM <- BayesSurv_HReg(Y, lin.pred, survData, cluster=NULL, model=myModel,
                    hyperParams, startValues, mcmc.PEM, path=myPath)
                    
 fit_PEM
@@ -277,12 +277,12 @@ myPath  <- "Output/03-Results-WB_Normal/"
 
 startValues      <- vector("list", 2)
 
-startValues[[1]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, cluster,
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster,
 Normal.zeta=0.95)
 
 ##
-fit_WB_N <- BayesSurv(Y, lin.pred, survData, cluster, model=myModel,
+fit_WB_N <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel,
                         hyperParams, startValues, mcmc.WB, path=myPath)
                         
 fit_WB_N
@@ -301,12 +301,12 @@ myModel <- c("Weibull", "DPM")
 myPath  <- "Output/04-Results-WB_DPM/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, cluster,
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster,
 Normal.zeta=0.95)
 
 ##
-fit_WB_DPM <- BayesSurv(Y, lin.pred, survData, cluster, model=myModel,
+fit_WB_DPM <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel,
                         hyperParams, startValues, mcmc.WB, path=myPath)
 
 fit_WB_DPM
@@ -325,12 +325,12 @@ myModel <- c("PEM", "Normal")
 myPath  <- "Output/05-Results-PEM_Normal/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, cluster,
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster,
 Normal.zeta=0.95)
 
 ##
-fit_PEM_N <- BayesSurv(Y, lin.pred, survData, cluster, model=myModel,
+fit_PEM_N <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel,
                             hyperParams, startValues, mcmc.PEM, path=myPath)
 
 fit_PEM_N
@@ -349,12 +349,12 @@ myModel <- c("PEM", "DPM")
 myPath  <- "Output/06-Results-PEM_DPM/"
 
 startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues(Y, lin.pred, survData, model=myModel, cluster,
+startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster)
+startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster,
 Normal.zeta=0.95)
 
 ##
-fit_PEM_DPM <- BayesSurv(Y, lin.pred, survData, cluster, model=myModel,
+fit_PEM_DPM <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel,
                         hyperParams, startValues, mcmc.PEM, path=myPath)
                         
 fit_PEM_DPM
@@ -368,5 +368,6 @@ names(fit_PEM_DPM.plot <- plot(fit_PEM_DPM, plot=FALSE))
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Bayesian framework }
-\keyword{ univariate analysis }% __ONLY ONE__ keyword per line
+\keyword{ univariate analysis }
+\keyword{ hazard regression models }% __ONLY ONE__ keyword per line
 

@@ -1,5 +1,5 @@
-\name{FreqID}
-\alias{FreqID}
+\name{FreqID_HReg}
+\alias{FreqID_HReg}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 The function to fit parametric Weibull models for the frequentist anlaysis of semi-competing risks data.
@@ -8,7 +8,7 @@ The function to fit parametric Weibull models for the frequentist anlaysis of se
 Independent semi-competing risks data can be analyzed using hierarchical models. Markov or semi-Markov assumption can be adopted for the conditional hazard function for time to the terminal event given time to non-terminal event.
 }
 \usage{
-FreqID(Y, lin.pred, data, model="semi-Markov", frailty = TRUE)
+FreqID_HReg(Y, lin.pred, data, model="semi-Markov", frailty = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -29,10 +29,10 @@ FreqID(Y, lin.pred, data, model="semi-Markov", frailty = TRUE)
 }
 }
 \details{
-	See \code{\link{BayesID}} for a detailed description of the models.
+	See \code{\link{BayesID_HReg}} for a detailed description of the models.
 }
 \value{
-	\code{FreqID} returns an object of class \code{Freq}. \cr
+	\code{FreqID_HReg} returns an object of class \code{Freq_HReg}. \cr
 }
 \references{
 Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015), 
@@ -51,7 +51,7 @@ Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-	\code{\link{print.Freq}}, \code{\link{summary.Freq}}, \code{\link{plot.Freq}}, \code{\link{BayesID}}.
+	\code{\link{print.Freq_HReg}}, \code{\link{summary.Freq_HReg}}, \code{\link{plot.Freq_HReg}}, \code{\link{BayesID_HReg}}.
 }
 \examples{
 \dontrun{
@@ -63,7 +63,7 @@ form2 <- as.formula( ~ x1 + x2)
 form3 <- as.formula( ~ x1 + x2)
 lin.pred <- list(form1, form2, form3)
 
-fit_WB	<- FreqID(Y, lin.pred, data=scrData, model="semi-Markov")
+fit_WB	<- FreqID_HReg(Y, lin.pred, data=scrData, model="semi-Markov")
 
 fit_WB
 summ.fit_WB <- summary(fit_WB); names(summ.fit_WB)
@@ -76,4 +76,5 @@ names(fit_WB.plot <- plot(fit_WB, tseq=seq(0, 30, 5), plot=FALSE))
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ frequentist framework }
-\keyword{ semi-competing risks analysis }% __ONLY ONE__ keyword per line
+\keyword{ semi-competing risks analysis }
+\keyword{ hazard regression models }% __ONLY ONE__ keyword per line

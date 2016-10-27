@@ -35,6 +35,13 @@
 #include "BpeMvnCorSurv.h"
 #include "BpeDpCorSurv.h"
 
+#include "BAFT_DPscr.h"
+#include "BAFT_LNscr.h"
+#include "BAFT_DPsurv.h"
+#include "BAFT_LNsurv.h"
+
+
+
 
 #define Pi 3.141592653589793238462643383280
 
@@ -4525,14 +4532,7 @@ void c_dmvnorm2(gsl_vector *x,
     
 	c_quadform_vMv(diff, SigmaInv, value);
     
-    /*
-     printf("%.10f\n\n", log(gsl_linalg_LU_det(SigmaInvLU, signum)));
-     */
-    
-    
     *value = (log(gsl_linalg_LU_det(SigmaInvLU, signum)) - log(pow(2*Pi, K)) - *value) / 2;
-    
-    
     
 	gsl_vector_free(diff);
 	gsl_matrix_free(SigmaInv);
@@ -5234,6 +5234,1184 @@ void c_solve(gsl_matrix *M,
     gsl_permutation_free(p);
     return;
 }
+
+
+
+
+
+
+
+
+
+
+
+/*********************************************************************************
+ *********************************************************************************
+ *********************************************************************************
+ *********************************************************************************
+ *********************************************************************************
+ *********************************************************************************
+ *********************************************************************************
+ *********************************************************************************
+ Functions for models in BayesID_AFT  */
+
+
+
+
+double logistic(double x)
+{
+    double value = exp(x)/(1+exp(x));
+    return value;
+}
+
+
+
+
+
+void set_r3_mu3_zeta3(gsl_vector *r3,
+                      gsl_vector *mu3_vec,
+                      gsl_vector *zeta3_vec,
+                      gsl_vector *mu3_all,
+                      gsl_vector *zeta3_all,
+                      double y1,
+                      double y2,
+                      gsl_vector *c0_neginf,
+                      gsl_vector *xbeta3,
+                      gsl_vector *gamma,
+                      gsl_vector *r3Uniq,
+                      gsl_vector *r3Uniq_count,
+                      int i,
+                      int u3,
+                      double mu03,
+                      double sigSq03,
+                      double a03,
+                      double b03,
+                      double tau3,
+                      gsl_rng *rr)
+{
+    int j, k, r_ind, n_ir;
+    double mean, sd, yStar, eta, val, sum_prob, b_mc;
+    double zeta, mu;
+    
+    int n = r3 -> size;
+    int u = u3;
+    
+    gsl_vector *prob = gsl_vector_calloc(u+1);
+    
+    zeta = INFINITY;
+    while(zeta == INFINITY || isnan(zeta))
+    {
+        zeta = rgamma(a03, 1/b03);
+    }
+    
+    mu = NAN;
+    while(mu == INFINITY || isnan(mu))
+    {
+        mu = rnorm(mu03, sqrt(sigSq03));
+    }
+    
+    eta = gsl_vector_get(xbeta3, i) + gsl_vector_get(gamma, i);
+    yStar = y2 + log(1-exp(y1-y2));
+    
+    for(j = 0; j < u; j++)
+    {
+        n_ir = gsl_vector_get(r3Uniq_count, j);
+        mean = gsl_vector_get(mu3_all, j) + eta;
+        sd = sqrt(1/gsl_vector_get(zeta3_all, j));
+        
+        val = dnorm(yStar, mean, sd, 0);
+        val *= (double) n_ir / (double)(n-1+tau3);
+        gsl_vector_set(prob, j, val);
+    }
+    
+    mean = mu + eta;
+    sd = sqrt(1/zeta);
+    
+    val = dnorm(yStar, mean, sd, 0);
+    val *= (double) tau3 / (double)(n-1+tau3);
+    
+    gsl_vector_set(prob, u, val);
+    
+    sum_prob = 0;
+    for(k = 0; k < u+1; k++)
+    {
+        sum_prob += gsl_vector_get(prob, k);
+    }
+    
+    if(sum_prob > pow(10, -300))
+    {
+        b_mc = 1/sum_prob;
+        gsl_vector_scale(prob, b_mc);
+    }else
+    {
+        for(k=0; k<u+1; k++)
+        {
+            gsl_vector_set(prob, k, (double) 1/(u+1));
+        }
+    }
+    
+    r_ind = c_multinom_sample(rr, prob, u+1);
+    
+    if(r_ind <= u)
+    {
+        gsl_vector_set(r3, i, gsl_vector_get(r3Uniq, r_ind-1));
+        gsl_vector_set(mu3_vec, i, gsl_vector_get(mu3_all, r_ind-1));
+        gsl_vector_set(zeta3_vec, i, gsl_vector_get(zeta3_all, r_ind-1));
+    }else if(r_ind == u+1)
+    {
+        gsl_vector_set(r3, i, gsl_vector_max(r3Uniq)+1);
+        gsl_vector_set(mu3_vec, i, mu);
+        gsl_vector_set(zeta3_vec, i, zeta);
+    }
+    
+    
+    gsl_vector_free(prob);
+    
+    return;
+}
+
+
+
+
+
+/*
+ Random generation from the Inverse Wishart distribution
+ */
+
+void c_riwishart_general(int v,
+                         gsl_matrix *X_ori,
+                         gsl_matrix *sample)
+{
+    int i, j, df;
+    double normVal;
+    int p = X_ori->size1;
+    
+    gsl_matrix *X = gsl_matrix_calloc(p, p);
+    matrixInv(X_ori, X);
+    
+    gsl_matrix *cholX = gsl_matrix_calloc(p, p);
+    gsl_matrix *ZZ = gsl_matrix_calloc(p, p);
+    gsl_matrix *XX = gsl_matrix_calloc(p, p);
+    gsl_matrix *KK = gsl_matrix_calloc(p, p);
+    
+    gsl_matrix_memcpy(cholX, X);
+    gsl_linalg_cholesky_decomp(cholX);
+    
+    for(i = 0; i < p; i ++)
+    {
+        for(j = 0; j < i; j ++)
+        {
+            gsl_matrix_set(cholX, i, j, 0);
+        }
+    }
+    
+    for(i = 0; i < p; i++)
+    {
+        df = v - i;
+        gsl_matrix_set(ZZ, i, i, sqrt(rchisq(df)));
+    }
+    
+    for(i = 0; i < p; i++)
+    {
+        for(j = 0; j < i; j ++)
+        {
+            normVal = rnorm(0, 1);
+            gsl_matrix_set(ZZ, i, j, normVal);
+        }
+    }
+    
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1, ZZ, cholX, 0, XX);
+    gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1, XX, XX, 0, KK);
+    matrixInv(KK, sample);
+    
+    gsl_matrix_free(X);
+    gsl_matrix_free(cholX);
+    gsl_matrix_free(XX);
+    gsl_matrix_free(ZZ);
+    gsl_matrix_free(KK);
+    
+}
+
+
+
+
+/*
+ Random generation from truncated normal distribution
+ */
+void c_rtnorm(double mean,
+              double sd,
+              double LL,
+              double UL,
+              int LL_neginf,
+              int UL_posinf,
+              double *value)
+{
+    int caseNO;
+    int stop=0;
+    double y, a, z, u, val, rho;
+    
+    LL = (LL-mean)/sd;
+    UL = (UL-mean)/sd;
+    
+    if((LL_neginf == 1 && UL_posinf == 1) || (LL_neginf == 0 && LL < 0 && UL_posinf == 1) || (LL_neginf == 1 && UL >0 && UL_posinf == 0) || (UL_posinf == 0 && LL_neginf == 0 && LL <0 && UL > 0  && (UL-LL) > sqrt(2* Pi)))
+    {
+        caseNO = 1;
+    }else if((LL >= 0 && UL > LL + 2*sqrt(exp(1))/(LL+sqrt(pow(LL,2)+4))*exp((2*LL-LL*sqrt(pow(LL, 2)+4))/4) && UL_posinf == 0 && LL_neginf == 0) || (LL >=0 && UL_posinf == 1 && LL_neginf == 0))
+    {
+        caseNO = 2;
+    }else if((UL <= 0 && -LL > -UL + 2*sqrt(exp(1))/(-UL+sqrt(pow(UL, 2)+4))*exp((2*UL+UL*sqrt(pow(UL, 2)+4))/4) && LL_neginf == 0 && UL_posinf == 0) || (LL_neginf == 1 && UL <= 0 && UL_posinf == 0))
+    {
+        caseNO = 3;
+    }else
+    {
+        caseNO = 4;
+    }
+    
+    
+    if(caseNO == 1)
+    {
+        while(stop == 0)
+        {
+            y = rnorm(0, 1);
+            if(LL_neginf == 1 && UL_posinf == 1)
+            {
+                stop = 1;
+                val = y;
+            }else if(LL_neginf == 0 && UL_posinf == 1)
+            {
+                if(y > LL)
+                {
+                    stop = 1;
+                    val = y;
+                }
+            }else if(LL_neginf == 1 && UL_posinf == 0)
+            {
+                if(y < UL)
+                {
+                    stop = 1;
+                    val = y;
+                }
+            }else if(LL_neginf == 0 && UL_posinf == 0)
+            {
+                if(y > LL && y < UL)
+                {
+                    stop = 1;
+                    val = y;
+                }
+            }
+        }
+    }
+    if(caseNO == 2)
+    {
+        while(stop == 0)
+        {
+            a = (LL + sqrt(pow(LL, 2)+4))/2;
+            z = rexp((double) 1/a) + LL;
+            u = runif(0, 1);
+            
+            if(LL_neginf == 0 && UL_posinf == 0)
+            {
+                if(u <= exp(-pow(z-a, 2)/2) && z <= UL)
+                {
+                    stop = 1;
+                    val = z;
+                }
+            }else if(LL_neginf == 0 && UL_posinf == 1)
+            {
+                if(u <= exp(-pow(z-a, 2)/2))
+                {
+                    stop = 1;
+                    val = z;
+                }
+            }
+        }
+    }
+    if(caseNO == 3)
+    {
+        while(stop == 0)
+        {
+            a = (-UL + sqrt(pow(UL, 2)+4))/2;
+            z = rexp((double) 1/a) - UL;
+            u = runif(0, 1);
+            
+            if(LL_neginf == 0 && UL_posinf == 0)
+            {
+                if(u <= exp(-pow(z-a, 2)/2) && z <= -LL)
+                {
+                    stop = 1;
+                    val = -z;
+                }
+            }else if(LL_neginf == 1 && UL_posinf == 0)
+            {
+                if(u <= exp(-pow(z-a, 2)/2))
+                {
+                    stop = 1;
+                    val = -z;
+                }
+            }
+        }
+    }
+    if(caseNO == 4)
+    {
+        while(stop == 0)
+        {
+            if(LL_neginf == 0 && UL_posinf == 0)
+            {
+                z = runif(LL, UL);
+                if(LL >0)
+                {
+                    rho = exp((pow(LL, 2) - pow(z, 2))/2);
+                }else if(UL <0)
+                {
+                    rho = exp((pow(UL, 2) - pow(z, 2))/2);
+                }else
+                {
+                    rho = exp(- pow(z, 2)/2);
+                }
+                u = runif(0, 1);
+                
+                if(u <= rho)
+                {
+                    stop = 1;
+                    val = z;
+                }
+            }
+        }
+    }
+    *value = mean + val * sd;
+    return;
+}
+
+
+
+
+
+/* Evaluating the joint probability density function of (y1, y2) - upper wedge */
+
+void log_Jpdf_Upper_BAFT_DP(int i,
+                            double y1,
+                            double y2,
+                            double LT,
+                            gsl_vector *c0_neginf,
+                            gsl_matrix *X1,
+                            gsl_matrix *X2,
+                            gsl_matrix *X3,
+                            gsl_vector *beta1,
+                            gsl_vector *beta2,
+                            gsl_vector *beta3,
+                            gsl_vector *gamma,
+                            gsl_vector *mu1_all,
+                            gsl_vector *mu2_all,
+                            gsl_vector *mu3_all,
+                            gsl_vector *zeta1_all,
+                            gsl_vector *zeta2_all,
+                            gsl_vector *zeta3_all,
+                            gsl_vector *r1Uniq,
+                            gsl_vector *r2Uniq,
+                            gsl_vector *r3Uniq,
+                            gsl_vector *r1Uniq_count,
+                            gsl_vector *r2Uniq_count,
+                            gsl_vector *r3Uniq_count,
+                            int u1,
+                            int u2,
+                            int u3,
+                            double *value)
+{
+    double gam;
+    double logf1_t1=0;
+    double logS2_t1=0;
+    double logS1_LT=0;
+    double logS2_LT=0;
+    double logf3_gap = 0;
+    double eta1, eta2, eta3;
+    double val = 0;
+    double dummy = 0;
+    
+    double yStar=0;
+    
+    
+    gam = gsl_vector_get(gamma, i);
+    
+    gsl_vector_view X1row = gsl_matrix_row(X1, i);
+    gsl_vector_view X2row = gsl_matrix_row(X2, i);
+    gsl_vector_view X3row = gsl_matrix_row(X3, i);
+    
+    gsl_blas_ddot(&X1row.vector, beta1, &eta1);
+    gsl_blas_ddot(&X2row.vector, beta2, &eta2);
+    gsl_blas_ddot(&X3row.vector, beta3, &eta3);
+    
+    log_fg_BAFT_DP(y1, u1, eta1, gam, mu1_all, zeta1_all, r1Uniq, r1Uniq_count, 1, 0, &logf1_t1, &dummy);
+    
+    if(y1 == y2)
+    {
+        logf3_gap = 0;
+    }else if(y2 > y1)
+    {
+        yStar =y2+log(1-exp(y1-y2));
+        log_fg_BAFT_DP(yStar, u3, eta3, gam, mu3_all, zeta3_all, r3Uniq, r3Uniq_count, 1, 0, &logf3_gap, &dummy);
+    }
+    
+    log_fg_BAFT_DP(y1, u2, eta2, gam, mu2_all, zeta2_all, r2Uniq, r2Uniq_count, 0, 1, &dummy, &logS2_t1);
+    
+    if(gsl_vector_get(c0_neginf, i) == 0)
+    {
+        log_fg_BAFT_DP(LT, u1, eta1, gam, mu1_all, zeta1_all, r1Uniq, r1Uniq_count, 0, 1, &dummy, &logS1_LT);
+        
+        log_fg_BAFT_DP(LT, u2, eta2, gam, mu2_all, zeta2_all, r2Uniq, r2Uniq_count, 0, 1, &dummy, &logS2_LT);
+    }
+    
+    val = (double) logf1_t1 + (double) logf3_gap + (double) logS2_t1 - (double) logS1_LT - (double) logS2_LT + y2 - yStar;
+    
+    *value = val;
+    return;
+}
+
+
+
+
+
+/* Evaluating the joint probability density function of (y1, y2) - lower wedge */
+
+void log_Jpdf_Lower_BAFT_DP(int i,
+                            double y2,
+                            double LT,
+                            gsl_vector *c0_neginf,
+                            gsl_matrix *X1,
+                            gsl_matrix *X2,
+                            gsl_vector *beta1,
+                            gsl_vector *beta2,
+                            gsl_vector *gamma,
+                            gsl_vector *mu1_all,
+                            gsl_vector *mu2_all,
+                            gsl_vector *zeta1_all,
+                            gsl_vector *zeta2_all,
+                            gsl_vector *r1Uniq,
+                            gsl_vector *r2Uniq,
+                            gsl_vector *r1Uniq_count,
+                            gsl_vector *r2Uniq_count,
+                            int u1,
+                            int u2,
+                            double *value)
+{
+    double gam;
+    double logf2_t2=0;
+    double logS1_t2=0;
+    double logS1_LT=0;
+    double logS2_LT=0;
+    double eta1, eta2;
+    double val = 0;
+    double dummy = 0;
+    
+    gam = gsl_vector_get(gamma, i);
+    
+    gsl_vector_view X1row = gsl_matrix_row(X1, i);
+    gsl_vector_view X2row = gsl_matrix_row(X2, i);
+    
+    gsl_blas_ddot(&X1row.vector, beta1, &eta1);
+    gsl_blas_ddot(&X2row.vector, beta2, &eta2);
+    
+    
+    log_fg_BAFT_DP(y2, u2, eta2, gam, mu2_all, zeta2_all, r2Uniq, r2Uniq_count, 1, 0, &logf2_t2, &dummy);
+    log_fg_BAFT_DP(y2, u1, eta1, gam, mu1_all, zeta1_all, r1Uniq, r1Uniq_count, 0, 1, &dummy, &logS1_t2);
+    
+    if(gsl_vector_get(c0_neginf, i) == 0)
+    {
+        log_fg_BAFT_DP(LT, u1, eta1, gam, mu1_all, zeta1_all, r1Uniq, r1Uniq_count, 0, 1, &dummy, &logS1_LT);
+        log_fg_BAFT_DP(LT, u2, eta2, gam, mu2_all, zeta2_all, r2Uniq, r2Uniq_count, 0, 1, &dummy, &logS2_LT);
+    }
+    
+    
+    val = (double) logf2_t2 + (double) logS1_t2 - (double) logS1_LT - (double) logS2_LT;
+    
+    *value = val;
+    return;
+    
+}
+
+
+
+
+
+
+/*
+ Random number generation for inverse gamma distribution
+ alpha = shape, beta = rate
+ 
+ */
+void c_rigamma(double *temp,
+               double alpha,
+               double beta)
+{
+    double shape = alpha;
+    double scale = (double) 1/beta;
+    double gam=0;
+    
+    if(alpha > 0 && beta > 0){
+        gam = rgamma(shape, scale);
+    }
+    *temp = (double) 1/gam;
+    return;
+}
+
+
+
+
+
+
+double Qfunc_BAFT_DP(double V,
+                     double mu0,
+                     double zeta0,
+                     double a0,
+                     double b0)
+{
+    double lterm1, term2, term3, val;
+    
+    lterm1 = gsl_sf_lngamma(a0+0.5) - gsl_sf_lngamma(a0);
+    term2 = sqrt(zeta0/(2*Pi*b0*(zeta0 + 1)));
+    term3 = pow(zeta0*pow(V - mu0, 2)/(2*b0*(zeta0 + 1)) + 1, -a0-0.5);
+    
+    val = exp(lterm1)*term2*term3;
+    
+    return val;
+}
+
+
+
+int MFunc_BAFT_DP(double yL,
+                  double yU,
+                  int yL_neginf,
+                  int yU_posinf,
+                  gsl_vector *mu_all,
+                  gsl_vector *zeta_all,
+                  gsl_vector *rUniq_count,
+                  int u,
+                  double eta,
+                  gsl_rng *rr)
+{
+    int k, selInd;
+    double mixProb_den, mu_k, sigSq_k;
+    
+    gsl_vector *mixProb = gsl_vector_calloc(u);
+    
+    mixProb_den = 0;
+    for(k=0; k<u; k++)
+    {
+        mu_k = gsl_vector_get(mu_all, k);
+        sigSq_k = 1/gsl_vector_get(zeta_all, k);
+        
+        if(yU_posinf == 1)
+        {
+            if(yL_neginf == 1)
+            {
+                gsl_vector_set(mixProb, k, gsl_vector_get(rUniq_count, k));
+            }else
+            {
+                gsl_vector_set(mixProb, k, gsl_vector_get(rUniq_count, k) * (1 - pnorm(yL, eta + mu_k, sqrt(sigSq_k), 1, 0)));
+            }
+        }else
+        {
+            if(yL_neginf == 1)
+            {
+                gsl_vector_set(mixProb, k, gsl_vector_get(rUniq_count, k) * (pnorm(yU, eta + mu_k, sqrt(sigSq_k), 1, 0)));
+            }else
+            {
+                gsl_vector_set(mixProb, k, gsl_vector_get(rUniq_count, k) * (pnorm(yU, eta + mu_k, sqrt(sigSq_k), 1, 0) - pnorm(yL, eta + mu_k, sqrt(sigSq_k), 1, 0)));
+            }
+            
+        }
+        mixProb_den += gsl_vector_get(mixProb, k);
+    }
+    
+    if(mixProb_den == 0)
+    {
+        for(k=0; k<u; k++)
+        {
+            gsl_vector_set(mixProb, k, (double) 1/u);
+        }
+    }else
+    {
+        gsl_vector_scale(mixProb, 1/mixProb_den);
+    }
+    
+    selInd = c_multinom_sample(rr, mixProb, u);
+    
+    gsl_vector_free(mixProb);
+    
+    return selInd;
+}
+
+
+
+
+void log_fg_BAFT_DP(double y,
+                    int u,
+                    double xbeta,
+                    double gam,
+                    gsl_vector *mu_all,
+                    gsl_vector *zeta_all,
+                    gsl_vector *rUniq,
+                    gsl_vector *rUniq_count,
+                    int calf,
+                    int calS,
+                    double *logfg,
+                    double *logSg)
+{
+    int k;
+    double mu_k, sigSq_k, mixProb_den, val1, val2, log1, logk, temp;
+    
+    
+    gsl_vector *mixProb = gsl_vector_calloc(u);
+    
+    mixProb_den=0;
+    for(k=0;k<u;k++)
+    {
+        gsl_vector_set(mixProb, k, gsl_vector_get(rUniq_count, k));
+        mixProb_den += gsl_vector_get(mixProb, k);
+    }
+    gsl_vector_scale(mixProb, (double) 1/mixProb_den);
+    
+    val1=0;
+    val2=0;
+    log1=0;
+    logk=0;
+    temp=0;
+    for(k=0;k<u;k++)
+    {
+        mu_k = (double) gsl_vector_get(mu_all, k);
+        sigSq_k = (double) pow(gsl_vector_get(zeta_all, k), -1);
+        
+        if(calf == 1)
+        {
+            val1 += gsl_vector_get(mixProb, k) * dnorm(y, xbeta+mu_k+gam, sqrt(sigSq_k), 0);
+            
+        }
+        if(calS == 1)
+        {
+            val2 += gsl_vector_get(mixProb, k) * pnorm(y, xbeta+mu_k+gam, sqrt(sigSq_k), 0, 0);
+        }
+        
+    }
+    
+    if(calf == 1)
+    {
+        if(val1 == 0)
+        {
+            *logfg = -600;
+        }else
+        {
+            *logfg = log(val1);
+        }
+    }
+    if(calS == 1)
+    {
+        if(val2 == 0)
+        {
+            *logSg = -600;
+        }else
+        {
+            *logSg = log(val2);
+        }
+    }
+    
+    gsl_vector_free(mixProb);
+    return;
+}
+
+
+
+
+
+
+
+
+
+/*
+ Identify unique lables for cluster memberships:
+ - r, mu_all, zeta_all musted be the updated one
+ - rUniq, rUniq_count, u are calculated
+ */
+void c_uniq(gsl_vector *r,
+            gsl_vector *rUniq,
+            gsl_vector *rUniq_count,
+            gsl_vector *mu_all,
+            gsl_vector *zeta_all,
+            int *u)
+{
+    int i, j, k;
+    
+    int u_old = *u;
+    int n = r -> size;
+    
+    gsl_vector *rTemp = gsl_vector_calloc(n);
+    gsl_vector *muTemp = gsl_vector_calloc(n);
+    gsl_vector *zetaTemp = gsl_vector_calloc(n);
+    gsl_vector *rUniq_old = gsl_vector_calloc(n);
+    
+    gsl_vector_memcpy(rUniq_old, rUniq);
+    
+    gsl_vector_set_zero(rUniq);
+    gsl_vector_set_zero(rUniq_count);
+    
+    gsl_vector_memcpy(rTemp, r);
+    *u = 0;
+    for(i = 0; i < n; i++)
+    {
+        if(gsl_vector_get(rTemp, i) != 0)
+        {
+            *u += 1;
+            gsl_vector_set(rUniq, *u-1, gsl_vector_get(rTemp, i));
+            for(k=0; k < u_old; k++)
+            {
+                if(gsl_vector_get(rUniq_old, k) == gsl_vector_get(rUniq, *u-1))
+                {
+                    gsl_vector_set(muTemp, *u-1, gsl_vector_get(mu_all, k));
+                    gsl_vector_set(zetaTemp, *u-1, gsl_vector_get(zeta_all, k));
+                }
+            }
+            
+            
+            for(j = i; j < n; j++)
+            {
+                if(gsl_vector_get(rTemp, j) == gsl_vector_get(rUniq, *u-1))
+                {
+                    gsl_vector_set(rUniq_count, *u-1, gsl_vector_get(rUniq_count, *u-1)+1);
+                    gsl_vector_set(rTemp, j, 0);
+                }
+            }
+        }
+    }
+    
+    gsl_vector_memcpy(mu_all, muTemp);
+    gsl_vector_memcpy(zeta_all, zetaTemp);
+    
+    gsl_vector_free(rTemp);
+    gsl_vector_free(muTemp);
+    gsl_vector_free(zetaTemp);
+    gsl_vector_free(rUniq_old);
+    
+    return;
+}
+
+
+/*
+ Identify unique lables for cluster memberships:
+ - r, mu_vec, zeta_vec musted be the updated one
+ - rUniq, rUniq_count, u, mu_all, zeta_all are calculated
+ */
+void c_uniq_h3(gsl_vector *r,
+               gsl_vector *rUniq,
+               gsl_vector *rUniq_count,
+               gsl_vector *mu_all,
+               gsl_vector *zeta_all,
+               gsl_vector *mu3_vec,
+               gsl_vector *zeta3_vec,
+               gsl_vector *y1_NA,
+               int *u)
+{
+    int i, j;
+    int n = r -> size;
+    
+    gsl_vector *rTemp = gsl_vector_calloc(n);
+    gsl_vector *muTemp = gsl_vector_calloc(n);
+    gsl_vector *zetaTemp = gsl_vector_calloc(n);
+    
+    gsl_vector_set_zero(rUniq);
+    gsl_vector_set_zero(rUniq_count);
+    
+    gsl_vector_memcpy(rTemp, r);
+    *u = 0;
+    for(i = 0; i < n; i++)
+    {
+        if(gsl_vector_get(y1_NA, i) != 1)
+        {
+            if(gsl_vector_get(rTemp, i) != 0)
+            {
+                *u += 1;
+                gsl_vector_set(rUniq, *u-1, gsl_vector_get(rTemp, i));
+                gsl_vector_set(muTemp, *u-1, gsl_vector_get(mu3_vec, i));
+                gsl_vector_set(zetaTemp, *u-1, gsl_vector_get(zeta3_vec, i));
+                
+                for(j = i; j < n; j++)
+                {
+                    if(gsl_vector_get(rTemp, j) == gsl_vector_get(rUniq, *u-1))
+                    {
+                        gsl_vector_set(rUniq_count, *u-1, gsl_vector_get(rUniq_count, *u-1)+1);
+                        gsl_vector_set(rTemp, j, 0);
+                    }
+                }
+            }
+        }else
+        {
+            gsl_vector_set(r, i, 0);
+            gsl_vector_set(mu3_vec, i, -exp(100000));
+            gsl_vector_set(zeta3_vec, i, -exp(100000));
+        }
+    }
+    
+    gsl_vector_memcpy(mu_all, muTemp);
+    gsl_vector_memcpy(zeta_all, zetaTemp);
+    
+    gsl_vector_free(rTemp);
+    gsl_vector_free(muTemp);
+    gsl_vector_free(zetaTemp);
+    
+    
+    return;
+}
+
+
+
+
+/*
+ Identify unique lables for cluster memberships for the first iteration
+ : r must be the updated one --> set rUniq, rUniq_count, nClass
+ */
+void c_uniq1(gsl_vector *r,
+             gsl_vector *rUniq,
+             gsl_vector *rUniq_count,
+             int *u)
+{
+    int i, j;
+    int n = r -> size;
+    
+    gsl_vector *rTemp = gsl_vector_calloc(n);
+    
+    gsl_vector_set_zero(rUniq);
+    gsl_vector_set_zero(rUniq_count);
+    
+    gsl_vector_memcpy(rTemp, r);
+    *u = 1;
+    for(i = 0; i < n; i++)
+    {
+        if(i == 0 && gsl_vector_get(rTemp, i) != 0)
+        {
+            gsl_vector_set(rUniq, 0, gsl_vector_get(rTemp, 0));
+            for(j = i; j < n; j++)
+            {
+                if(gsl_vector_get(rTemp, j) == gsl_vector_get(rUniq, 0))
+                {
+                    gsl_vector_set(rUniq_count, 0, gsl_vector_get(rUniq_count, 0)+1);
+                    gsl_vector_set(rTemp, j, 0);
+                }
+            }
+        }
+        
+        if(i != 0 && gsl_vector_get(rTemp, i) != 0)
+        {
+            *u += 1;
+            gsl_vector_set(rUniq, *u-1, gsl_vector_get(rTemp, i));
+            
+            for(j = i; j < n; j++)
+            {
+                if(gsl_vector_get(rTemp, j) == gsl_vector_get(rUniq, *u-1))
+                {
+                    gsl_vector_set(rUniq_count, *u-1, gsl_vector_get(rUniq_count, *u-1)+1);
+                    gsl_vector_set(rTemp, j, 0);
+                }
+            }
+        }
+    }
+    
+    gsl_vector_free(rTemp);
+    
+    return;
+}
+
+
+
+/*
+ Identify unique lables for cluster memberships for the first iteration
+ : r and y1_NA must be the updated one --> set rUniq, rUniq_count, nClass
+ */
+void c_uniq1_h3(gsl_vector *r,
+                gsl_vector *rUniq,
+                gsl_vector *rUniq_count,
+                gsl_vector *y1_NA,
+                int *u)
+{
+    int i, j;
+    int n = r -> size;
+    
+    gsl_vector *rTemp = gsl_vector_calloc(n);
+    
+    gsl_vector_set_zero(rUniq);
+    gsl_vector_set_zero(rUniq_count);
+    
+    gsl_vector_memcpy(rTemp, r);
+    *u = 0;
+    for(i = 0; i < n; i++)
+    {
+        if(gsl_vector_get(y1_NA, i) == 0)
+        {
+            if(gsl_vector_get(rTemp, i) != 0)
+            {
+                *u += 1;
+                gsl_vector_set(rUniq, *u-1, gsl_vector_get(rTemp, i));
+                
+                for(j = i; j < n; j++)
+                {
+                    if(gsl_vector_get(rTemp, j) == gsl_vector_get(rUniq, *u-1))
+                    {
+                        gsl_vector_set(rUniq_count, *u-1, gsl_vector_get(rUniq_count, *u-1)+1);
+                        gsl_vector_set(rTemp, j, 0);
+                    }
+                }
+            }
+        }else
+        {
+            gsl_vector_set(r, i, 0);
+        }
+    }
+    
+    gsl_vector_free(rTemp);
+    
+    return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Evaluating the joint probability density function of (y1, y2) - upper wedge */
+
+void log_Jpdf_Upper_BAFT_LN(int i,
+                            double y1,
+                            double y2,
+                            double LT,
+                            gsl_vector *c0_neginf,
+                            gsl_matrix *X1,
+                            gsl_matrix *X2,
+                            gsl_matrix *X3,
+                            gsl_vector *beta1,
+                            gsl_vector *beta2,
+                            gsl_vector *beta3,
+                            gsl_vector *gamma,
+                            double beta01,
+                            double beta02,
+                            double beta03,
+                            double sigSq1,
+                            double sigSq2,
+                            double sigSq3,
+                            double *value)
+{
+    double eta1, eta2, eta3, gam, y2_temp;
+    double val = 0;
+    y2_temp = 0;
+    
+    gam = gsl_vector_get(gamma, i);
+    
+    gsl_vector_view X1row = gsl_matrix_row(X1, i);
+    gsl_vector_view X2row = gsl_matrix_row(X2, i);
+    gsl_vector_view X3row = gsl_matrix_row(X3, i);
+    
+    gsl_blas_ddot(&X1row.vector, beta1, &eta1);
+    gsl_blas_ddot(&X2row.vector, beta2, &eta2);
+    gsl_blas_ddot(&X3row.vector, beta3, &eta3);
+    
+    eta1 += beta01 + gam;
+    eta2 += beta02 + gam;
+    eta3 += beta03 + gam;
+    
+    /* without left-truncation */
+    val += dnorm(y1, eta1, sqrt(sigSq1), 1);
+    val += pnorm(y1, eta2, sqrt(sigSq2), 0, 1);
+    
+    /*     */
+    val += y2;
+    
+    if(y1 < y2)
+    {
+        val += dnorm(log(exp(y2)-exp(y1)), eta3, sqrt(sigSq3), 1);
+        
+        /*         */
+        val -= y2 + log(1-exp(y1-y2));
+        
+    }
+    
+    if(gsl_vector_get(c0_neginf, i) == 0)
+    {
+        /* for left-truncation */
+        val -= pnorm(LT, eta1, sqrt(sigSq1), 0, 1);
+        val -= pnorm(LT, eta2, sqrt(sigSq2), 0, 1);
+    }
+    
+    *value = val;
+    return;
+}
+
+
+/* Evaluating the joint probability density function of (y1, y2) - lower wedge */
+
+void log_Jpdf_Lower_BAFT_LN(int i,
+                            double y2,
+                            double LT,
+                            gsl_vector *c0_neginf,
+                            gsl_matrix *X1,
+                            gsl_matrix *X2,
+                            gsl_vector *beta1,
+                            gsl_vector *beta2,
+                            gsl_vector *gamma,
+                            double beta01,
+                            double beta02,
+                            double sigSq1,
+                            double sigSq2,
+                            double *value)
+{
+    double eta1, eta2, gam;
+    double val = 0;
+    
+    gam = gsl_vector_get(gamma, i);
+    
+    gsl_vector_view X1row = gsl_matrix_row(X1, i);
+    gsl_vector_view X2row = gsl_matrix_row(X2, i);
+    
+    gsl_blas_ddot(&X1row.vector, beta1, &eta1);
+    gsl_blas_ddot(&X2row.vector, beta2, &eta2);
+    
+    eta1 += beta01 + gam;
+    eta2 += beta02 + gam;
+    
+    /* without left-truncation */
+    val += dnorm(y2, eta2, sqrt(sigSq2), 1);
+    val += pnorm(y2, eta1, sqrt(sigSq1), 0, 1);
+    
+    if(gsl_vector_get(c0_neginf, i) == 0)
+    {
+        /* for left-truncation */
+        val -= pnorm(LT, eta1, sqrt(sigSq1), 0, 1);
+        val -= pnorm(LT, eta2, sqrt(sigSq2), 0, 1);
+    }
+    
+    *value = val;
+    return;
+}
+
+
+
+/*
+ Evaluate density function for mixture of truncated normals
+ */
+double fmixTN(double y,
+              double yL,
+              double yU,
+              int yL_neginf,
+              int yU_posinf,
+              gsl_vector *mu_all,
+              gsl_vector *zeta_all,
+              gsl_vector *rUniq_count,
+              int u,
+              double eta)
+{
+    int k;
+    double mixProb_den, mu_k, sigSq_k, temp;
+    double TN_den, TN_num;
+    
+    gsl_vector *mixProb = gsl_vector_calloc(u);
+    
+    mixProb_den = 0;
+    for(k=0;k<u;k++)
+    {
+        mu_k = (double) gsl_vector_get(mu_all, k);
+        sigSq_k = (double) pow(gsl_vector_get(zeta_all, k), -1);
+        
+        if(yL_neginf == 0 && yU_posinf == 0)
+        {
+            gsl_vector_set(mixProb, k, gsl_vector_get(rUniq_count, k) * (pnorm(yU, eta + mu_k, sqrt(sigSq_k), 1, 0) - pnorm(yL, eta + mu_k, sqrt(sigSq_k), 1, 0)));
+        }else if(yL_neginf == 0 && yU_posinf == 1)
+        {
+            gsl_vector_set(mixProb, k, gsl_vector_get(rUniq_count, k) * pnorm(yL, eta + mu_k, sqrt(sigSq_k), 0, 0));
+        }else if(yL_neginf == 1 && yU_posinf == 0)
+        {
+            gsl_vector_set(mixProb, k, gsl_vector_get(rUniq_count, k) * pnorm(yU, eta + mu_k, sqrt(sigSq_k), 1, 0));
+        }else if(yL_neginf == 1 && yU_posinf == 1)
+        {
+            gsl_vector_set(mixProb, k, gsl_vector_get(rUniq_count, k));
+        }
+        
+        mixProb_den += gsl_vector_get(mixProb, k);
+        
+    }
+    gsl_vector_scale(mixProb, (double) 1/mixProb_den);
+    
+    
+    temp = 0;
+    for(k=0;k<u;k++)
+    {
+        mu_k = (double) gsl_vector_get(mu_all, k);
+        sigSq_k = (double) pow(gsl_vector_get(zeta_all, k), -1);
+        
+        
+        if(yL_neginf == 0 && yU_posinf == 0)
+        {
+            TN_num = dnorm(y, eta + mu_k, sqrt(sigSq_k), 0);
+            if(TN_num != 0)
+            {
+                TN_den = pnorm(yU, eta + mu_k, sqrt(sigSq_k), 1, 0)-pnorm(yL, eta + mu_k, sqrt(sigSq_k), 1, 0);
+                if(TN_den !=0)
+                {
+                    temp += gsl_vector_get(mixProb, k) * TN_num/TN_den;
+                }
+            }
+        }else if(yL_neginf == 0 && yU_posinf == 1)
+        {
+            TN_num = dnorm(y, eta + mu_k, sqrt(sigSq_k), 0);
+            if(TN_num != 0)
+            {
+                TN_den = pnorm(yL, eta + mu_k, sqrt(sigSq_k), 0, 0);
+                if(TN_den !=0)
+                {
+                    temp += gsl_vector_get(mixProb, k) * TN_num/TN_den;
+                }
+            }
+        }else if(yL_neginf == 1 && yU_posinf == 0)
+        {
+            TN_num = dnorm(y, eta + mu_k, sqrt(sigSq_k), 0);
+            if(TN_num != 0)
+            {
+                TN_den = pnorm(yU, eta + mu_k, sqrt(sigSq_k), 1, 0);
+                if(TN_den !=0)
+                {
+                    temp += gsl_vector_get(mixProb, k) * TN_num/TN_den;
+                }
+            }
+        }else if(yL_neginf == 1 && yU_posinf == 1)
+        {
+            temp += gsl_vector_get(mixProb, k) * dnorm(y, eta + mu_k, sqrt(sigSq_k), 0);
+        }
+        
+    }
+    
+    gsl_vector_free(mixProb);
+    return temp;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
