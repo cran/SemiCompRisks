@@ -23,8 +23,11 @@ print.Freq_HReg <- function(x, digits=3, ...)
         #cat("\nBaseline hazard function components:\n")
         #print(round(value[c(1:2),], digits=digits))
         ##
-        cat("\nRegression coefficients:\n")
-        print(round(value[-c(1:2),], digits=digits))
+        if(length(obj$myLabels) >= 3)
+        {
+            cat("\nRegression coefficients:\n")
+            print(round(value[-c(1:2),], digits=digits))
+        }
     }
     
     ##
@@ -45,9 +48,12 @@ print.Freq_HReg <- function(x, digits=3, ...)
         if(obj$frailty == TRUE) print(round(value_theta, digits=digits))
         if(obj$frailty == FALSE) print("NA")
         ##
-        cat("\nRegression coefficients:\n")
-        if(obj$frailty == TRUE) print(round(value[-c(1:7),], digits=digits))
-        if(obj$frailty == FALSE) print(round(value[-c(1:6),], digits=digits))
+        if(sum(obj$nP) != 0)
+        {
+            cat("\nRegression coefficients:\n")
+            if(obj$frailty == TRUE) print(round(value[-c(1:7),], digits=digits))
+            if(obj$frailty == FALSE) print(round(value[-c(1:6),], digits=digits))
+        }
     }
     
     ##
@@ -1200,8 +1206,14 @@ summary.Freq_HReg <- function(object, digits=3, ...)
     {
         ##
         #cat("\nRegression coefficients:\n")
-        output.coef           <- results[-c(1:2),]
-        dimnames(output.coef) <- list(unique(obj$myLabels[-c(1:2)]), c("beta", "LL", "UL"))
+        if(length(obj$myLabels) >= 3)
+        {
+            output.coef           <- results[-c(1:2),]
+            dimnames(output.coef) <- list(unique(obj$myLabels[-c(1:2)]), c("beta", "LL", "UL"))
+        }else
+        {
+            output.coef <- NULL
+        }
         ##
         #cat("\nBaseline hazard function components:\n")
         output.h0           <- results[c(1:2),]
@@ -1229,9 +1241,18 @@ summary.Freq_HReg <- function(object, digits=3, ...)
         dimnames(output) <- list(beta.names, c("beta1", "LL", "UL", "beta2", "LL", "UL", "beta3", "LL", "UL"))
         for(i in 1:nP)
         {
-            for(j in 1:nP.1) if(obj$myLabels[nP.0+j] == beta.names[i]) output[i,1:3] <- results[nP.0+j,]
-            for(j in 1:nP.2) if(obj$myLabels[nP.0+nP.1+j] == beta.names[i]) output[i,4:6] <- results[nP.0+nP.1+j,]
-            for(j in 1:nP.3) if(obj$myLabels[nP.0+nP.1+nP.2+j] == beta.names[i]) output[i,7:9] <- results[nP.0+nP.1+nP.2+j,]
+            if(nP.1 != 0)
+            {
+                for(j in 1:nP.1) if(obj$myLabels[nP.0+j] == beta.names[i]) output[i,1:3] <- results[nP.0+j,]
+            }
+            if(nP.2 != 0)
+            {
+                for(j in 1:nP.2) if(obj$myLabels[nP.0+nP.1+j] == beta.names[i]) output[i,4:6] <- results[nP.0+nP.1+j,]
+            }
+            if(nP.3 != 0)
+            {
+                 for(j in 1:nP.3) if(obj$myLabels[nP.0+nP.1+nP.2+j] == beta.names[i]) output[i,7:9] <- results[nP.0+nP.1+nP.2+j,]
+            }
         }
         output.coef <- output
         ##
@@ -3177,10 +3198,13 @@ print.summ.Freq_HReg <- function(x, digits=3, ...)
     }
     ##
     #cat("\nRegression coefficients:\n")
-    #print(round(obj$coef, digits=digits))
-    ##
-    cat("\nHazard ratios:\n")
-    print(round(exp(obj$coef), digits=digits))
+    #print(round(obj$coef, digits=digits))    
+    if(!is.null(obj$coef))
+    {
+        ##
+        cat("\nHazard ratios:\n")
+        print(round(exp(obj$coef), digits=digits))
+    }
     ##
     if(class(obj)[2] == "ID"){
         cat("\nVariance of frailties:\n")

@@ -114,7 +114,15 @@ logLike.weibull.Uni <- function(para, y, delta, Xmat)
     alpha <- exp(para[2])
     ##
     nP  <- length(para)
-    eta <- as.vector(Xmat %*% para[3:nP])
+    ncov <- ncol(Xmat)
+    ##
+    if(ncov == 0)
+    {
+    	eta <- 0
+    }else if(ncov > 0)
+    {
+    	 eta <- as.vector(Xmat %*% para[3:nP])
+    }   
     ##
     comp1 <- - (kappa*y^alpha) * exp(eta)
     comp2 <- log(alpha) + log(kappa) + (alpha-1) * log(y) + eta
@@ -123,6 +131,8 @@ logLike.weibull.Uni <- function(para, y, delta, Xmat)
     ##
     return(-loglh)
 }
+
+
 
 ##
 logLike.weibull.SCR <- function(para, y1, y2, delta1, delta2, Xmat1=NULL, Xmat2=NULL, Xmat3=NULL, frailty=TRUE)
@@ -144,10 +154,27 @@ logLike.weibull.SCR <- function(para, y1, y2, delta1, delta2, Xmat1=NULL, Xmat2=
     nP.2 <- ncol(Xmat2)
     nP.3 <- ncol(Xmat3)
     ##
-    eta.1 <- as.vector(Xmat1 %*% para[nP.0 + c(1:nP.1)])
-    eta.2 <- as.vector(Xmat2 %*% para[nP.0 + nP.1 + c(1:nP.2)])
-    eta.3 <- as.vector(Xmat3 %*% para[nP.0 + nP.1 + nP.2 + c(1:nP.3)])
-    
+    if(nP.1 == 0)
+    {
+    	eta.1 <- 0
+    }else if(nP.1 > 0)
+    {
+    	eta.1 <- as.vector(Xmat1 %*% para[nP.0 + c(1:nP.1)])
+    }
+    if(nP.2 == 0)
+    {
+    	eta.2 <- 0
+    }else if(nP.2 > 0)
+    {
+    	eta.2 <- as.vector(Xmat2 %*% para[nP.0 + nP.1 + c(1:nP.2)])
+    }
+    if(nP.3 == 0)
+    {
+    	eta.3 <- 0
+    }else if(nP.3 > 0)
+    {
+    	eta.3 <- as.vector(Xmat3 %*% para[nP.0 + nP.1 + nP.2 + c(1:nP.3)])
+    }        
     ##
     type1 <- as.numeric(delta1 == 1 & delta2 == 1)
     type2 <- as.numeric(delta1 == 0 & delta2 == 1)
@@ -206,10 +233,27 @@ logLike.weibull.SCR.SM <- function(para, y1, y2, delta1, delta2, Xmat1=NULL, Xma
     nP.2 <- ncol(Xmat2)
     nP.3 <- ncol(Xmat3)
     ##
-    eta.1 <- as.vector(Xmat1 %*% para[nP.0 + c(1:nP.1)])
-    eta.2 <- as.vector(Xmat2 %*% para[nP.0 + nP.1 + c(1:nP.2)])
-    eta.3 <- as.vector(Xmat3 %*% para[nP.0 + nP.1 + nP.2 + c(1:nP.3)])
-    
+    if(nP.1 == 0)
+    {
+    	eta.1 <- 0
+    }else if(nP.1 > 0)
+    {
+    	eta.1 <- as.vector(Xmat1 %*% para[nP.0 + c(1:nP.1)])
+    }
+    if(nP.2 == 0)
+    {
+    	eta.2 <- 0
+    }else if(nP.2 > 0)
+    {
+    	eta.2 <- as.vector(Xmat2 %*% para[nP.0 + nP.1 + c(1:nP.2)])
+    }
+    if(nP.3 == 0)
+    {
+    	eta.3 <- 0
+    }else if(nP.3 > 0)
+    {
+    	eta.3 <- as.vector(Xmat3 %*% para[nP.0 + nP.1 + nP.2 + c(1:nP.3)])
+    }     
     ##
     type1 <- as.numeric(delta1 == 1 & delta2 == 1)
     type2 <- as.numeric(delta1 == 0 & delta2 == 1)
