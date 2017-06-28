@@ -72,8 +72,8 @@ For the Bayesian parametric analysis, we build on the log-Normal formulation and
 \code{BayesID_AFT} returns an object of class \code{Bayes_AFT}. \cr
 }
 \references{
-Lee, K. H., Rondeau, V., and Haneuse, S. (2016),
-Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{under review}. \cr}
+Lee, K. H., Rondeau, V., and Haneuse, S. (2017),
+Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, in press. \cr}
 \author{
 Kyu Ha Lee and Sebastien Haneuse\cr
 Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>

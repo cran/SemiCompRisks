@@ -115,8 +115,8 @@ The function initiates starting values for a single chain for accelrated failtur
 	\code{initiate.startValues_AFT} returns a list containing starting values for a sigle chain that can be used for \code{BayesID_AFT} and \code{BayesSurv_AFT}.
 }
 \references{
-Lee, K. H., Rondeau, V., and Haneuse, S. (2016),
-Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{under review}. \cr
+Lee, K. H., Rondeau, V., and Haneuse, S. (2017),
+Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, in press. \cr
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr

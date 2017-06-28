@@ -1,4 +1,4 @@
-useDynLib(SemiCompRisks) 
+useDynLib(SemiCompRisks, .registration = TRUE) 
 
 export(BayesSurv_HReg)
 export(BayesSurv_AFT)
