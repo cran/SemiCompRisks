@@ -116,7 +116,7 @@ The function initiates starting values for a single chain for accelrated failtur
 }
 \references{
 Lee, K. H., Rondeau, V., and Haneuse, S. (2017),
-Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, in press. \cr
+Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, 73, 4, 1401-1412. \cr
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr

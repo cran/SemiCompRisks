@@ -1938,7 +1938,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             
             tbl_k3 <- c(kappa.pMed, kappa.pLb, kappa.pUb)
             
-            bh  <- matrix(c(tbl_a1, tbl_a2, tbl_a3, tbl_k1, tbl_k2, tbl_k3), 2, 9, byrow = T)
+            bh  <- matrix(c(tbl_k1, tbl_k2, tbl_k3, tbl_a1, tbl_a2, tbl_a3), 2, 9, byrow = T)
             dimnames(bh) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("h1-PM", "LL", "UL", "h2-PM", "LL", "UL", "h3-PM", "LL", "UL"))
             
             value <- list(classFit=class(x), psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
@@ -3979,9 +3979,9 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
                     lines(time1, BS1Lb, col="blue", lwd=3, lty=3)
                 }else
                 {
-                    lines(unique(c(0, time1)), c(1, BS1Med), col="red", lwd=3)
-                    lines(unique(c(0, time1)), c(1, BS1Ub), col="red", lwd=3, lty=3)
-                    lines(unique(c(0, time1)), c(1, BS1Lb), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time1)), c(1, BS1Med), col="blue", lwd=3)
+                    lines(unique(c(0, time1)), c(1, BS1Ub), col="blue", lwd=3, lty=3)
+                    lines(unique(c(0, time1)), c(1, BS1Lb), col="blue", lwd=3, lty=3)
                 }
                 
                 ##
@@ -3998,9 +3998,9 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
                 
                 if(time2[1] == 0)
                 {
-                    lines(time2, BS2Med, col="blue", lwd=3)
-                    lines(time2, BS2Ub, col="blue", lwd=3, lty=3)
-                    lines(time2, BS2Lb, col="blue", lwd=3, lty=3)
+                    lines(time2, BS2Med, col="red", lwd=3)
+                    lines(time2, BS2Ub, col="red", lwd=3, lty=3)
+                    lines(time2, BS2Lb, col="red", lwd=3, lty=3)
                 }else
                 {
                     lines(unique(c(0, time2)), c(1, BS2Med), col="red", lwd=3)
@@ -4022,9 +4022,9 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
                 
                 if(time3[1] == 0)
                 {
-                    lines(time3, BS3Med, col="blue", lwd=3)
-                    lines(time3, BS3Ub, col="blue", lwd=3, lty=3)
-                    lines(time3, BS3Lb, col="blue", lwd=3, lty=3)
+                    lines(time3, BS3Med, col="red", lwd=3)
+                    lines(time3, BS3Ub, col="red", lwd=3, lty=3)
+                    lines(time3, BS3Lb, col="red", lwd=3, lty=3)
                 }else
                 {
                     lines(unique(c(0, time3)), c(1, BS3Med), col="red", lwd=3)
@@ -4375,9 +4375,9 @@ plot.Bayes_AFT <- function(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", 
                     lines(time1, BS1Lb, col="blue", lwd=3, lty=3)
                 }else
                 {
-                    lines(unique(c(0, time1)), c(1, BS1Med), col="red", lwd=3)
-                    lines(unique(c(0, time1)), c(1, BS1Ub), col="red", lwd=3, lty=3)
-                    lines(unique(c(0, time1)), c(1, BS1Lb), col="red", lwd=3, lty=3)
+                    lines(unique(c(0, time1)), c(1, BS1Med), col="blue", lwd=3)
+                    lines(unique(c(0, time1)), c(1, BS1Ub), col="blue", lwd=3, lty=3)
+                    lines(unique(c(0, time1)), c(1, BS1Lb), col="blue", lwd=3, lty=3)
                 }
                 
                 ##
@@ -4387,9 +4387,9 @@ plot.Bayes_AFT <- function(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", 
                 
                 if(time2[1] == 0)
                 {
-                    lines(time2, BS2Med, col="blue", lwd=3)
-                    lines(time2, BS2Ub, col="blue", lwd=3, lty=3)
-                    lines(time2, BS2Lb, col="blue", lwd=3, lty=3)
+                    lines(time2, BS2Med, col="red", lwd=3)
+                    lines(time2, BS2Ub, col="red", lwd=3, lty=3)
+                    lines(time2, BS2Lb, col="red", lwd=3, lty=3)
                 }else
                 {
                     lines(unique(c(0, time2)), c(1, BS2Med), col="red", lwd=3)
@@ -4404,9 +4404,9 @@ plot.Bayes_AFT <- function(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", 
                 
                 if(time3[1] == 0)
                 {
-                    lines(time3, BS3Med, col="blue", lwd=3)
-                    lines(time3, BS3Ub, col="blue", lwd=3, lty=3)
-                    lines(time3, BS3Lb, col="blue", lwd=3, lty=3)
+                    lines(time3, BS3Med, col="red", lwd=3)
+                    lines(time3, BS3Ub, col="red", lwd=3, lty=3)
+                    lines(time3, BS3Lb, col="red", lwd=3, lty=3)
                 }else
                 {
                     lines(unique(c(0, time3)), c(1, BS3Med), col="red", lwd=3)

@@ -42,7 +42,7 @@ a list containing variables required for MCMC sampling. Components include,
 \code{storage} (a list containing numeric values for storing posterior samples for subject- and cluster-specific random effects:
 \code{nGam_save}, the number of \eqn{\gamma} to be stored; \code{nY1_save}, the number of \eqn{y1} to be stored; \code{nY2_save}, the number of \eqn{y2} to be stored; \code{nY1.NA_save}, the number of \eqn{y1.NA} to be stored).
 \code{tuning} (a list containing numeric values relevant to tuning parameters for specific updates in Metropolis-Hastings (MH) algorithm:
-\code{mhProp_theta_var}, the variance of proposal density for \eqn{\theta}; \code{betag.prop.var}, the variance of proposal density for \eqn{\beta_g}; \code{mug.prop.var}, the variance of proposal density for \eqn{\mu_{g}}; \code{zetag.prop.var}, the variance of proposal density for \eqn{1/\sigma_g^2};
+\code{betag.prop.var}, the variance of proposal density for \eqn{\beta_g}; \code{mug.prop.var}, the variance of proposal density for \eqn{\mu_{g}}; \code{zetag.prop.var}, the variance of proposal density for \eqn{1/\sigma_g^2};
 \code{gamma.prop.var}, the variance of proposal density for \eqn{\gamma}).
 See Details and Examples below.
 }
@@ -73,7 +73,7 @@ For the Bayesian parametric analysis, we build on the log-Normal formulation and
 }
 \references{
 Lee, K. H., Rondeau, V., and Haneuse, S. (2017),
-Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, in press. \cr}
+Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, 73, 4, 1401-1412. \cr}
 \author{
 Kyu Ha Lee and Sebastien Haneuse\cr
 Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>

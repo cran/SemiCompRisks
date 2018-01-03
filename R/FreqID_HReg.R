@@ -30,16 +30,16 @@ FreqID_HReg <- function(Y, lin.pred, data, model = "semi-Markov", frailty=TRUE)
     if(model == "Markov")
     {
         ##
-        fit0  <- nlm(logLike.weibull.SCR, p=startVals * runif(length(startVals), 0.9, 1.1),
+        fit0  <- suppressWarnings(nlm(logLike.weibull.SCR, p=startVals * runif(length(startVals), 0.9, 1.1),
         y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
-        iterlim=1000, hessian=TRUE)
+        iterlim=1000, hessian=TRUE))
     }
     if(model == "semi-Markov")
     {
         ##
-        fit0  <- nlm(logLike.weibull.SCR.SM, p=startVals * runif(length(startVals), 0.9, 1.1),
+        fit0  <- suppressWarnings(nlm(logLike.weibull.SCR.SM, p=startVals * runif(length(startVals), 0.9, 1.1),
         y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
-        iterlim=1000, hessian=TRUE)
+        iterlim=1000, hessian=TRUE))
     }
     
     ##

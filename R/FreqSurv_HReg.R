@@ -12,9 +12,9 @@ FreqSurv_HReg <- function(Y, lin.pred, data)
     ## log(kappa), log(alpha), log(beta)
     startVals <- c(-alpha*coef(fit.survreg)[1], log(alpha), -coef(fit.survreg)[-1]*alpha)
     ##
-    fit0 <- nlm(logLike.weibull.Uni, p=startVals * runif(length(startVals), 0.9, 1.1),
+    fit0 <- suppressWarnings(nlm(logLike.weibull.Uni, p=startVals * runif(length(startVals), 0.9, 1.1),
     y=y, delta=delta, Xmat=Xmat,
-    iterlim=1000, hessian=TRUE)
+    iterlim=1000, hessian=TRUE))
     ##
     if(fit0$code == 1 | fit0$code == 2)
     {

@@ -9,7 +9,7 @@ Independent/cluster-correlated semi-competing risks data can be analyzed using H
 }
 \usage{
 BayesID_HReg(Y, lin.pred, data, cluster=NULL, model=c("semi-Markov", "Weibull"), 
-        hyperParams, startValues, mcmc, path=NULL)
+        hyperParams, startValues, mcmcParams, path=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,7 +34,7 @@ BayesID_HReg(Y, lin.pred, data, cluster=NULL, model=c("semi-Markov", "Weibull"),
   \item{hyperParams}{
 	a list containing lists or vectors for hyperparameter values in hierarchical models. Components include, 
 	\code{theta} (a numeric vector for hyperparameter in the prior of subject-specific frailty variance component), 
-	\code{WB} (a list containing numeric vectors for Weibull hyperparameters: \code{WB.ab1}, \code{WB.ab2}, \code{WB.ab3}), 
+	\code{WB} (a list containing numeric vectors for Weibull hyperparameters: \code{WB.ab1}, \code{WB.ab2}, \code{WB.ab3}, \code{WB.cd1}, \code{WB.cd2}, \code{WB.cd3}), 
 	\code{PEM} (a list containing numeric vectors for PEM hyperparameters: \code{PEM.ab1}, \code{PEM.ab2}, \code{PEM.ab3}, \code{PEM.alpha1}, \code{PEM.alpha2}, \code{PEM.alpha3}).
 	Models for clustered data require additional components,
 	\code{MVN} (a list containing numeric vectors for MVN hyperparameters: \code{Psi_v}, \code{rho_v}), 
@@ -44,7 +44,7 @@ BayesID_HReg(Y, lin.pred, data, cluster=NULL, model=c("semi-Markov", "Weibull"),
   \item{startValues}{
   	a list containing vectors of starting values for model parameters. It can be specified as the object returned by the function \code{\link{initiate.startValues_HReg}}.
 }
-  \item{mcmc}{
+  \item{mcmcParams}{
 	a list containing variables required for MCMC sampling. Components include,
 	\code{run} (a list containing numeric values for setting for the overall run: 
 	\code{numReps}, total number of scans; \code{thin}, extent of thinning; \code{burninPerc}, the proportion of burn-in).

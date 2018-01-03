@@ -9,7 +9,7 @@ Independent/cluster-correlated univariate right-censored survival data can be an
 }
 \usage{
 BayesSurv_HReg(Y, lin.pred, data, cluster=NULL, model="Weibull", 
-          hyperParams, startValues, mcmc, path=NULL)
+          hyperParams, startValues, mcmcParams, path=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,7 +32,7 @@ BayesSurv_HReg(Y, lin.pred, data, cluster=NULL, model="Weibull",
 }
   \item{hyperParams}{
 	a list containing lists or vectors for hyperparameter values in hierarchical models. Components include, 
-	\code{WB} (a list containing a numeric vector for Weibull hyperparameters: \code{WB.ab}), 
+	\code{WB} (a list containing a numeric vector for Weibull hyperparameters: \code{WB.ab}, \code{WB.cd}), 
 	\code{PEM} (a list containing numeric vectors for PEM hyperparameters: \code{PEM.ab}, \code{PEM.alpha}).
 	Models for clustered data require additional components,
 	\code{Normal} (a list containing a numeric vector for hyperparameters in a Normal prior: \code{Normal.ab}), 
@@ -42,7 +42,7 @@ BayesSurv_HReg(Y, lin.pred, data, cluster=NULL, model="Weibull",
   \item{startValues}{
 	a list containing vectors of starting values for model parameters. It can be specified as the object returned by the function \code{\link{initiate.startValues_HReg}}.
 }
-  \item{mcmc}{
+  \item{mcmcParams}{
 	a list containing variables required for MCMC sampling. Components include,
 	\code{run} (a list containing numeric values for setting for the overall run: 
 	\code{numReps}, total number of scans; \code{thin}, extent of thinning; \code{burninPerc}, the proportion of burn-in).

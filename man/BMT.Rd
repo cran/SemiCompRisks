@@ -25,13 +25,13 @@ Data on 137 Bone Marrow Transplant Patients
     \item{\code{deltaP}}{platelet recovery indicator; 1-Platelets returned to normal levels, 0-Platelets never returned to normal levels}
     \item{\code{Z1}}{patient age in years}
     \item{\code{Z2}}{donor age in years}
-    \item{\code{Z3}}{patient sex; 1-Male, 2-Female}
-    \item{\code{Z4}}{donor sex; 1-Male, 2-Female}
-    \item{\code{Z5}}{patient CMV status; 1-CMV positive, 0-CMV negative}
-    \item{\code{Z6}}{donor CMV status; 1-CMV positive, 0-CMV negative}
+    \item{\code{Z3}}{patient sex: 1-Male, 2-Female}
+    \item{\code{Z4}}{donor sex: 1-Male, 2-Female}
+    \item{\code{Z5}}{patient CMV status: 1-CMV positive, 0-CMV negative}
+    \item{\code{Z6}}{donor CMV status: 1-CMV positive, 0-CMV negative}
     \item{\code{Z7}}{waiting time to transplant in days}
-    \item{\code{Z8}}{FAB; 1-FAB Grade 4 or 5 and AML, 0-Otherwise}
-    \item{\code{Z9}}{hospital; 1-The Ohio State University, 2-Alfred, 3-St. Vincent, 4-Hahnemann}
+    \item{\code{Z8}}{FAB: 1-FAB Grade 4 or 5 and AML, 0-Otherwise}
+    \item{\code{Z9}}{hospital: 1-The Ohio State University, 2-Alfred, 3-St. Vincent, 4-Hahnemann}
     \item{\code{Z10}}{MTX used as a graft-versus-host-prophylactic; 1-Yes, 0-No}
   }
 }

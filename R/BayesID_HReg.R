@@ -8,9 +8,10 @@ cluster = NULL,
 model = c("semi-Markov", "Weibull"),
 hyperParams,
 startValues,
-mcmc,
+mcmcParams,
 path = NULL)
 {
+	mcmc <- mcmcParams
     hyperP      <- hyperParams
     mcmcList    <- mcmc
     
