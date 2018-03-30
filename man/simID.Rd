@@ -8,14 +8,14 @@ The function that simulates independent/cluster-correlated semi-competing risks 
 The function to simulate independent/cluster-correlated semi-competing risks data under semi-Markov Weibull/Weibull-MVN models.
 }
 \usage{
-simID(cluster=NULL, x1, x2, x3, beta1.true, beta2.true, beta3.true, 
+simID(id=NULL, x1, x2, x3, beta1.true, beta2.true, beta3.true,
 			alpha1.true, alpha2.true, alpha3.true, 
 			kappa1.true, kappa2.true, kappa3.true, 
 			theta.true, SigmaV.true=NULL, cens)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{cluster}{
+  \item{id}{
 	a vector of cluster information for \code{n} subjects. The cluster membership must be set to consecutive positive integers, \eqn{1:J}. 
 	Required only when generating clustered data.
 }
@@ -91,7 +91,7 @@ Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 	nj = 50
 	n = J * nj
 
-	cluster <- rep(1:J, each = nj)
+	id <- rep(1:J, each = nj)
 
 	kappa1.true <- 0.05
 	kappa2.true <- 0.01
@@ -112,7 +112,7 @@ Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 	x2 <- as.data.frame(cbind(cov1, cov2))
 	x3 <- as.data.frame(cbind(cov1, cov2))
 	
-	simData <- simID(cluster, x1, x2, x3, beta1.true, beta2.true, beta3.true, 
+	simData <- simID(id, x1, x2, x3, beta1.true, beta2.true, beta3.true, 
 				alpha1.true, alpha2.true, alpha3.true, 
 				kappa1.true, kappa2.true, kappa3.true, 
 				theta.true, SigmaV.true, cens)	

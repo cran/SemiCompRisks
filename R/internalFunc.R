@@ -292,7 +292,7 @@ logLike.weibull.SCR.SM <- function(para, y1, y2, delta1, delta2, Xmat1=NULL, Xma
 
 
 
-BSBH.DP <- function(fit, time, g, time.trunc)
+BSBH.DP <- function(fit, time, g, time.trunc, xnew=NULL)
 {
     nChain = fit$setup$nChain
     
@@ -309,6 +309,27 @@ BSBH.DP <- function(fit, time, g, time.trunc)
                 sigSq.p <- rbind(sigSq.p, fit[[nam]]$sigSq1.p)
             }
         }
+        nS <- dim(r.p)[1]
+        
+        if(!is.null(xnew))
+        {
+            #beta1
+            p1    = dim(fit$chain1$beta1.p)[2]
+            beta.p <- fit$chain1$beta1.p
+            if(nChain > 1)
+            {
+                for(i in 2:nChain)
+                {
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, fit[[nam]]$beta1.p)
+                }
+            }
+            LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+        }else
+        {
+            LP <- rep(0, nS)
+        }
+        
     }else if(g == 2)
     {
         r.p <- fit$chain1$r2.p
@@ -322,6 +343,27 @@ BSBH.DP <- function(fit, time, g, time.trunc)
                 sigSq.p <- rbind(sigSq.p, fit[[nam]]$sigSq2.p)
             }
         }
+        nS <- dim(r.p)[1]
+        
+        if(!is.null(xnew))
+        {
+            #beta2
+            p    = dim(fit$chain1$beta2.p)[2]
+            beta.p <- fit$chain1$beta2.p
+            if(nChain > 1)
+            {
+                for(i in 2:nChain)
+                {
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, fit[[nam]]$beta2.p)
+                }
+            }
+            LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+        }else
+        {
+            LP <- rep(0, nS)
+        }
+        
     }else if(g == 3)
     {
         r.p <- fit$chain1$r3.p
@@ -335,6 +377,27 @@ BSBH.DP <- function(fit, time, g, time.trunc)
                 sigSq.p <- rbind(sigSq.p, fit[[nam]]$sigSq3.p)
             }
         }
+        nS <- dim(r.p)[1]
+        
+        if(!is.null(xnew))
+        {
+            #beta3
+            p    = dim(fit$chain1$beta3.p)[2]
+            beta.p <- fit$chain1$beta3.p
+            if(nChain > 1)
+            {
+                for(i in 2:nChain)
+                {
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, fit[[nam]]$beta3.p)
+                }
+            }
+            LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+        }else
+        {
+            LP <- rep(0, nS)
+        }
+        
     }else if(g == 0)
     {
         r.p <- fit$chain1$r.p
@@ -348,9 +411,28 @@ BSBH.DP <- function(fit, time, g, time.trunc)
                 sigSq.p <- rbind(sigSq.p, fit[[nam]]$sigSq.p)
             }
         }
+        nS <- dim(r.p)[1]
+        
+        if(!is.null(xnew))
+        {
+            #beta
+            p    = dim(fit$chain1$beta.p)[2]
+            beta.p <- fit$chain1$beta.p
+            if(nChain > 1)
+            {
+                for(i in 2:nChain)
+                {
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, fit[[nam]]$beta.p)
+                }
+            }
+            LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+        }else
+        {
+            LP <- rep(0, nS)
+        }
     }
     
-    nS <- dim(r.p)[1]
     n <- dim(r.p)[2]
     
     SurvDP <- matrix(NA, nS, length(time))
@@ -370,7 +452,7 @@ BSBH.DP <- function(fit, time, g, time.trunc)
             rUniq <- unique(r)
         }
         
-        u	<- length(rUniq)
+        u    <- length(rUniq)
         
         member <- list()
         for(k in 1:u)
@@ -382,15 +464,15 @@ BSBH.DP <- function(fit, time, g, time.trunc)
         pdfDP[G,] <- 0
         for(k in 1:u)
         {
-            temp <- length(member[[k]])/n * (pnorm(log(time), mean = mu.p[G,k], sd= sqrt(sigSq.p[G,k]), lower.tail = T) - pnorm(log(time.trunc), mean = mu.p[G,k], sd= sqrt(sigSq.p[G,k]), lower.tail = T))/(1 - pnorm(log(time.trunc), mean = mu.p[G,k], sd= sqrt(sigSq.p[G,k]), lower.tail = T))
+            temp <- length(member[[k]])/n * (pnorm(log(time), mean = mu.p[G,k]+LP[G], sd= sqrt(sigSq.p[G,k]), lower.tail = T) - pnorm(log(time.trunc), mean = mu.p[G,k]+LP[G], sd= sqrt(sigSq.p[G,k]), lower.tail = T))/(1 - pnorm(log(time.trunc), mean = mu.p[G,k]+LP[G], sd= sqrt(sigSq.p[G,k]), lower.tail = T))
             if(all(!is.nan(temp)))
             {
                 cdfDP <- cdfDP + temp
             }
-            den <- 1 - pnorm(log(time.trunc), mean = mu.p[G,k], sd= sqrt(sigSq.p[G,k]), lower.tail = T)
+            den <- 1 - pnorm(log(time.trunc), mean = mu.p[G,k]+LP[G], sd= sqrt(sigSq.p[G,k]), lower.tail = T)
             if(den != 0)
             {
-                pdfDP[G,] <-pdfDP[G,] + length(member[[k]])/n * (1/time*dnorm(log(time), mean = mu.p[G,k], sd= sqrt(sigSq.p[G,k])) )/den
+                pdfDP[G,] <-pdfDP[G,] + length(member[[k]])/n * (1/time*dnorm(log(time), mean = mu.p[G,k]+LP[G], sd= sqrt(sigSq.p[G,k])) )/den
             }
         }
         
@@ -411,14 +493,14 @@ BSBH.DP <- function(fit, time, g, time.trunc)
 
 
 
-BSBH.N <- function(fit, time, g, time.trunc)
+BSBH.N <- function(fit, time, g, time.trunc, xnew=NULL)
 {
     nChain = fit$setup$nChain
     
     if(g == 1)
     {
-        mu.p	<- fit$chain1$mu1.p
-        sigSq.p	<- fit$chain1$sigSq1.p
+        mu.p    <- fit$chain1$mu1.p
+        sigSq.p    <- fit$chain1$sigSq1.p
         if(nChain > 1){
             for(i in 2:nChain){
                 nam <- paste("chain", i, sep="")
@@ -426,10 +508,30 @@ BSBH.N <- function(fit, time, g, time.trunc)
                 sigSq.p <- c(sigSq.p, fit[[nam]]$sigSq1.p)
             }
         }
+        nS <- length(mu.p)
+        
+        if(!is.null(xnew))
+        {
+            #beta1
+            p1    = dim(fit$chain1$beta1.p)[2]
+            beta.p <- fit$chain1$beta1.p
+            if(nChain > 1)
+            {
+                for(i in 2:nChain)
+                {
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, fit[[nam]]$beta1.p)
+                }
+            }
+            LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+        }else
+        {
+            LP <- rep(0, nS)
+        }
     }else if(g == 2)
     {
-        mu.p	<- fit$chain1$mu2.p
-        sigSq.p	<- fit$chain1$sigSq2.p
+        mu.p    <- fit$chain1$mu2.p
+        sigSq.p    <- fit$chain1$sigSq2.p
         if(nChain > 1){
             for(i in 2:nChain){
                 nam <- paste("chain", i, sep="")
@@ -437,21 +539,63 @@ BSBH.N <- function(fit, time, g, time.trunc)
                 sigSq.p <- c(sigSq.p, fit[[nam]]$sigSq2.p)
             }
         }
+        nS <- length(mu.p)
+        
+        if(!is.null(xnew))
+        {
+            #beta2
+            p    = dim(fit$chain1$beta2.p)[2]
+            beta.p <- fit$chain1$beta2.p
+            if(nChain > 1)
+            {
+                for(i in 2:nChain)
+                {
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, fit[[nam]]$beta2.p)
+                }
+            }
+            LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+        }else
+        {
+            LP <- rep(0, nS)
+        }
     }else if(g == 3)
     {
-        mu.p	<- fit$chain1$mu3.p
-        sigSq.p	<- fit$chain1$sigSq3.p
+        mu.p    <- fit$chain1$mu3.p
+        sigSq.p    <- fit$chain1$sigSq3.p
+        beta.p    <- fit$chain1$beta3.p
         if(nChain > 1){
             for(i in 2:nChain){
                 nam <- paste("chain", i, sep="")
                 mu.p <- c(mu.p, fit[[nam]]$mu3.p)
                 sigSq.p <- c(sigSq.p, fit[[nam]]$sigSq3.p)
+                beta.p <- c(beta.p, fit[[nam]]$beta3.p)
             }
+        }
+        nS <- length(mu.p)
+        
+        if(!is.null(xnew))
+        {
+            #beta3
+            p    = dim(fit$chain1$beta3.p)[2]
+            beta.p <- fit$chain1$beta3.p
+            if(nChain > 1)
+            {
+                for(i in 2:nChain)
+                {
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, fit[[nam]]$beta3.p)
+                }
+            }
+            LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+        }else
+        {
+            LP <- rep(0, nS)
         }
     }else if(g == 0)
     {
-        mu.p	<- fit$chain1$mu.p
-        sigSq.p	<- fit$chain1$sigSq.p
+        mu.p    <- fit$chain1$mu.p
+        sigSq.p    <- fit$chain1$sigSq.p
         if(nChain > 1){
             for(i in 2:nChain){
                 nam <- paste("chain", i, sep="")
@@ -459,9 +603,27 @@ BSBH.N <- function(fit, time, g, time.trunc)
                 sigSq.p <- c(sigSq.p, fit[[nam]]$sigSq.p)
             }
         }
+        nS <- length(mu.p)
+        
+        if(!is.null(xnew))
+        {
+            #beta
+            p    = dim(fit$chain1$beta.p)[2]
+            beta.p <- fit$chain1$beta.p
+            if(nChain > 1)
+            {
+                for(i in 2:nChain)
+                {
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, fit[[nam]]$beta.p)
+                }
+            }
+            LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+        }else
+        {
+            LP <- rep(0, nS)
+        }
     }
-    
-    nS <- length(mu.p)
     
     SurvN <- matrix(NA, nS, length(time))
     HazN <- matrix(NA, nS, length(time))
@@ -470,8 +632,8 @@ BSBH.N <- function(fit, time, g, time.trunc)
     
     for(G in 1:nS)
     {
-        cdfN <- (pnorm(log(time), mean=mu.p[G], sd=sqrt(sigSq.p[G]), lower.tail=T)-pnorm(log(time.trunc), mean=mu.p[G], sd=sqrt(sigSq.p[G]), lower.tail=T))/(1-pnorm(log(time.trunc), mean=mu.p[G], sd=sqrt(sigSq.p[G]), lower.tail=T))
-        pdfN <- 1/time*dnorm(log(time), mean=mu.p[G], sd=sqrt(sigSq.p[G]))/(1-pnorm(log(time.trunc), mean=mu.p[G], sd=sqrt(sigSq.p[G]), lower.tail=T))
+        cdfN <- (pnorm(log(time), mean=mu.p[G]+LP[G], sd=sqrt(sigSq.p[G]), lower.tail=T)-pnorm(log(time.trunc), mean=mu.p[G]+LP[G], sd=sqrt(sigSq.p[G]), lower.tail=T))/(1-pnorm(log(time.trunc), mean=mu.p[G]+LP[G], sd=sqrt(sigSq.p[G]), lower.tail=T))
+        pdfN <- 1/time*dnorm(log(time), mean=mu.p[G]+LP[G], sd=sqrt(sigSq.p[G]))/(1-pnorm(log(time.trunc), mean=mu.p[G]+LP[G], sd=sqrt(sigSq.p[G]), lower.tail=T))
         SurvN[G, ] <- 1-cdfN
         HazN[G, ] <- pdfN/SurvN[G, ] }
     
@@ -484,6 +646,4 @@ BSBH.N <- function(fit, time, g, time.trunc)
     list(BS = SurvN, BH = HazN)
     
 }
-
-
 

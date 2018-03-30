@@ -1,10 +1,6 @@
-
-
-
-BayesID_HReg <- function(Y,
-lin.pred,
+BayesID_HReg <- function(Formula,
 data,
-cluster = NULL,
+id = NULL,
 model = c("semi-Markov", "Weibull"),
 hyperParams,
 startValues,
@@ -15,26 +11,31 @@ path = NULL)
     hyperP      <- hyperParams
     mcmcList    <- mcmc
     
+    time1 <- model.part(Formula, data=data, lhs=1)
+    time2 <- model.part(Formula, data=data, lhs=2)
+    
+    Y <- cbind(time1[1], time1[2], time2[1], time2[2])
+    
+    Xmat1 <- model.frame(formula(Formula, lhs=0, rhs=1), data=data)
+    Xmat2 <- model.frame(formula(Formula, lhs=0, rhs=2), data=data)
+    Xmat3 <- model.frame(formula(Formula, lhs=0, rhs=3), data=data)
+    
+    p1 <- ncol(Xmat1)
+    p2 <- ncol(Xmat2)
+    p3 <- ncol(Xmat3)
+    
+    nCov <- c(p1, p2, p3)
+    
     if((mcmcList$run$numReps / mcmcList$run$thin * mcmcList$run$burninPerc) %% 1 == 0)
     {
         ## for independent semi-competing risks data
         
-        if(is.null(cluster))
+        if(is.null(id))
         {
             nChain <- length(startValues)
             
             model_h3    <- model[1]
             hz.type     <- model[2]
-            
-            Xmat1 <- model.frame(lin.pred[[1]], data=data)
-            Xmat2 <- model.frame(lin.pred[[2]], data=data)
-            Xmat3 <- model.frame(lin.pred[[3]], data=data)
-            
-            p1 <- ncol(Xmat1)
-            p2 <- ncol(Xmat2)
-            p3 <- ncol(Xmat3)
-            
-            nCov <- c(p1, p2, p3)
             
             ##
             
@@ -747,26 +748,22 @@ path = NULL)
                 
             }	# while(chain <= nChain)
             
-            ret[["setup"]]	<- list(nCov = nCov, hyperParams = hyperParams, startValues = startValues, mcmcParams = mcmcParams, nGam_save = nGam_save, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, model = model_h3, nChain = nChain)
+            ret[["setup"]]	<- list(Formula=Formula, nCov = nCov, hyperParams = hyperParams, startValues = startValues, mcmcParams = mcmcParams, nGam_save = nGam_save, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, model = model_h3, nChain = nChain)
             
             
             if(hz.type == "Weibull")
             {
-                class(ret) <- c("Bayes_HReg", "ID", "Ind", "WB")
+                ret$class <- c("Bayes_HReg", "ID", "Ind", "WB")
             }
             if(hz.type == "PEM")
             {
-                class(ret) <- c("Bayes_HReg", "ID", "Ind", "PEM")
+                ret$class <- c("Bayes_HReg", "ID", "Ind", "PEM")
             }
             
-            
+            class(ret) <- "Bayes_HReg"
             
             return(ret)
             
-            #}
-            #else{
-            #	print("The 'startValues' should be the list of length equal to 'nChain'.")
-            #}
         }
         
         
@@ -774,36 +771,25 @@ path = NULL)
         
         ## for cluster-correlated semi-competing risks data
         
-        if(!is.null(cluster))
+        if(!is.null(id))
         {
             nChain <- length(startValues)
             
             model_h3 	<- model[1]
             hz.type 	<- model[2]
             re.type 	<- model[3]
-            
-            Xmat1 <- model.frame(lin.pred[[1]], data=data)
-            Xmat2 <- model.frame(lin.pred[[2]], data=data)
-            Xmat3 <- model.frame(lin.pred[[3]], data=data)
-            
-            p1 <- ncol(Xmat1)
-            p2 <- ncol(Xmat2)
-            p3 <- ncol(Xmat3)
-            
-            nCov <- c(p1, p2, p3)
-            
-            
+                        
             ##
-            survData <- cbind(Y, cluster, Xmat1, Xmat2, Xmat3)
+            survData <- cbind(Y, id, Xmat1, Xmat2, Xmat3)
             
             n	<- dim(survData)[1]
             
-            J	<- length(unique(survData[,5]))
+            J	<- length(unique(id))
             
             nj	<- rep(NA, J)
             
             for(i in 1:J){
-                nj[i]	<- length(which(survData[,5] == i))
+                nj[i]	<- length(which(id == i))
             }
             
             
@@ -1097,7 +1083,7 @@ path = NULL)
                             DIC <- pD + Dbar
                             
                             
-                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
+                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, DIC=DIC)
                             
                         } ## end: if Weibull-MVN-M
                         
@@ -2905,49 +2891,41 @@ path = NULL)
             }	## end: while(chain <= nChain)
             
             
-            ret[["setup"]]	<- list(nCov = nCov, hyperParams = hyperParams, startValues = startValues, mcmc = mcmc, nGam_save = nGam_save, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, re.type = re.type, model = model_h3, nChain = nChain)
+            ret[["setup"]]	<- list(Formula=Formula, nCov = nCov, hyperParams = hyperParams, startValues = startValues, mcmc = mcmc, nGam_save = nGam_save, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, re.type = re.type, model = model_h3, nChain = nChain)
             
             if(hz.type == "Weibull")
             {
                 if(re.type == "MVN")
                 {
-                    class(ret) <- c("Bayes_HReg", "ID", "Cor", "WB", "MVN")
+                    ret$class <- c("Bayes_HReg", "ID", "Cor", "WB", "MVN")
                 }
                 if(re.type == "DPM")
                 {
-                    class(ret) <- c("Bayes_HReg", "ID", "Cor", "WB", "DPM")
+                    ret$class <- c("Bayes_HReg", "ID", "Cor", "WB", "DPM")
                 }
             }
             if(hz.type == "PEM")
             {
                 if(re.type == "MVN")
                 {
-                    class(ret) <- c("Bayes_HReg", "ID", "Cor", "PEM", "MVN")
+                    ret$class <- c("Bayes_HReg", "ID", "Cor", "PEM", "MVN")
                 }
                 if(re.type == "DPM")
                 {
-                    class(ret) <- c("Bayes_HReg", "ID", "Cor", "PEM", "DPM")
+                    ret$class <- c("Bayes_HReg", "ID", "Cor", "PEM", "DPM")
                 }
             }
             
+            class(ret) <- "Bayes_HReg"
             
             return(ret)
             
-            
-            
-            #}  ## end: if(class(startValues) == "list" & length(startValues) == nChain)
-            
-            
-            
-            #else{
-            #	print("The 'startValues' should be the list of length equal to 'nChain'.")
-            #}
         }
         
         
     }
     else{
-        print(" (numReps * burninPerc) must be divisible by (thin)")
+        warning(" (numReps * burninPerc) must be divisible by (thin)")
     }
     
     

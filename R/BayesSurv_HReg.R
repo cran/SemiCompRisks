@@ -1,10 +1,6 @@
-
-
-
-BayesSurv_HReg <- function(Y,
-lin.pred,
+BayesSurv_HReg <- function(Formula,
 data,
-cluster=NULL,
+id=NULL,
 model = "Weibull",
 hyperParams,
 startValues,
@@ -15,20 +11,21 @@ path = NULL)
     hyperP      <- hyperParams
     mcmcList    <- mcmc
     
+    time1 <- model.part(Formula, data=data, lhs=1)
+    
+    Y <- cbind(time1[1], time1[2])
+    Xmat <- model.frame(formula(Formula, lhs=0, rhs=1), data=data)
+    p <- ncol(Xmat)
+    
     if((mcmcList$run$numReps / mcmcList$run$thin * mcmcList$run$burninPerc) %% 1 == 0)
     {
         
         # for independent univariate time-to-event data
-        if(is.null(cluster))
+        if(is.null(id))
         {
             nChain <- length(startValues)
             
             hz.type 	<- model
-            
-            Xmat <- model.frame(lin.pred, data=data)
-            
-            p <- ncol(Xmat)
-            
             
             ##
             
@@ -275,12 +272,14 @@ path = NULL)
             
             if(hz.type == "Weibull")
             {
-                class(ret) <- c("Bayes_HReg", "Surv", "Ind", "WB")
+                ret$class <- c("Bayes_HReg", "Surv", "Ind", "WB")
             }
             if(hz.type == "PEM")
             {
-                class(ret) <- c("Bayes_HReg", "Surv", "Ind", "PEM")
+                ret$class <- c("Bayes_HReg", "Surv", "Ind", "PEM")
             }
+            
+            class(ret) <- "Bayes_HReg"
             
             return(ret)
             
@@ -288,29 +287,24 @@ path = NULL)
         
         
         # for cluster-correlated univariate time-to-event data
-        if(!is.null(cluster))
+        if(!is.null(id))
         {
             nChain <- length(startValues)
             
             hz.type 	<- model[1]
             re.type 	<- model[2]
             
-            Xmat <- model.frame(lin.pred, data=data)
-            
-            p <- ncol(Xmat)
-            
-            
             ##
-            survData <- cbind(Y, cluster, Xmat)
+            survData <- cbind(Y, id, Xmat)
             
             n	<- dim(survData)[1]
             
-            J	<- length(unique(cluster))
+            J	<- length(unique(id))
             
             nj	<- rep(NA, J)
             
             for(i in 1:J){
-                nj[i]	<- length(which(cluster == i))
+                nj[i]	<- length(which(id == i))
             }
             
             if(!is.null(path)){
@@ -820,24 +814,27 @@ path = NULL)
             {
                 if(re.type == "Normal")
                 {
-                    class(ret) <- c("Bayes_HReg", "Surv", "Cor", "WB", "Normal")
+                    ret$class <- c("Bayes_HReg", "Surv", "Cor", "WB", "Normal")
                 }
                 if(re.type == "DPM")
                 {
-                    class(ret) <- c("Bayes_HReg", "Surv", "Cor", "WB", "DPM")
+                    ret$class <- c("Bayes_HReg", "Surv", "Cor", "WB", "DPM")
                 }
             }
             if(hz.type == "PEM")
             {
                 if(re.type == "Normal")
                 {
-                    class(ret) <- c("Bayes_HReg", "Surv", "Cor", "PEM", "Normal")
+                    ret$class <- c("Bayes_HReg", "Surv", "Cor", "PEM", "Normal")
                 }
                 if(re.type == "DPM")
                 {
-                    class(ret) <- c("Bayes_HReg", "Surv", "Cor", "PEM", "DPM")
+                    ret$class <- c("Bayes_HReg", "Surv", "Cor", "PEM", "DPM")
                 }
             }
+            
+            class(ret) <- "Bayes_HReg"
+            
             return(ret)
         }
         
@@ -845,7 +842,7 @@ path = NULL)
         
     }
     else{
-        print(" (numReps * burninPerc) must be divisible by (thin)")
+        warning(" (numReps * burninPerc) must be divisible by (thin)")
     }
     
     

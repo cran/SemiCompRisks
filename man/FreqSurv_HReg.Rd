@@ -8,18 +8,15 @@ The function to fit parametric Weibull models for the frequentist analysis of un
 Independent univariate right-censored survival data can be analyzed using hierarchical models.
 }
 \usage{
-FreqSurv_HReg(Y, lin.pred, data)
+FreqSurv_HReg(Formula, data)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{Y}{
-	a data.frame containing univariate time-to-event outcomes from \code{n} subjects. It is of dimension \eqn{n\times 2}: the columns correspond to \eqn{y}, \eqn{\delta}.
+\item{Formula}{
+    a \code{Formula} object of the form \eqn{y}+\eqn{\delta} ~ \eqn{x}. See Details and Examples below.
 }
-  \item{lin.pred}{
-	a formula object that corresponds to \eqn{h}.
-}
-  \item{data}{
-	a data.frame in which to interpret the variables named in the formula in \code{lin.pred}.
+\item{data}{
+    a data.frame in which to interpret the variables named in \code{Formula}.
 }
 }
 \details{
@@ -32,6 +29,8 @@ FreqSurv_HReg(Y, lin.pred, data)
 Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015), 
 Bayesian semiparametric analysis of semicompeting risks data: 
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
+Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2018+),
+SemiCompRisks: an R package for independent and cluster-correlated analyses of semi-competing risks data, \emph{submitted}, arXiv:1801.03567. \cr
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr
@@ -44,22 +43,22 @@ Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-	\code{\link{print.Freq_HReg}}, \code{\link{summary.Freq_HReg}}, \code{\link{plot.Freq_HReg}}, \code{\link{BayesSurv_HReg}}.
+	\code{\link{print.Freq_HReg}}, \code{\link{summary.Freq_HReg}}, \code{\link{predict.Freq_HReg}}, \code{\link{BayesSurv_HReg}}.
 }
 \examples{
 \dontrun{	
 # loading a data set	
 data(survData)
-Y <- survData[,c(1,2)]
-lin.pred <- as.formula( ~ cov1 + cov2)
 
-fit_WB <- FreqSurv_HReg(Y, lin.pred, data=survData)
+form <- Formula(time + event ~ cov1 + cov2)
+
+fit_WB <- FreqSurv_HReg(form, data=survData)
 fit_WB
 summ.fit_WB <- summary(fit_WB); names(summ.fit_WB)
 summ.fit_WB
-plot(fit_WB, tseq=seq(from=0, to=30, by=5))
-plot(fit_WB, tseq=seq(from=0, to=30, by=5), plot.est = "BH")
-names(fit_WB.plot <- plot(fit_WB, tseq=seq(0, 30, 5), plot=FALSE))
+pred_WB <- predict(fit_WB, tseq=seq(from=0, to=30, by=5))
+plot(pred_WB, plot.est="Haz")
+plot(pred_WB, plot.est="Surv")
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

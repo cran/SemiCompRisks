@@ -1,4 +1,4 @@
-initiate.startValues_AFT <- function(Y, lin.pred, data, model,
+initiate.startValues_AFT <- function(Formula, data, model, nChain=1,
 beta1=NULL, beta2=NULL, beta3=NULL, beta=NULL,
 gamma=NULL,
 theta=NULL,
@@ -9,18 +9,27 @@ DPM.mu1=NULL, DPM.mu2=NULL, DPM.mu3=NULL, DPM.mu=NULL,
 DPM.zeta1=NULL, DPM.zeta2=NULL, DPM.zeta3=NULL, DPM.zeta=NULL,
 DPM.tau=NULL)
 {
+    ret <- vector("list", nChain)
+    chain = 1
     
+    while(chain <= nChain){
     
     ## BayesSurv_AFT
     
-    if(class(lin.pred)=="formula")
+    if(length(Formula)[2]==1)
     {
-        print(paste("Start values are initiated for univariate ", model, " model...", sep = ""), cat("\n"))
+        cat(paste("Start values are initiated for univariate ", model, " model...", sep = ""), cat("\n"))
         
         ##
-        n <- nrow(Y)
-        p <- ncol(model.frame(lin.pred, data=data))
+        LT <- model.part(Formula, data=data, lhs=1)
+        y.mat <- model.part(Formula, data=data, lhs=2)
         
+        Y <- cbind(y.mat, LT)
+        
+        Xmat <- model.frame(formula(Formula, lhs=0, rhs=1), data=data)
+        
+        p <- ncol(Xmat)
+        n <- nrow(Xmat)
         
         ##
         if(!is.null(beta1)) stop(paste("'beta1' is for semi-competing risks models so it must be specified as NULL for univariate ", model, " model.", sep = ""))
@@ -137,15 +146,25 @@ DPM.tau=NULL)
     
     ## BayesID_AFT
     
-    if(class(lin.pred)=="list")
+    if(length(Formula)[2]==3)
     {
-        print(paste("Start values are initiated for semi-competing risks ", model[1], " model...", sep = ""), cat("\n"))
+        cat(paste("Start values are initiated for semi-competing risks ", model[1], " model...", sep = ""), cat("\n"))
         
         ##
-        n <- nrow(Y)
-        p1 <- ncol(model.matrix(lin.pred[[1]], data=data)) - 1
-        p2 <- ncol(model.matrix(lin.pred[[2]], data=data)) - 1
-        p3 <- ncol(model.matrix(lin.pred[[3]], data=data)) - 1
+        LT <- model.part(Formula, data=data, lhs=1)
+        y1.mat <- model.part(Formula, data=data, lhs=2)
+        y2.mat <- model.part(Formula, data=data, lhs=3)
+        
+        Y <- cbind(y1.mat, y2.mat, LT)
+
+        Xmat1 <- model.frame(formula(Formula, lhs=0, rhs=1), data=data)
+        Xmat2 <- model.frame(formula(Formula, lhs=0, rhs=2), data=data)
+        Xmat3 <- model.frame(formula(Formula, lhs=0, rhs=3), data=data)
+        
+        p1 <- ncol(Xmat1)
+        p2 <- ncol(Xmat2)
+        p3 <- ncol(Xmat3)
+        n <- nrow(Xmat1)
         
         ##
         if(!is.null(beta)) stop(paste("'beta' is for univariate models so it must be specified as NULL for semi-competing risks ", model, " model.", sep = ""))
@@ -301,9 +320,14 @@ DPM.tau=NULL)
         
     }
     
+    ret[[chain]] <- value
+    chain = chain + 1
+    
+    } # while(chain <= nChain)
+    
     
     ##
-    return(value)
+    return(ret)
 }
 
 

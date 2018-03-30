@@ -1,10 +1,10 @@
 
-simID <- function(cluster=NULL, x1, x2, x3, beta1.true, beta2.true, beta3.true,
+simID <- function(id=NULL, x1, x2, x3, beta1.true, beta2.true, beta3.true,
 alpha1.true, alpha2.true, alpha3.true,
 kappa1.true, kappa2.true, kappa3.true, theta.true, SigmaV.true=NULL, cens)
 {
-    if(!is.null(cluster) & is.null(SigmaV.true)){
-        print("SigmaV.true must be given to simulate correated data")
+    if(!is.null(id) & is.null(SigmaV.true)){
+        stop("SigmaV.true must be given to simulate correated data")
     }
     else
     {
@@ -23,16 +23,16 @@ kappa1.true, kappa2.true, kappa3.true, theta.true, SigmaV.true=NULL, cens)
         }
         
         
-        if(is.null(cluster))
+        if(is.null(id))
         {
             LP1	<- as.vector(beta1.true %*% t(x1))
             LP2	<- as.vector(beta2.true %*% t(x2))
             LP3	<- as.vector(beta3.true %*% t(x3))
         }
-        if(!is.null(cluster))
+        if(!is.null(id))
         {
-            J <- length(unique(cluster))
-            nj <- as.vector(table(cluster))
+            J <- length(unique(id))
+            nj <- as.vector(table(id))
             
             Vmat <- mvrnorm(J, rep(0, 3), SigmaV.true) # J X 3
             

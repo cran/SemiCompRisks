@@ -8,19 +8,16 @@ The function to implement Bayesian parametric and semi-parametric analyses for u
 Independent univariate survival data can be analyzed using AFT models that have a hierarchical structure. The proposed models can accomodate left-truncated and/or interval-censored data. An efficient computational algorithm that gives users the flexibility to adopt either a fully parametric (log-Normal) or a semi-parametric (Dirichlet process mixture) model specification is developed.
 }
 \usage{
-BayesSurv_AFT(Y, lin.pred, data, model = "LN", hyperParams, startValues,
+BayesSurv_AFT(Formula, data, model = "LN", hyperParams, startValues,
                 mcmcParams, path = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{Y}{
-a data.frame containing (interval-censored and/or left-truncated) univariate time-to-event outcome from \code{n} subjects. It is of dimension \eqn{n\times 3}: the columns correspond to \eqn{c_{j}}, \eqn{c_{j+1}}, \eqn{L}. See Details and Examples below.
-}
-  \item{lin.pred}{
-    a formula object whose right-hand side specifies the covariate terms.
+  \item{Formula}{
+    a \code{Formula} object of the form \eqn{L} | \eqn{y_{L}}+\eqn{y_{U}} ~ \eqn{x}. See Details and Examples below.
 }
   \item{data}{
-    a data.frame in which to interpret the variables named in the formulas in \code{lin.pred}.
+    a data.frame in which to interpret the variables named in \code{Formula}.
 }
   \item{model}{
     The specification of baseline survival distribution: "LN" or "DPM".
@@ -63,7 +60,9 @@ We refer readers to \code{\link{print.Bayes_AFT}} for a detailed illustration of
 }
 \references{
 Lee, K. H., Rondeau, V., and Haneuse, S. (2017),
-Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, 73, 4, 1401-1412. \cr
+Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, 73, 4, 1401-1412. \cr \cr
+Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2018+),
+SemiCompRisks: an R package for independent and cluster-correlated analyses of semi-competing risks data, \emph{submitted}, arXiv:1801.03567. \cr
 }
 \author{
 Kyu Ha Lee and Sebastien Haneuse\cr
@@ -76,19 +75,18 @@ Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{initiate.startValues_AFT}}, \code{\link{print.Bayes_AFT}}, \code{\link{summary.Bayes_AFT}}, \code{\link{plot.Bayes_AFT}}
+\code{\link{initiate.startValues_AFT}}, \code{\link{print.Bayes_AFT}}, \code{\link{summary.Bayes_AFT}}, \code{\link{predict.Bayes_AFT}}
 }
 \examples{
 
 \dontrun{
 # loading a data set
 data(survData)
-Y <- matrix(NA, dim(survData)[1], 3)
-Y[,1] <- Y[,2] <- survData[,1]
-Y[which(scrData[,2] == 0),2] <- Inf
-Y[,3] <- rep(0, dim(survData)[1])
+survData$yL <- survData$yU <- survData[,1]
+survData$yU[which(survData[,2] == 0)] <- Inf
+survData$LT <- rep(0, dim(survData)[1])
 
-lin.pred <- as.formula( ~ cov1 + cov2)
+form <- Formula(LT | yL + yU ~ cov1 + cov2)
 
 #####################
 ## Hyperparameters ##
@@ -143,22 +141,18 @@ zeta.prop.var=zeta.prop.var))
 myModel <- "LN"
 myPath  <- "Output/01-Results-LN/"
 
-startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues_AFT(Y, lin.pred, survData, model=myModel)
-startValues[[2]] <- initiate.startValues_AFT(Y, lin.pred, survData, model=myModel,
-beta=c(0.05, -0.05))
+startValues      <- initiate.startValues_AFT(form, survData, model=myModel, nChain=2)
 
 ##
-fit_LN <- BayesSurv_AFT(Y, lin.pred, survData, model=myModel, hyperParams,
+fit_LN <- BayesSurv_AFT(form, survData, model=myModel, hyperParams,
 startValues, mcmcParams, path=myPath)
 
 fit_LN
 summ.fit_LN <- summary(fit_LN); names(summ.fit_LN)
 summ.fit_LN
-plot(fit_LN, time = seq(0, 35, 1), tseq=seq(from=0, to=30, by=5))
-plot(fit_LN, time = seq(0, 35, 1), tseq=seq(from=0, to=30, by=5), plot.est = "BH")
-names(fit_LN.plot <- plot(fit_LN, time = seq(0, 35, 1),  tseq=seq(0, 30, 5), plot=FALSE))
-
+pred_LN <- predict(fit_LN, time = seq(0, 35, 1), tseq=seq(from=0, to=30, by=5))
+plot(pred_LN, plot.est="Haz")
+plot(pred_LN, plot.est="Surv")
 
 #########
 ## DPM ##
@@ -168,21 +162,18 @@ names(fit_LN.plot <- plot(fit_LN, time = seq(0, 35, 1),  tseq=seq(0, 30, 5), plo
 myModel <- "DPM"
 myPath  <- "Output/02-Results-DPM/"
 
-startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues_AFT(Y, lin.pred, survData, model=myModel)
-startValues[[2]] <- initiate.startValues_AFT(Y, lin.pred, survData, model=myModel,
-beta=c(0.05, -0.05))
+startValues      <- initiate.startValues_AFT(form, survData, model=myModel, nChain=2)
 
 ##
-fit_DPM <- BayesSurv_AFT(Y, lin.pred, survData, model=myModel, hyperParams,
+fit_DPM <- BayesSurv_AFT(form, survData, model=myModel, hyperParams,
 startValues, mcmcParams, path=myPath)
 
 fit_DPM
 summ.fit_DPM <- summary(fit_DPM); names(summ.fit_DPM)
 summ.fit_DPM
-plot(fit_DPM, time = seq(0, 35, 1),  tseq=seq(from=0, to=30, by=5))
-plot(fit_DPM, time = seq(0, 35, 1),  tseq=seq(from=0, to=30, by=5), plot.est = "BH")
-names(fit_DPM.plot <- plot(fit_DPM, time = seq(0, 35, 1), tseq=seq(0, 30, 5), plot=FALSE))
+pred_DPM <- predict(fit_DPM, time = seq(0, 35, 1), tseq=seq(from=0, to=30, by=5))
+plot(pred_DPM, plot.est="Haz")
+plot(pred_DPM, plot.est="Surv")
 }
 
 }

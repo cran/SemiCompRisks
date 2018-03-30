@@ -4263,8 +4263,6 @@ void BweibMvnCorScr_logMLH(gsl_vector *beta1,
 
 
 
-
-
 /* evaluating log-likelihood function for subject i */
 
 /**/
@@ -4922,10 +4920,10 @@ void set_Ind(gsl_matrix *ind_d,
     
     for(i = 0; i < n; i++)
     {
-        if(gsl_vector_get(survEvent, i)==0 & gsl_vector_get(survTime, i)<= s_max) gsl_vector_set(case0yleq, i, 1);
-        if(gsl_vector_get(survEvent, i)==0 & gsl_vector_get(survTime, i)> s_max) gsl_vector_set(case0ygeq, i, 1);
-        if(gsl_vector_get(survEvent, i)==1 & gsl_vector_get(survTime, i)<= s_max) gsl_vector_set(case1yleq, i, 1);
-        if(gsl_vector_get(survEvent, i)==1 & gsl_vector_get(survTime, i)> s_max) gsl_vector_set(case1ygeq, i, 1);
+        if(gsl_vector_get(survEvent, i)==0 && gsl_vector_get(survTime, i)<= s_max) gsl_vector_set(case0yleq, i, 1);
+        if(gsl_vector_get(survEvent, i)==0 && gsl_vector_get(survTime, i)> s_max) gsl_vector_set(case0ygeq, i, 1);
+        if(gsl_vector_get(survEvent, i)==1 && gsl_vector_get(survTime, i)<= s_max) gsl_vector_set(case1yleq, i, 1);
+        if(gsl_vector_get(survEvent, i)==1 && gsl_vector_get(survTime, i)> s_max) gsl_vector_set(case1ygeq, i, 1);
     }
     
     
@@ -4935,10 +4933,10 @@ void set_Ind(gsl_matrix *ind_d,
         {
             for(j = 0; j < J; j++)
             {
-                if(gsl_vector_get(survTime, i) > gsl_vector_get(s, j) & gsl_vector_get(survTime, i) <= gsl_vector_get(s, j+1)) gsl_matrix_set(ind_d, i, j+1, 1);
+                if(gsl_vector_get(survTime, i) > gsl_vector_get(s, j) && gsl_vector_get(survTime, i) <= gsl_vector_get(s, j+1)) gsl_matrix_set(ind_d, i, j+1, 1);
                 if(gsl_vector_get(survTime, i) > gsl_vector_get(s, j)) gsl_matrix_set(ind_r, i, j+1, 1);
             }
-            if(gsl_vector_get(survTime, i) > 0 & gsl_vector_get(survTime, i) <= gsl_vector_get(s, 0)) gsl_matrix_set(ind_d, i, 0, 1);
+            if(gsl_vector_get(survTime, i) > 0 && gsl_vector_get(survTime, i) <= gsl_vector_get(s, 0)) gsl_matrix_set(ind_d, i, 0, 1);
         }
         
         if(gsl_vector_get(case0yleq, i) == 1)
@@ -4949,7 +4947,7 @@ void set_Ind(gsl_matrix *ind_d,
             }
         }
         
-        if(gsl_vector_get(case0ygeq, i) == 1 | gsl_vector_get(case1ygeq, i) == 1)
+        if(gsl_vector_get(case0ygeq, i) == 1 || gsl_vector_get(case1ygeq, i) == 1)
         {
             for(j = 0; j < J+1; j++)
             {

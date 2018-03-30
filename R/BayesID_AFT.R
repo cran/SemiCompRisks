@@ -1,7 +1,4 @@
-
-
-BayesID_AFT <- function(Y,
-lin.pred,
+BayesID_AFT <- function(Formula,
 data,
 model = "LN",
 hyperParams,
@@ -17,9 +14,15 @@ path=NULL)
         
         hz.type     <- model[1]
         
-        Xmat1 <- model.frame(lin.pred[[1]], data = data)
-        Xmat2 <- model.frame(lin.pred[[2]], data = data)
-        Xmat3 <- model.frame(lin.pred[[3]], data = data)
+        LT <- model.part(Formula, data=data, lhs=1)
+        y1.mat <- model.part(Formula, data=data, lhs=2)
+        y2.mat <- model.part(Formula, data=data, lhs=3)
+        
+        Y <- cbind(y1.mat, y2.mat, LT)
+        
+        Xmat1 <- model.frame(formula(Formula, lhs=0, rhs=1), data=data)
+        Xmat2 <- model.frame(formula(Formula, lhs=0, rhs=2), data=data)
+        Xmat3 <- model.frame(formula(Formula, lhs=0, rhs=3), data=data)
         
         p1 <- ncol(Xmat1)
         p2 <- ncol(Xmat2)
@@ -486,20 +489,21 @@ path=NULL)
         
         ret[["setup"]]	<- list(nCov = nCov, hyperParams = hyperParams, startValues = startValues, mcmcParams = mcmcParams, nGam_save = nGam_save, numReps = numReps, thin = thin, path=path, burninPerc = burninPerc, model = hz.type, nChain = nChain)
         
+        class(ret) <- "Bayes_AFT"
         
         if(hz.type == "LN")
         {
-            class(ret) <- c("Bayes_AFT", "ID", "Ind", "LN")
+            ret$class <- c("Bayes_AFT", "ID", "Ind", "LN")
         }
         if(hz.type == "DPM")
         {
-            class(ret) <- c("Bayes_AFT", "ID", "Ind", "DPM")
+            ret$class <- c("Bayes_AFT", "ID", "Ind", "DPM")
         }
         
         return(ret)
         
     }else{
-        print(" (numReps * burninPerc) must be divisible by (thin)")
+        warning(" (numReps * burninPerc) must be divisible by (thin)")
     }
     
     

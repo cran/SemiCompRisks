@@ -1,4 +1,4 @@
-initiate.startValues_HReg <- function(Y, lin.pred, data, model, cluster=NULL,
+initiate.startValues_HReg <- function(Formula, data, model, id=NULL, nChain=1,
 beta1=NULL, beta2=NULL, beta3=NULL, beta=NULL,
 gamma.ji=NULL,
 theta=NULL,
@@ -10,17 +10,25 @@ PEM.mu_lam=NULL, PEM.sigSq_lam=NULL,
 MVN.SigmaV=NULL, Normal.zeta=NULL,
 DPM.class=NULL, DPM.tau=NULL)
 {
+    ret <- vector("list", nChain)
+    chain = 1
+    
+    while(chain <= nChain){
+    
     ## BayesSurv
     
     if(length(model)==1)
     {
-        print(paste("Start values are initiated for univariate ", model, " model...", sep = ""), cat("\n"))
+        cat(paste("Start values are initiated for univariate ", model, " model...", sep = ""), cat("\n"))
         ##
-        if(!is.null(cluster)) print(paste("Warning: 'cluster' is not required for ", model, " model so it is ignored", sep = ""))
+        if(!is.null(id)) warning(paste("'cluster' is not required for ", model, " model so it is ignored", sep = ""))
         
         ##
+        time1 <- model.part(Formula, data=data, lhs=1)
+        Y <- cbind(time1[1], time1[2])
+        
         n <- nrow(Y)
-        p <- ncol(model.frame(lin.pred, data=data))
+        p <- ncol(model.frame(formula(Formula, lhs=0, rhs=1), data=data))
         
         
         ##
@@ -135,16 +143,21 @@ DPM.class=NULL, DPM.tau=NULL)
     
     ## BayesSurvcor
     
-    if(length(model)==2 & class(lin.pred)=="formula")
+    if(length(model)==2 & length(Formula)[2]==1)
     {
-        print(paste("Start values are initiated for univariate ", model[1],"-", model[2], " model...", sep = ""), cat("\n"))
+        cat(paste("Start values are initiated for univariate ", model[1],"-", model[2], " model...", sep = ""), cat("\n"))
         ##
-        if(is.null(cluster)) stop(paste("'cluster' must be given for ", model[1],"-", model[2], " model.", sep = ""))
+        if(is.null(id)) stop(paste("'cluster' must be given for ", model[1],"-", model[2], " model.", sep = ""))
         
         ##
+        
+        time1 <- model.part(Formula, data=data, lhs=1)
+        Y <- cbind(time1[1], time1[2])
+        
+        J <- length(unique(id))
+        
         n <- nrow(Y)
-        J <- length(unique(cluster))
-        p <- ncol(model.frame(lin.pred, data=data))
+        p <- ncol(model.frame(formula(Formula, lhs=0, rhs=1), data=data))
         
         ##
         if(!is.null(beta1)) stop(paste("'beta1' is for semi-competing risks models so it must be specified as NULL for ", model[1],"-", model[2], " model.", sep = ""))
@@ -279,17 +292,21 @@ DPM.class=NULL, DPM.tau=NULL)
     
     ## BayesID
     
-    if(length(model)==2 & class(lin.pred)=="list")
+    if(length(model)==2 & length(Formula)[2]==3)
     {
-        print(paste("Start values are initiated for semi-competing risks ", model[2], " model...", sep = ""), cat("\n"))
+        cat(paste("Start values are initiated for semi-competing risks ", model[2], " model...", sep = ""), cat("\n"))
         ##
-        if(!is.null(cluster)) print(paste("Warning: 'cluster' is not required for ", model[2], " model so it is ignored", sep = ""))
+        if(!is.null(id)) warning(paste("'cluster' is not required for ", model[2], " model so it is ignored", sep = ""))
         
         ##
+        time1 <- model.part(Formula, data=data, lhs=1)
+        time2 <- model.part(Formula, data=data, lhs=2)
+        Y <- cbind(time1[1], time1[2], time2[1], time2[2])
+        
         n <- nrow(Y)
-        p1 <- ncol(model.matrix(lin.pred[[1]], data=data)) - 1
-        p2 <- ncol(model.matrix(lin.pred[[2]], data=data)) - 1
-        p3 <- ncol(model.matrix(lin.pred[[3]], data=data)) - 1
+        p1 <- ncol(model.frame(formula(Formula, lhs=0, rhs=1), data=data)) 
+        p2 <- ncol(model.frame(formula(Formula, lhs=0, rhs=2), data=data)) 
+        p3 <- ncol(model.frame(formula(Formula, lhs=0, rhs=3), data=data)) 
         
         ##
         if(!is.null(beta)) stop(paste("'beta' is for univariate models so it must be specified as NULL for semi-competing risks ", model[2], " model.", sep = ""))
@@ -461,15 +478,19 @@ DPM.class=NULL, DPM.tau=NULL)
     
     if(length(model)==3)
     {
-        print(paste("Start values are initiated for semi-competing risks ", model[2],"-", model[3], " model...", sep = ""), cat("\n"))
+        cat(paste("Start values are initiated for semi-competing risks ", model[2],"-", model[3], " model...", sep = ""), cat("\n"))
         ##
-        if(is.null(cluster)) stop(paste("'cluster' must be given for ", model[2],"-", model[3], " model.", sep = ""))
+        if(is.null(id)) stop(paste("'cluster' must be given for ", model[2],"-", model[3], " model.", sep = ""))
         ##
+        time1 <- model.part(Formula, data=data, lhs=1)
+        time2 <- model.part(Formula, data=data, lhs=2)
+        Y <- cbind(time1[1], time1[2], time2[1], time2[2])
+        
         n <- nrow(Y)
-        J <- length(unique(cluster))
-        p1 <- ncol(model.matrix(lin.pred[[1]], data=data)) - 1
-        p2 <- ncol(model.matrix(lin.pred[[2]], data=data)) - 1
-        p3 <- ncol(model.matrix(lin.pred[[3]], data=data)) - 1
+        J <- length(unique(id))
+        p1 <- ncol(model.frame(formula(Formula, lhs=0, rhs=1), data=data))
+        p2 <- ncol(model.frame(formula(Formula, lhs=0, rhs=2), data=data))
+        p3 <- ncol(model.frame(formula(Formula, lhs=0, rhs=3), data=data))
         
         ##
         if(!is.null(beta)) stop(paste("'beta' is for univariate models so it must be specified as NULL for ", model[2],"-", model[3], " model.", sep = ""))
@@ -655,9 +676,13 @@ DPM.class=NULL, DPM.tau=NULL)
             if(model[3] == "DPM") value <- list(common=start.common, PEM=start.PEM, DPM=start.DPM)
         }
     }
+    ret[[chain]] <- value
+    chain = chain + 1
+    
+    } # while(chain <= nChain)
     
     ##
-    return(value)
+    return(ret)
 }
 
 

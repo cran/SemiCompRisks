@@ -8,7 +8,7 @@ The function that initiates starting values for a single chain.
 The function initiates starting values for a single chain for accelrated failture time (AFT) models. Users are allowed to set some non-null values to starting values for a set of parameters. The function will automatically generate starting values for any parameters whose values are not specified.
 }
 \usage{
-    initiate.startValues_AFT(Y, lin.pred, data, model,
+    initiate.startValues_AFT(Formula, data, model, nChain=1,
                             beta1=NULL, beta2=NULL, beta3=NULL, beta=NULL,
                             gamma=NULL, theta=NULL,
                             y1=NULL, y2=NULL, y=NULL,
@@ -21,11 +21,9 @@ The function initiates starting values for a single chain for accelrated failtur
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{Y}{
+  \item{Formula}{
 	For \code{BayesID_AFT}, it is a data.frame containing semi-competing risks outcomes from \code{n} subjects. See \code{BayesID_AFT}.
 	For \code{BayesSurv_AFT}, it is a data.frame containing univariate time-to-event outcomes from \code{n} subjects. See \code{BayesSurv_AFT}.
-}
-  \item{lin.pred}{
 	For \code{BayesID_AFT}, it is a list containing three formula objects that correspond to the transition \eqn{g}=1,2,3.
 	For \code{BayesSurv_AFT}, it is a formula object that corresponds to \eqn{log(t)}.
 }
@@ -34,6 +32,9 @@ The function initiates starting values for a single chain for accelrated failtur
 }
   \item{model}{
 	a character vector that specifies the type of components in a model. Check \code{\link{BayesID_AFT}} and \code{\link{BayesSurv_AFT}}.
+}
+\item{nChain}{
+The number of chains.
 }
   \item{beta1}{
 	starting values of \eqn{\beta_1} for \code{BayesID_AFT}.
@@ -116,7 +117,9 @@ The function initiates starting values for a single chain for accelrated failtur
 }
 \references{
 Lee, K. H., Rondeau, V., and Haneuse, S. (2017),
-Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, 73, 4, 1401-1412. \cr
+Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, 73, 4, 1401-1412. \cr \cr
+Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2018+),
+SemiCompRisks: an R package for independent and cluster-correlated analyses of semi-competing risks data, \emph{submitted}, arXiv:1801.03567. \cr
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr

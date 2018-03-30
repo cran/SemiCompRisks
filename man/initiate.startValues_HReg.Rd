@@ -8,7 +8,7 @@ The function that initiates starting values for a single chain.
 The function initiates starting values for a single chain for hazard regression (HReg) models. Users are allowed to set some non-null values to starting values for a set of parameters. The function will automatically generate starting values for any parameters whose values are not specified.
 }
 \usage{
-initiate.startValues_HReg(Y, lin.pred, data, model, cluster = NULL, 
+initiate.startValues_HReg(Formula, data, model, id = NULL, nChain=1,
                    beta1 = NULL, beta2 = NULL, beta3 = NULL, beta = NULL,
                    gamma.ji = NULL, theta = NULL,
                    V.j1 = NULL, V.j2 = NULL, V.j3 = NULL, V.j = NULL,
@@ -21,12 +21,9 @@ initiate.startValues_HReg(Y, lin.pred, data, model, cluster = NULL,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{Y}{
+  \item{Formula}{
 	For \code{BayesID_HReg}, it is a data.frame containing semi-competing risks outcomes from \code{n} subjects.
-	For \code{BayesSurv_HReg}, it is a data.frame containing univariate time-to-event outcomes from \code{n} subjects.
-}
-  \item{lin.pred}{
-	For \code{BayesID_HReg}, it is a list containing three formula objects that correspond to \eqn{h_g()}, \eqn{g}=1,2,3.
+	For \code{BayesSurv_HReg}, it is a data.frame containing univariate time-to-event outcomes from \code{n} subjects. For \code{BayesID_HReg}, it is a list containing three formula objects that correspond to \eqn{h_g()}, \eqn{g}=1,2,3.
 	For \code{BayesSurv_HReg}, it is a formula object that corresponds to \eqn{h()}.
 }
   \item{data}{
@@ -35,8 +32,11 @@ initiate.startValues_HReg(Y, lin.pred, data, model, cluster = NULL,
   \item{model}{
 	a character vector that specifies the type of components in a model. Check \code{\link{BayesID_HReg}} and \code{\link{BayesSurv_HReg}}.
 }
-  \item{cluster}{
+  \item{id}{
 	a vector of cluster information for \code{n} subjects. The cluster membership must be set to consecutive positive integers, \eqn{1:J}.  
+}
+\item{nChain}{
+The number of chains.
 }
   \item{beta1}{
 	starting values of \eqn{\beta_1} for \code{BayesID_HReg}.
@@ -132,7 +132,9 @@ Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015),
 Bayesian semiparametric analysis of semicompeting risks data: 
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
 Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S. (2016),
-Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, 111, 515, 1075-1095. \cr
+Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, 111, 515, 1075-1095. \cr \cr
+Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2018+),
+SemiCompRisks: an R package for independent and cluster-correlated analyses of semi-competing risks data, \emph{submitted}, arXiv:1801.03567. \cr
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr

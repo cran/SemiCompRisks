@@ -15,30 +15,30 @@ print.Freq_HReg <- function(x, digits=3, ...)
     dimnames(value) <- list(obj$myLabels, c( "Estimate", "SE", "LL", "UL"))
     
     ##
-    if(class(obj)[2] == "Surv")
+    if(obj$class[2] == "Surv")
     {
         ##
         cat("\nAnalysis of independent univariate time-to-event data \n")
         ##
         #cat("\nBaseline hazard function components:\n")
-        #print(round(value[c(1:2),], digits=digits))
+        #cat(round(value[c(1:2),], digits=digits))
         ##
         if(length(obj$myLabels) >= 3)
         {
             cat("\nRegression coefficients:\n")
-            print(round(value[-c(1:2),], digits=digits))
+            cat(round(value[-c(1:2),], digits=digits))
         }
     }
     
     ##
-    if(class(obj)[2] == "ID")
+    if(obj$class[2] == "ID")
     {
         ##
         cat("\nAnalysis of independent semi-competing risks data \n")
-        cat(class(obj)[5], "assumption for h3\n")
+        cat(obj$class[5], "assumption for h3\n")
         ##
         #cat("\nBaseline hazard function components:\n")
-        #print(round(value[c(1:6),], digits=digits))
+        #cat(round(value[c(1:6),], digits=digits))
         ##
         value_theta <- matrix(exp(value[7,]), ncol = 4)
         dimnames(value_theta) <- list("", c( "Estimate", "SE", "LL", "UL"))
@@ -46,7 +46,7 @@ print.Freq_HReg <- function(x, digits=3, ...)
         
         cat("\nVariance of frailties, theta:\n")
         if(obj$frailty == TRUE) print(round(value_theta, digits=digits))
-        if(obj$frailty == FALSE) print("NA")
+        if(obj$frailty == FALSE) cat("NA")
         ##
         if(sum(obj$nP) != 0)
         {
@@ -64,14 +64,14 @@ print.Bayes_HReg <- function(x, digits=3, ...)
 {
     nChain = x$setup$nChain
     
-    if(class(x)[2] == "ID")
+    if(x$class[2] == "ID")
     {
-        if(class(x)[3] == "Cor")
+        if(x$class[3] == "Cor")
         {
             ##
             cat("\nAnalysis of cluster-correlated semi-competing risks data \n")
         }
-        if(class(x)[3] == "Ind")
+        if(x$class[3] == "Ind")
         {
             ##
             cat("\nAnalysis of independent semi-competing risks data \n")
@@ -79,14 +79,14 @@ print.Bayes_HReg <- function(x, digits=3, ...)
         ##
         cat(x$setup$model, "assumption for h3\n")
     }
-    if(class(x)[2] == "Surv")
+    if(x$class[2] == "Surv")
     {
-        if(class(x)[3] == "Cor")
+        if(x$class[3] == "Cor")
         {
             ##
             cat("\nAnalysis of cluster-correlated univariate time-to-event data \n")
         }
-        if(class(x)[3] == "Ind")
+        if(x$class[3] == "Ind")
         {
             ##
             cat("\nAnalysis of independent univariate time-to-event data \n")
@@ -110,9 +110,8 @@ print.Bayes_HReg <- function(x, digits=3, ...)
         cat("\n######\n")
         cat("Potential Scale Reduction Factor\n")
         
-        if(class(x)[2] == "ID")
+        if(x$class[2] == "ID")
         {
-            
             theta <- x$chain1$theta.p
             for(i in 2:nChain){
                 nam <- paste("chain", i, sep = "")
@@ -121,10 +120,8 @@ print.Bayes_HReg <- function(x, digits=3, ...)
             psrftheta <- matrix(calcPSR(theta), 1, 1)
             dimnames(psrftheta) <- list("", "")
             
-            
             cat("\nVariance of frailties, theta:")
             print(round(psrftheta, digits=digits))
-            
             
             beta.names <- unique(c(x$chain1$covNames1, x$chain1$covNames2, x$chain1$covNames3))
             nP         <- length(beta.names)
@@ -134,7 +131,6 @@ print.Bayes_HReg <- function(x, digits=3, ...)
             if(length(x$chain1$beta1.p) != 0){
                 
                 #beta1
-                
                 p1	= dim(x$chain1$beta1.p)[2]
                 
                 psrfBeta1 <- rep(NA, p1)
@@ -216,7 +212,7 @@ print.Bayes_HReg <- function(x, digits=3, ...)
             ##
             cat("\nBaseline hazard function components:\n")
             
-            if(class(x)[4] == "WB")
+            if(x$class[4] == "WB")
             {
                 ##
                 # alpha
@@ -271,7 +267,7 @@ print.Bayes_HReg <- function(x, digits=3, ...)
                 
             }
             
-            if(class(x)[4] == "PEM")
+            if(x$class[4] == "PEM")
             {
                 ##
                 
@@ -407,7 +403,7 @@ print.Bayes_HReg <- function(x, digits=3, ...)
             
         }
         
-        if(class(x)[2] == "Surv")
+        if(x$class[2] == "Surv")
         {
             beta.names <- c(x$chain1$covNames)
             nP         <- length(beta.names)
@@ -446,7 +442,7 @@ print.Bayes_HReg <- function(x, digits=3, ...)
             }
             
             
-            if(class(x)[4] == "WB")
+            if(x$class[4] == "WB")
             {
                 ##
                 # alpha
@@ -474,7 +470,7 @@ print.Bayes_HReg <- function(x, digits=3, ...)
                 print(round(bh_WB, digits=digits))
             }
             
-            if(class(x)[4] == "PEM")
+            if(x$class[4] == "PEM")
             {
                 ##
                 ntime  = length(x$chain1$time_lambda)
@@ -547,7 +543,7 @@ print.Bayes_HReg <- function(x, digits=3, ...)
     cat("\n######\n")
     cat("Estimates\n")
     
-    if(class(x)[2] == "ID")
+    if(x$class[2] == "ID")
     {
         ##
         cat("\nVariance of frailties, theta:\n")
@@ -671,7 +667,7 @@ print.Bayes_HReg <- function(x, digits=3, ...)
         
     }
     
-    if(class(x)[2] == "Surv")
+    if(x$class[2] == "Surv")
     {
         if(length(x$chain1$beta.p) != 0){
             
@@ -715,27 +711,27 @@ print.Bayes_AFT <- function(x, digits=3, ...)
 {
     nChain = x$setup$nChain
     
-    if(class(x)[2] == "ID")
+    if(x$class[2] == "ID")
     {
-        if(class(x)[3] == "Cor")
+        if(x$class[3] == "Cor")
         {
             ##
             cat("\nAnalysis of cluster-correlated semi-competing risks data \n")
         }
-        if(class(x)[3] == "Ind")
+        if(x$class[3] == "Ind")
         {
             ##
             cat("\nAnalysis of independent semi-competing risks data \n")
         }
     }
-    if(class(x)[2] == "Surv")
+    if(x$class[2] == "Surv")
     {
-        if(class(x)[3] == "Cor")
+        if(x$class[3] == "Cor")
         {
             ##
             cat("\nAnalysis of cluster-correlated univariate time-to-event data \n")
         }
-        if(class(x)[3] == "Ind")
+        if(x$class[3] == "Ind")
         {
             ##
             cat("\nAnalysis of independent univariate time-to-event data \n")
@@ -759,7 +755,7 @@ print.Bayes_AFT <- function(x, digits=3, ...)
         cat("\n######\n")
         cat("Potential Scale Reduction Factor\n")
         
-        if(class(x)[2] == "ID")
+        if(x$class[2] == "ID")
         {
             theta <- x$chain1$theta.p
             for(i in 2:nChain){
@@ -852,7 +848,7 @@ print.Bayes_AFT <- function(x, digits=3, ...)
             ##
             cat("\nBaseline survival function components:\n")
             
-            if(class(x)[4] == "LN")
+            if(x$class[4] == "LN")
             {
                 ##
                 # mu
@@ -906,7 +902,7 @@ print.Bayes_AFT <- function(x, digits=3, ...)
                 
             }
             
-            if(class(x)[4] == "DPM")
+            if(x$class[4] == "DPM")
             {
                 ##
                 # tau
@@ -939,7 +935,7 @@ print.Bayes_AFT <- function(x, digits=3, ...)
             }
         }
         
-        if(class(x)[2] == "Surv")
+        if(x$class[2] == "Surv")
         {
             beta.names <- c(x$chain1$covNames)
             nP         <- length(beta.names)
@@ -976,7 +972,7 @@ print.Bayes_AFT <- function(x, digits=3, ...)
             }
             
             
-            if(class(x)[4] == "LN")
+            if(x$class[4] == "LN")
             {
                 ##
                 # mu
@@ -1003,7 +999,7 @@ print.Bayes_AFT <- function(x, digits=3, ...)
                 
             }
             
-            if(class(x)[4] == "DPM")
+            if(x$class[4] == "DPM")
             {
                 ##
                 # tau
@@ -1034,7 +1030,7 @@ print.Bayes_AFT <- function(x, digits=3, ...)
     cat("\n######\n")
     cat("Estimates\n")
     
-    if(class(x)[2] == "ID")
+    if(x$class[2] == "ID")
     {
         ##
         cat("\nVariance of frailties, theta:\n")
@@ -1148,7 +1144,7 @@ print.Bayes_AFT <- function(x, digits=3, ...)
         }
     }
     
-    if(class(x)[2] == "Surv")
+    if(x$class[2] == "Surv")
     {
         if(length(x$chain1$beta.p) != 0){
             
@@ -1202,7 +1198,7 @@ summary.Freq_HReg <- function(object, digits=3, ...)
     results <- cbind(logEst, logEst - 1.96*logSE, logEst + 1.96*logSE)
     
     ##
-    if(class(obj)[2] == "Surv")
+    if(obj$class[2] == "Surv")
     {
         ##
         #cat("\nRegression coefficients:\n")
@@ -1217,15 +1213,14 @@ summary.Freq_HReg <- function(object, digits=3, ...)
         ##
         #cat("\nBaseline hazard function components:\n")
         output.h0           <- results[c(1:2),]
-        dimnames(output.h0) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("beta", "LL", "UL"))
+        dimnames(output.h0) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("h-PM", "LL", "UL"))
         ##
-        value <- list(coef=output.coef, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results))
-        class(value) <- c("summ.Freq_HReg", "Surv")
+        value <- list(coef=output.coef, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results), class=obj$class)
     }
     
     
     ##
-    if(class(obj)[2] == "ID")
+    if(obj$class[2] == "ID")
     {
         ##
         nP.0 <- ifelse(obj$frailty, 7, 6)
@@ -1274,17 +1269,10 @@ summary.Freq_HReg <- function(object, digits=3, ...)
         output[2,7:9] <- results[6,]
         output.h0 <- output
         ##
-        value <- list(coef=output.coef, theta=output.theta, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results))
-        if(class(obj)[5] == "semi-Markov")
-        {
-            class(value) <- c("summ.Freq_HReg", "ID", "semi-Markov")
-        }
-        if(class(obj)[5] == "Markov")
-        {
-            class(value) <- c("summ.Freq_HReg", "ID", "Markov")
-        }
-        
+        value <- list(coef=output.coef, theta=output.theta, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results), class=obj$class)
     }
+    
+    class(value) <- "summ.Freq_HReg"
     
     ##
     return(value)
@@ -1300,7 +1288,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
     psrf <- NULL
     
     if(nChain > 1){
-        if(class(x)[2] == "ID")
+        if(x$class[2] == "ID")
         {
             theta <- x$chain1$theta.p
             for(i in 2:nChain){
@@ -1396,7 +1384,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             ##
-            if(class(x)[4] == "WB")
+            if(x$class[4] == "WB")
             {
                 ##
                 # alpha
@@ -1451,7 +1439,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
                 psrf <- list(theta=psrftheta, coef=psrfcoef, h0=bh)
             }
             
-            if(class(x)[4] == "PEM")
+            if(x$class[4] == "PEM")
             {
                 ##
                 
@@ -1580,7 +1568,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             
         }
         
-        if(class(x)[2] == "Surv")
+        if(x$class[2] == "Surv")
         {
             beta.names <- c(x$chain1$covNames)
             nP         <- length(beta.names)
@@ -1617,7 +1605,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
                 psrfcoef <- output
             }
             
-            if(class(x)[4] == "WB")
+            if(x$class[4] == "WB")
             {
                 ##
                 # alpha
@@ -1647,7 +1635,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
                 
             }
             
-            if(class(x)[4] == "PEM")
+            if(x$class[4] == "PEM")
             {
                 ##
                 ntime  = length(x$chain1$time_lambda)
@@ -1709,7 +1697,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
     
     # estimates
     
-    if(class(x)[2] == "ID")
+    if(x$class[2] == "ID")
     {
         ##
         theta.p <- x$chain1$theta.p
@@ -1839,7 +1827,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
         
         
         
-        if(class(x)[4] == "WB")
+        if(x$class[4] == "WB")
         {
             ##
             alpha.p <- x$chain1$alpha1.p
@@ -1941,10 +1929,10 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             bh  <- matrix(c(tbl_k1, tbl_k2, tbl_k3, tbl_a1, tbl_a2, tbl_a3), 2, 9, byrow = T)
             dimnames(bh) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("h1-PM", "LL", "UL", "h2-PM", "LL", "UL", "h3-PM", "LL", "UL"))
             
-            value <- list(classFit=class(x), psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
+            value <- list(classFit=x$class, psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
             
         }
-        if(class(x)[4] == "PEM")
+        if(x$class[4] == "PEM")
         {
             ##
             mu_lam.p <- x$chain1$mu_lam1.p
@@ -2150,13 +2138,13 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             dimnames(lambda3) <- list(rep("", length(x$chain1$time_lambda3)), c("time", "lambda3-PM", "LL", "UL"))
             
             
-            value <- list(classFit=class(x), psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh, lambda1=lambda1, lambda2=lambda2, lambda3=lambda3)
+            value <- list(classFit=x$class, psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh, lambda1=lambda1, lambda2=lambda2, lambda3=lambda3)
             
         }
         
-        if(class(x)[3] == "Cor")
+        if(x$class[3] == "Cor")
         {
-            if(class(x)[5] == "MVN")
+            if(x$class[5] == "MVN")
             {
                 nS <- dim(x$chain1$Sigma_V.p)[3]
                 Sigma <- array(NA, c(3,3, nS*nChain))
@@ -2170,7 +2158,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
                 }
             }
             
-            if(class(x)[5] == "DPM")
+            if(x$class[5] == "DPM")
             {
                 ##
                 tau.p <- x$chain1$tau.p
@@ -2223,7 +2211,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
         }
     }
     
-    if(class(x)[2] == "Surv")
+    if(x$class[2] == "Surv")
     {
         ##
         beta.names <- c(x$chain1$covNames)
@@ -2270,7 +2258,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             output.coef <- output
         }
         
-        if(class(x)[4] == "WB")
+        if(x$class[4] == "WB")
         {
             ##
             alpha.p <- x$chain1$alpha.p
@@ -2308,10 +2296,10 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             bh  <- matrix(c(tbl_a, tbl_k), 2, 3, byrow = T)
             dimnames(bh) <- list(c("Weibull: log-kappa", "Weibull: log-alpha"), c("h-PM", "LL", "UL"))
             
-            value <- list(coef=output.coef, h0=bh, psrf=psrf, classFit=class(x))
+            value <- list(coef=output.coef, h0=bh, psrf=psrf, classFit=x$class)
             
         }
-        if(class(x)[4] == "PEM")
+        if(x$class[4] == "PEM")
         {
             ##
             mu_lam.p <- x$chain1$mu_lam.p
@@ -2383,13 +2371,13 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             
             dimnames(lambda) <- list(rep("", length(x$chain1$time_lambda)), c("time", "lambda-PM", "LL", "UL"))
             
-            value <- list(coef=output.coef, h0=bh, psrf=psrf, lambda=lambda, classFit=class(x))
+            value <- list(coef=output.coef, h0=bh, psrf=psrf, lambda=lambda, classFit=x$class)
             
         }
         
-        if(class(x)[3] == "Cor")
+        if(x$class[3] == "Cor")
         {
-            if(class(x)[5] == "Normal")
+            if(x$class[5] == "Normal")
             {
                 #sigmaV
                 sigV <- 1/x$chain1$zeta.p
@@ -2402,7 +2390,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
                 }
             }
             
-            if(class(x)[5] == "DPM")
+            if(x$class[5] == "DPM")
             {
                 ##
                 tau.p <- x$chain1$tau.p
@@ -2459,13 +2447,13 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
     
     value$setup <- x$setup
     
-    # if(class(x)[3] == "Cor")
+    # if(x$class[3] == "Cor")
     # {
-    #     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Cor", as.vector(class(x)[4]), as.vector(class(x)[5]))
+    #     class(value) <- c("summ.Bayes", as.vector(x$class[2]), "Cor", as.vector(x$class[4]), as.vector(x$class[5]))
     # }
-    # if(class(x)[3] == "Ind")
+    # if(x$class[3] == "Ind")
     # {
-    #     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Ind", as.vector(class(x)[4]))
+    #     class(value) <- c("summ.Bayes", as.vector(x$class[2]), "Ind", as.vector(x$class[4]))
     # }
     
     class(value) <- "summ.Bayes_HReg"
@@ -2484,7 +2472,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
     psrf <- NULL
     
     if(nChain > 1){
-        if(class(x)[2] == "ID")
+        if(x$class[2] == "ID")
         {
             theta <- x$chain1$theta.p
             for(i in 2:nChain){
@@ -2579,7 +2567,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
                 psrfcoef <- output
             }
             
-            if(class(x)[4] == "LN")
+            if(x$class[4] == "LN")
             {
                 ##
                 # mu
@@ -2633,7 +2621,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
                 psrf <- list(theta=psrftheta, coef=psrfcoef, h0=bh)
             }
             
-            if(class(x)[4] == "DPM")
+            if(x$class[4] == "DPM")
             {
                 ##
                 # tau
@@ -2667,7 +2655,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
         }
         
-        if(class(x)[2] == "Surv")
+        if(x$class[2] == "Surv")
         {
             beta.names <- c(x$chain1$covNames)
             nP         <- length(beta.names)
@@ -2704,7 +2692,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
                 psrfcoef <- output
             }
             
-            if(class(x)[4] == "LN")
+            if(x$class[4] == "LN")
             {
                 ##
                 # mu
@@ -2731,7 +2719,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
                 psrf <- list(coef=psrfcoef, h0=bh)
             }
             
-            if(class(x)[4] == "DPM")
+            if(x$class[4] == "DPM")
             {
                 ##
                 # tau
@@ -2752,7 +2740,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
     
     # estimates
     
-    if(class(x)[2] == "ID")
+    if(x$class[2] == "ID")
     {
         ##
         theta.p <- x$chain1$theta.p
@@ -2880,7 +2868,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             output.coef <- output
         }
         
-        if(class(x)[4] == "LN")
+        if(x$class[4] == "LN")
         {
             ##
             sigSq.p <- x$chain1$sigSq1.p
@@ -2983,10 +2971,10 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             bh  <- matrix(c(tbl_b1, tbl_b2, tbl_b3, tbl_s1, tbl_s2, tbl_s3), 2, 9, byrow = T)
             dimnames(bh) <- list(c("log-Normal: mu", "log-Normal: sigmaSq"), c("g=1: PM", "LL", "UL", "g=2: PM", "LL", "UL", "g=3: PM", "LL", "UL"))
             
-            value <- list(classFit=class(x), psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
+            value <- list(classFit=x$class, psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
             
         }
-        if(class(x)[4] == "DPM")
+        if(x$class[4] == "DPM")
         {
             ##
             tau.p <- x$chain1$tau1.p
@@ -3040,12 +3028,12 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             bh <- matrix(c(tbl_t1, tbl_t2, tbl_t3), 1, 9, byrow = T)
             dimnames(bh) <- list(c("tau"), c("g=1: PM", "LL", "UL", "g=2: PM", "LL", "UL", "g=3: PM", "LL", "UL"))
             
-            value <- list(classFit=class(x), psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
+            value <- list(classFit=x$class, psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
         }
         
     }
     
-    if(class(x)[2] == "Surv")
+    if(x$class[2] == "Surv")
     {
         ##
         beta.names <- c(x$chain1$covNames)
@@ -3091,7 +3079,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             output.coef <- output
         }
         
-        if(class(x)[4] == "LN")
+        if(x$class[4] == "LN")
         {
             ##
             sigSq.p <- x$chain1$sigSq.p
@@ -3128,10 +3116,10 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             bh  <- matrix(c(tbl_b, tbl_s), 2, 3, byrow = T)
             dimnames(bh) <- list(c("log-Normal: mu", "log-Normal: sigmaSq"), c("PM", "LL", "UL"))
             
-            value <- list(coef=output.coef, h0=bh, psrf=psrf, classFit=class(x))
+            value <- list(coef=output.coef, h0=bh, psrf=psrf, classFit=x$class)
             
         }
-        if(class(x)[4] == "DPM")
+        if(x$class[4] == "DPM")
         {
             ##
             tau.p <- x$chain1$tau.p
@@ -3152,7 +3140,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             bh <- matrix(c(tbl_t), 1, 3, byrow = T)
             dimnames(bh) <- list(c("tau"), c("PM", "LL", "UL"))
             
-            value <- list(coef=output.coef, h0=bh, psrf=psrf, classFit=class(x))
+            value <- list(coef=output.coef, h0=bh, psrf=psrf, classFit=x$class)
             
         }
         
@@ -3160,13 +3148,13 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
     
     value$setup <- x$setup
     
-    # if(class(x)[3] == "Cor")
+    # if(x$class[3] == "Cor")
     # {
-    #     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Cor", as.vector(class(x)[4]), as.vector(class(x)[5]))
+    #     class(value) <- c("summ.Bayes", as.vector(x$class[2]), "Cor", as.vector(x$class[4]), as.vector(x$class[5]))
     # }
-    # if(class(x)[3] == "Ind")
+    # if(x$class[3] == "Ind")
     # {
-    #     class(value) <- c("summ.Bayes", as.vector(class(x)[2]), "Ind", as.vector(class(x)[4]))
+    #     class(value) <- c("summ.Bayes", as.vector(x$class[2]), "Ind", as.vector(x$class[4]))
     # }
     
     class(value) <- "summ.Bayes_AFT"
@@ -3185,20 +3173,20 @@ print.summ.Freq_HReg <- function(x, digits=3, ...)
 {
     obj <- x
     ##
-    if(class(obj)[2] == "Surv")
+    if(obj$class[2] == "Surv")
     {
         ##
         cat("\nAnalysis of independent univariate time-to-event data \n")
     }
-    if(class(obj)[2] == "ID")
+    if(obj$class[2] == "ID")
     {
         ##
         cat("\nAnalysis of independent semi-competing risks data \n")
-        cat(class(obj)[3], "assumption for h3\n")
+        cat(obj$class[5], "assumption for h3\n")
     }
     ##
     #cat("\nRegression coefficients:\n")
-    #print(round(obj$coef, digits=digits))    
+    #cat(round(obj$coef, digits=digits))    
     if(!is.null(obj$coef))
     {
         ##
@@ -3206,7 +3194,7 @@ print.summ.Freq_HReg <- function(x, digits=3, ...)
         print(round(exp(obj$coef), digits=digits))
     }
     ##
-    if(class(obj)[2] == "ID"){
+    if(obj$class[2] == "ID"){
         cat("\nVariance of frailties:\n")
         print(round(obj$theta, digits=digits))
     }
@@ -3360,327 +3348,554 @@ print.summ.Bayes_AFT <- function(x, digits=3, ...)
 
 
 
+
+
 ####
-## PLOT METHOD
+## COEF METHOD
 ####
 ##
-plot.Freq_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+coef.Bayes_HReg <- function(object, ...)
 {
-    obj <- x
-    T2seq <- tseq
-    yLim <- NULL
-    ##
-    ## SEs based on the Delta method using log(-log(S0))
+    x <- object
+    nChain = x$setup$nChain
+
+    # estimates
     
-    ##
-    if(class(obj)[2] == "Surv")
-    {
-        T2 <- seq(from=min(T2seq), to=max(T2seq), length=100)
-        
-        ##
-        kappa    <- exp(obj$estimate[1])
-        alpha    <- exp(obj$estimate[2])
-        log_kappa    <- obj$estimate[1]
-        log_alpha    <- obj$estimate[2]
-        S0     <- exp(-(kappa*(T2)^alpha))
-        ## Delta method based on log(-log(S0))
-        #J            <- cbind(1/kappa, log(T2))
-        J            <- cbind(1, exp(log_alpha)*log(T2))
-        Var.loglogS0 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
-        se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        se.loglogS0[is.na(se.loglogS0)] <- 0
-        LL <- S0^exp(-qnorm(0.025)*se.loglogS0)
-        UL <- S0^exp(qnorm(0.025)*se.loglogS0)
-        ##
-        BS_tbl <- cbind(T2, S0, LL, UL)
-        dimnames(BS_tbl) <- list(rep("", length(T2)), c("time", "S0", "LL", "UL"))
-        
-        ##
-        h0  <- alpha*kappa*(T2)^(alpha-1)
-        J   <- cbind(h0, h0*(1+alpha*log(T2)))
-        Var.h0 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
-        se.h0  <- sqrt(diag(Var.h0))
-        se.h0[is.nan(se.h0)] <- 0
-        LLh0 <- h0 - qnorm(0.025)*se.h0
-        ULh0 <- h0 + qnorm(0.025)*se.h0
-        LLh0[LLh0 < 0] <- 0
-        
-        
-        T2h <- T2
-        if(T2[1] == 0)
-        {
-            T2h <- T2h[-1]
-            h0 <- h0[-1]
-            LLh0 <- LLh0[-1]
-            ULh0 <- ULh0[-1]
-        }
-        
-        BH_tbl <- cbind(T2h, h0, LLh0, ULh0)
-        dimnames(BH_tbl) <- list(rep("", length(T2h)), c("time", "h0", "LL", "UL"))
-        
-        value <- list(h0=BH_tbl, S0=BS_tbl)
-        
-        ##
-        if(is.null(yLim))
-        {
-            if(plot.est=="BS")
-            {
-                yLim <- seq(from=0, to=1, by=0.2)
-            }
-            if(plot.est=="BH")
-            {
-                grid <- (max(ULh0) - min(LLh0))/5
-                yLim <- seq(from=min(LLh0), to=max(ULh0), by=grid)
-            }
-        }
-        
-        ##
-        if(is.null(ylab))
-        {
-            if(plot.est=="BS")
-            {
-                ylab <- "Baseline survival"
-            }
-            if(plot.est=="BH")
-            {
-                ylab <- "Baseline hazard"
-            }
-        }
-        
-        ##
-        if(is.null(xlab)) xlab <- "Time"
-        
-        ##
-        if(plot == TRUE){
-            if(plot.est == "BS")
-            {
-                ##
-                plot(range(T2seq), range(yLim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", S[0](t), "")), axes=FALSE)
-                axis(1, at=T2seq)
-                axis(2, at=yLim)
-                lines(T2, S0, col="red", lwd=3)
-                lines(T2, LL, col="red", lwd=3, lty=3)
-                lines(T2, UL, col="red", lwd=3, lty=3)
-            }
-            if(plot.est == "BH")
-            {
-                ##
-                plot(range(T2seq), range(yLim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", h[0](t), "")), axes=FALSE)
-                axis(1, at=T2seq)
-                axis(2, at=round(yLim, 4))
-                lines(T2h, h0, col="red", lwd=3)
-                lines(T2h, LLh0, col="red", lwd=3, lty=3)
-                lines(T2h, ULh0, col="red", lwd=3, lty=3)
-            }
-        }
-        if(plot == FALSE) return(value)
-    }
-    
-    ##
-    if(class(obj)[2] == "ID")
+    if(x$class[2] == "ID")
     {
         ##
-        T2 <- seq(from=min(T2seq), to=max(T2seq), length=100)
-        ##
+        beta.names <- unique(c(x$chain1$covNames1, x$chain1$covNames2, x$chain1$covNames3))
+        nP         <- length(beta.names)
+        output <- matrix(NA, nrow=nP, ncol=9)
+        dimnames(output) <- list(beta.names, c("beta1", "LL", "UL", "beta2", "LL", "UL", "beta3", "LL", "UL"))
         
-        kappa    <- exp(obj$estimate[1])
-        alpha 	 <- exp(obj$estimate[2])
-        log_alpha <- obj$estimate[2]
-        S0.1   		<- exp(-kappa*(T2)^alpha)
-        J            <- cbind(1, exp(log_alpha)*log(T2))
-        Var.loglogS0 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
-        se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        LL.1         <- S0.1^exp(-qnorm(0.025)*se.loglogS0)
-        UL.1         <- S0.1^exp(qnorm(0.025)*se.loglogS0)
-        ##
-        h0.1  <- alpha*kappa*(T2)^(alpha-1)
-        J   <- cbind(h0.1, h0.1*(1+alpha*log(T2)))
-        Var.h0.1 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
-        se.h0.1  <- sqrt(diag(Var.h0.1))
-        se.h0.1[is.nan(se.h0.1)] <- 0
-        LLh0.1 <- h0.1 - qnorm(0.025)*se.h0.1
-        ULh0.1 <- h0.1 + qnorm(0.025)*se.h0.1
-        LLh0.1[LLh0.1 < 0] <- 0
-        
-        ##
-        kappa    <- exp(obj$estimate[3])
-        alpha 	 <- exp(obj$estimate[4])
-        log_alpha <- obj$estimate[4]
-        S0.2   <- exp(-kappa*(T2)^alpha)
-        J            <- cbind(1, exp(log_alpha)*log(T2))
-        Var.loglogS0 <- J %*% obj$Finv[3:4,3:4] %*% t(J)
-        se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        LL.2         <- S0.2^exp(-qnorm(0.025)*se.loglogS0)
-        UL.2         <- S0.2^exp(qnorm(0.025)*se.loglogS0)
-        ##
-        h0.2  <- alpha*kappa*(T2)^(alpha-1)
-        J   <- cbind(h0.2, h0.2*(1+alpha*log(T2)))
-        Var.h0.2 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
-        se.h0.2  <- sqrt(diag(Var.h0.2))
-        se.h0.2[is.nan(se.h0.2)] <- 0
-        LLh0.2 <- h0.2 - qnorm(0.025)*se.h0.2
-        ULh0.2 <- h0.2 + qnorm(0.025)*se.h0.2
-        LLh0.2[LLh0.2 < 0] <- 0
-        
-        ##
-        kappa    <- exp(obj$estimate[5])
-        alpha 	 <- exp(obj$estimate[6])
-        log_alpha <- obj$estimate[6]
-        S0.3   <- exp(-kappa*(T2)^alpha)
-        J            <- cbind(1, exp(log_alpha)*log(T2))
-        Var.loglogS0 <- J %*% obj$Finv[5:6,5:6] %*% t(J)
-        se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        LL.3         <- S0.3^exp(-qnorm(0.025)*se.loglogS0)
-        UL.3         <- S0.3^exp(qnorm(0.025)*se.loglogS0)
-        ##
-        h0.3  <- alpha*kappa*(T2)^(alpha-1)
-        J   <- cbind(h0.3, h0.3*(1+alpha*log(T2)))
-        Var.h0.3 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
-        se.h0.3  <- sqrt(diag(Var.h0.3))
-        se.h0.3[is.nan(se.h0.3)] <- 0
-        LLh0.3 <- h0.3 - qnorm(0.025)*se.h0.3
-        ULh0.3 <- h0.3 + qnorm(0.025)*se.h0.3
-        LLh0.3[LLh0.3 < 0] <- 0
-        
-        T2h <- T2
-        if(T2[1] == 0)
-        {
-            T2h <- T2h[-1]
-            h0.1 <- h0.1[-1]
-            LLh0.1 <- LLh0.1[-1]
-            ULh0.1 <- ULh0.1[-1]
+        if(length(x$chain1$beta1.p) != 0){
             
-            h0.2 <- h0.2[-1]
-            LLh0.2 <- LLh0.2[-1]
-            ULh0.2 <- ULh0.2[-1]
+            #beta1
+            p1    = dim(x$chain1$beta1.p)[2]
+            beta.p <- x$chain1$beta1.p
             
-            h0.3 <- h0.3[-1]
-            LLh0.3 <- LLh0.3[-1]
-            ULh0.3 <- ULh0.3[-1]
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta1.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl1 <- matrix(NA, p1, 3)
+            rownames(tbl1) <- x$chain1$covNames1
+            
+            tbl1[,1]    <- beta.pMed
+            tbl1[,2]    <- beta.pLb
+            tbl1[,3]    <- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p1) if(x$chain1$covNames1[k] == beta.names[i]) output[i,1:3] <- tbl1[k,]
+            }
+            
+        }
+        if(length(x$chain1$beta2.p) != 0){
+            
+            #beta2
+            p2    = dim(x$chain1$beta2.p)[2]
+            beta.p <- x$chain1$beta2.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta2.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl2 <- matrix(NA, p2, 3)
+            rownames(tbl2) <- x$chain1$covNames2
+            
+            tbl2[,1]    <- beta.pMed
+            tbl2[,2]    <- beta.pLb
+            tbl2[,3]    <- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p2) if(x$chain1$covNames2[k] == beta.names[i]) output[i,4:6] <- tbl2[k,]
+            }
+            
+        }
+        if(length(x$chain1$beta3.p) != 0){
+            
+            #beta3
+            p3    = dim(x$chain1$beta3.p)[2]
+            beta.p <- x$chain1$beta3.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta3.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl3 <- matrix(NA, p3, 3)
+            rownames(tbl3) <- x$chain1$covNames3
+            
+            tbl3[,1]    <- beta.pMed
+            tbl3[,2]    <- beta.pLb
+            tbl3[,3]    <- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p3) if(x$chain1$covNames3[k] == beta.names[i]) output[i,7:9] <- tbl3[k,]
+            }
         }
         
-        BH1_tbl <- cbind(T2h, h0.1, LLh0.1, ULh0.1)
-        dimnames(BH1_tbl) <- list(rep("", length(T2h)), c("time", "h0.1", "LL.1", "UL.1"))
-        BH2_tbl <- cbind(T2h, h0.2, LLh0.2, ULh0.2)
-        dimnames(BH2_tbl) <- list(rep("", length(T2h)), c("time", "h0.2", "LL.2", "UL.2"))
-        BH3_tbl <- cbind(T2h, h0.3, LLh0.3, ULh0.3)
-        dimnames(BH3_tbl) <- list(rep("", length(T2h)), c("time", "h0.3", "LL.3", "UL.3"))
-        
-        BS1_tbl <- cbind(T2, S0.1, LL.1, UL.1)
-        dimnames(BS1_tbl) <- list(rep("", length(T2)), c("time", "S0.1", "LL.1", "UL.1"))
-        BS2_tbl <- cbind(T2, S0.2, LL.2, UL.2)
-        dimnames(BS2_tbl) <- list(rep("", length(T2)), c("time", "S0.2", "LL.2", "UL.2"))
-        BS3_tbl <- cbind(T2, S0.3, LL.3, UL.3)
-        dimnames(BS3_tbl) <- list(rep("", length(T2)), c("time", "S0.3", "LL.3", "UL.3"))
-        
-        value <- list(h0.1=BH1_tbl, h0.2=BH2_tbl, h0.3=BH3_tbl, S0.1=BS1_tbl, S0.2=BS2_tbl, S0.3=BS3_tbl)
-        
-        ##
-        if(is.null(yLim))
+        output.coef <- NULL
+        if(nP > 0)
         {
-            if(plot.est=="BS")
-            {
-                yLim <- seq(from=0, to=1, by=0.2)
-            }
-            if(plot.est=="BH")
-            {
-                grid <- (max(ULh0.1, ULh0.2, ULh0.3) - min(LLh0.1, LLh0.2, LLh0.3))/5
-                yLim <- seq(from=min(LLh0.1, LLh0.2, LLh0.3), to=max(ULh0.1, ULh0.2, ULh0.3), by=grid)
-            }
+            output.coef <- output
         }
-        
-        ##
-        if(is.null(ylab))
-        {
-            if(plot.est=="BS")
-            {
-                ylab <- "Baseline survival"
-            }
-            if(plot.est=="BH")
-            {
-                ylab <- "Baseline hazard"
-            }
-        }
-        
-        ##
-        if(is.null(xlab))
-        {
-            xlab <- c("Time", "Time", "Time")
-            if(class(obj)[5] == "semi-Markov")
-            {
-                xlab[3] <- "Time since non-terminal event"
-            }
-        }
-        
-        ##
-        if(plot == TRUE){
-            if(plot.est == "BS")
-            {
-                ##
-                par(mfrow=c(1,3))
-                ##
-                plot(range(T2seq), range(yLim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][1](t), "")), axes=FALSE)
-                axis(1, at=T2seq)
-                axis(2, at=yLim)
-                lines(T2, S0.1, col="blue", lwd=3)
-                lines(T2, LL.1, col="blue", lwd=3, lty=3)
-                lines(T2, UL.1, col="blue", lwd=3, lty=3)
-                ##
-                plot(range(T2seq), range(yLim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][2](t), "")), axes=FALSE)
-                axis(1, at=T2seq)
-                axis(2, at=yLim)
-                lines(T2, S0.2, col="red", lwd=3)
-                lines(T2, LL.2, col="red", lwd=3, lty=3)
-                lines(T2, UL.2, col="red", lwd=3, lty=3)
-                ##
-                plot(range(T2seq), range(yLim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][3](t), "")), axes=FALSE)
-                axis(1, at=T2seq)
-                axis(2, at=yLim)
-                lines(T2, S0.3, col="red", lwd=3)
-                lines(T2, LL.3, col="red", lwd=3, lty=3)
-                lines(T2, UL.3, col="red", lwd=3, lty=3)
-            }
-            if(plot.est == "BH")
-            {
-                ##
-                par(mfrow=c(1,3))
-                ##
-                plot(range(T2seq), range(yLim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][1](t), "")), axes=FALSE)
-                axis(1, at=T2seq)
-                axis(2, at=round(yLim, 4))
-                lines(T2h, h0.1, col="blue", lwd=3)
-                lines(T2h, LLh0.1, col="blue", lwd=3, lty=3)
-                lines(T2h, ULh0.1, col="blue", lwd=3, lty=3)
-                ##
-                plot(range(T2seq), range(yLim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][2](t), "")), axes=FALSE)
-                axis(1, at=T2seq)
-                axis(2, at=round(yLim, 4))
-                lines(T2h, h0.2, col="red", lwd=3)
-                lines(T2h, LLh0.2, col="red", lwd=3, lty=3)
-                lines(T2h, ULh0.2, col="red", lwd=3, lty=3)
-                ##
-                plot(range(T2seq), range(yLim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][3](t), "")), axes=FALSE)
-                axis(1, at=T2seq)
-                axis(2, at=round(yLim, 4))
-                lines(T2h, h0.3, col="red", lwd=3)
-                lines(T2h, LLh0.3, col="red", lwd=3, lty=3)
-                lines(T2h, ULh0.3, col="red", lwd=3, lty=3)
-            }
-        }
-        if(plot == FALSE) return(value)
     }
-    ##
-    invisible()
+    
+    if(x$class[2] == "Surv")
+    {
+        ##
+        beta.names <- c(x$chain1$covNames)
+        nP         <- length(beta.names)
+        output <- matrix(NA, nrow=nP, ncol=3)
+        dimnames(output) <- list(beta.names, c("exp(beta)", "LL", "UL"))
+        
+        if(length(x$chain1$beta.p) != 0){
+            
+            #beta
+            p    = dim(x$chain1$beta.p)[2]
+            beta.p <- x$chain1$beta.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl <- matrix(NA, p, 3)
+            rownames(tbl) <- x$chain1$covNames
+            
+            tbl[,1]    <- beta.pMed
+            tbl[,2]    <- beta.pLb
+            tbl[,3]    <- beta.pUb
+            
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p) if(x$chain1$covNames[k] == beta.names[i]) output[i,1:3] <- tbl[k,]
+            }
+        }
+        
+        output.coef <- NULL
+        if(nP > 0)
+        {
+            output.coef <- output
+        }
+        
+    }
+    
+    value <- output.coef
+    
+    return(value)
+    
 }
 
 
-plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+
+
+
+coef.Bayes_AFT <- function(object, ...)
 {
+    x <- object
+    nChain = x$setup$nChain
+
+    # estimates
+    
+    if(x$class[2] == "ID")
+    {
+        ##
+        beta.names <- unique(c(x$chain1$covNames1, x$chain1$covNames2, x$chain1$covNames3))
+        nP         <- length(beta.names)
+        output <- matrix(NA, nrow=nP, ncol=9)
+        dimnames(output) <- list(beta.names, c("beta1", "LL", "UL", "beta2", "LL", "UL", "beta3", "LL", "UL"))
+        
+        if(length(x$chain1$beta1.p) != 0){
+            
+            #beta1
+            p1    = dim(x$chain1$beta1.p)[2]
+            beta.p <- x$chain1$beta1.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta1.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl1 <- matrix(NA, p1, 3)
+            rownames(tbl1) <- x$chain1$covNames1
+            
+            tbl1[,1]    <- beta.pMed
+            tbl1[,2]    <- beta.pLb
+            tbl1[,3]    <- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p1) if(x$chain1$covNames1[k] == beta.names[i]) output[i,1:3] <- tbl1[k,]
+            }
+            
+        }
+        if(length(x$chain1$beta2.p) != 0){
+            
+            #beta2
+            p2    = dim(x$chain1$beta2.p)[2]
+            beta.p <- x$chain1$beta2.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta2.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl2 <- matrix(NA, p2, 3)
+            rownames(tbl2) <- x$chain1$covNames2
+            
+            tbl2[,1]    <- beta.pMed
+            tbl2[,2]    <- beta.pLb
+            tbl2[,3]    <- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p2) if(x$chain1$covNames2[k] == beta.names[i]) output[i,4:6] <- tbl2[k,]
+            }
+            
+        }
+        if(length(x$chain1$beta3.p) != 0){
+            
+            #beta3
+            p3    = dim(x$chain1$beta3.p)[2]
+            beta.p <- x$chain1$beta3.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta3.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl3 <- matrix(NA, p3, 3)
+            rownames(tbl3) <- x$chain1$covNames3
+            
+            tbl3[,1]    <- beta.pMed
+            tbl3[,2]    <- beta.pLb
+            tbl3[,3]    <- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p3) if(x$chain1$covNames3[k] == beta.names[i]) output[i,7:9] <- tbl3[k,]
+            }
+        }
+        
+        output.coef <- NULL
+        if(nP > 0)
+        {
+            output.coef <- output
+        }
+    }
+    
+    if(x$class[2] == "Surv")
+    {
+        ##
+        beta.names <- c(x$chain1$covNames)
+        nP         <- length(beta.names)
+        output <- matrix(NA, nrow=nP, ncol=3)
+        dimnames(output) <- list(beta.names, c("beta", "LL", "UL"))
+        
+        if(length(x$chain1$beta.p) != 0){
+            
+            #beta
+            p    = dim(x$chain1$beta.p)[2]
+            beta.p <- x$chain1$beta.p
+            
+            if(nChain > 1){
+                for(i in 2:nChain){
+                    nam <- paste("chain", i, sep="")
+                    beta.p <- rbind(beta.p, x[[nam]]$beta.p)
+                }
+            }
+            
+            beta.pMed <- apply(beta.p, 2, median)
+            beta.pSd <- apply(beta.p, 2, sd)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
+            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            
+            tbl <- matrix(NA, p, 3)
+            rownames(tbl) <- x$chain1$covNames
+            
+            tbl[,1]    <- beta.pMed
+            tbl[,2]    <- beta.pLb
+            tbl[,3]    <- beta.pUb
+            
+            for(i in 1:nP)
+            {
+                for(k in 1:p) if(x$chain1$covNames[k] == beta.names[i]) output[i,1:3] <- tbl[k,]
+            }
+        }
+        
+        output.coef <- NULL
+        if(nP > 0)
+        {
+            output.coef <- output
+        }
+        
+    }
+    
+    value <- output.coef
+    
+    return(value)
+}
+
+
+coef.Freq_HReg <- function(object, ...)
+{
+    obj <- object
+    ##
+    logEst  <- obj$estimate
+    logSE   <- sqrt(diag(obj$Finv))
+    results <- cbind(logEst, logEst - 1.96*logSE, logEst + 1.96*logSE)
+    
+    ##
+    if(obj$class[2] == "Surv")
+    {
+        ##
+        #cat("\nRegression coefficients:\n")
+        if(length(obj$myLabels) >= 3)
+        {
+            output.coef           <- results[-c(1:2),]
+            dimnames(output.coef) <- list(unique(obj$myLabels[-c(1:2)]), c("beta", "LL", "UL"))
+        }else
+        {
+            output.coef <- NULL
+        }
+    }
+    
+    ##
+    if(obj$class[2] == "ID")
+    {
+        ##
+        nP.0 <- ifelse(obj$frailty, 7, 6)
+        nP.1 <- obj$nP[1]
+        nP.2 <- obj$nP[2]
+        nP.3 <- obj$nP[3]
+        ##
+        beta.names <- unique(obj$myLabels[-c(1:nP.0)])
+        nP         <- length(beta.names)
+        ##
+        #cat("\nRegression coefficients:\n")
+        output <- matrix(NA, nrow=nP, ncol=9)
+        dimnames(output) <- list(beta.names, c("beta1", "LL", "UL", "beta2", "LL", "UL", "beta3", "LL", "UL"))
+        for(i in 1:nP)
+        {
+            if(nP.1 != 0)
+            {
+                for(j in 1:nP.1) if(obj$myLabels[nP.0+j] == beta.names[i]) output[i,1:3] <- results[nP.0+j,]
+            }
+            if(nP.2 != 0)
+            {
+                for(j in 1:nP.2) if(obj$myLabels[nP.0+nP.1+j] == beta.names[i]) output[i,4:6] <- results[nP.0+nP.1+j,]
+            }
+            if(nP.3 != 0)
+            {
+                for(j in 1:nP.3) if(obj$myLabels[nP.0+nP.1+nP.2+j] == beta.names[i]) output[i,7:9] <- results[nP.0+nP.1+nP.2+j,]
+            }
+        }
+        output.coef <- output
+    }
+    
+    value <- output.coef
+    
+    return(value)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+####
+## predict METHOD
+####
+##
+predict.Bayes_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=NULL, tseq=c(0, 5, 10), ...)
+{
+    x <- object
     nChain = x$setup$nChain
     
-    if(class(x)[2] == "ID")
+    if(x$class[2] == "ID")
     {
-        if(class(x)[4] == "PEM")
+        if(!is.null(xnew))
+        {
+            stop("'xnew' is for univariate models so it must be specified as NULL for semi-competing risks models")
+        }
+        if(is.null(x$chain1$beta1.p))
+        {
+            if(!is.null(x1new))
+            {
+                stop("x1new does not have the same length as the x1 specified in the Formula.")
+            }else
+            {
+                LP1 <- 0
+            }
+        }else if(length(x$chain1$beta1.p) != 0)
+        {
+            if(!is.null(x1new))
+            {
+                #beta1
+                p1    = dim(x$chain1$beta1.p)[2]
+                beta1.p <- x$chain1$beta1.p
+                if(nChain > 1)
+                {
+                    for(i in 2:nChain)
+                    {
+                        nam <- paste("chain", i, sep="")
+                        beta1.p <- rbind(beta1.p, x[[nam]]$beta1.p)
+                    }
+                }
+                LP1 <- rowSums(beta1.p * matrix(x1new, nrow=dim(beta1.p)[1], ncol = dim(beta1.p)[2], byrow=T))
+            }else
+            {
+                LP1 <- 0
+            }
+        }
+        if(is.null(x$chain1$beta2.p))
+        {
+            if(!is.null(x2new))
+            {
+                stop("x2new does not have the same length as the x2 specified in the Formula.")
+            }else
+            {
+                LP2 <- 0
+            }
+        }else if(length(x$chain1$beta2.p) != 0){
+            if(!is.null(x2new))
+            {
+                #beta2
+                p2    = dim(x$chain1$beta2.p)[2]
+                beta2.p <- x$chain1$beta2.p
+                
+                if(nChain > 1){
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep="")
+                        beta2.p <- rbind(beta2.p, x[[nam]]$beta2.p)
+                    }
+                }
+                LP2 <- rowSums(beta2.p * matrix(x2new, nrow=dim(beta2.p)[1], ncol = dim(beta2.p)[2], byrow=T))
+            }else
+            {
+                LP2 <- 0
+            }
+        }
+
+        if(is.null(x$chain1$beta3.p))
+        {
+            if(!is.null(x3new))
+            {
+                stop("x3new does not have the same length as the x3 specified in the Formula.")
+            }else
+            {
+                LP3 <- 0
+            }
+        }else if(length(x$chain1$beta3.p) != 0){
+            if(!is.null(x3new))
+            {
+                #beta3
+                p3    = dim(x$chain1$beta3.p)[2]
+                beta3.p <- x$chain1$beta3.p
+                
+                if(nChain > 1){
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep="")
+                        beta3.p <- rbind(beta3.p, x[[nam]]$beta3.p)
+                    }
+                }
+                LP3 <- rowSums(beta3.p * matrix(x3new, nrow=dim(beta3.p)[1], ncol = dim(beta3.p)[2], byrow=T))
+            }else
+            {
+                LP3 <- 0
+            }
+        }
+        
+        if(x$class[4] == "PEM")
         {
             time1 <- x$chain1$time_lambda1
             time2 <- x$chain1$time_lambda2
@@ -3690,9 +3905,9 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
             time2hz <- time2
             time3hz <- time3
             
-            lambda1.fin	<- x$chain1$lambda1.fin
-            lambda2.fin	<- x$chain1$lambda2.fin
-            lambda3.fin	<- x$chain1$lambda3.fin
+            lambda1.fin    <- x$chain1$lambda1.fin
+            lambda2.fin    <- x$chain1$lambda2.fin
+            lambda3.fin    <- x$chain1$lambda3.fin
             
             if(nChain > 1){
                 for(i in 2:nChain){
@@ -3703,17 +3918,17 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
                 }
             }
             
-            BH1Med  <-  apply(exp(lambda1.fin), 2, median)
-            BH1Ub   <-  apply(exp(lambda1.fin), 2, quantile, prob = 0.975)
-            BH1Lb   <-  apply(exp(lambda1.fin), 2, quantile, prob = 0.025)
+            BH1Med  <-  apply(exp(lambda1.fin)*exp(matrix(LP1, nrow=dim(lambda1.fin)[1], ncol=dim(lambda1.fin)[2], byrow=F)), 2, median)
+            BH1Ub   <-  apply(exp(lambda1.fin)*exp(matrix(LP1, nrow=dim(lambda1.fin)[1], ncol=dim(lambda1.fin)[2], byrow=F)), 2, quantile, prob = 0.975)
+            BH1Lb   <-  apply(exp(lambda1.fin)*exp(matrix(LP1, nrow=dim(lambda1.fin)[1], ncol=dim(lambda1.fin)[2], byrow=F)), 2, quantile, prob = 0.025)
             
-            BH2Med  <-  apply(exp(lambda2.fin), 2, median)
-            BH2Ub   <-  apply(exp(lambda2.fin), 2, quantile, prob = 0.975)
-            BH2Lb   <-  apply(exp(lambda2.fin), 2, quantile, prob = 0.025)
+            BH2Med  <-  apply(exp(lambda2.fin)*exp(matrix(LP2, nrow=dim(lambda2.fin)[1], ncol=dim(lambda2.fin)[2], byrow=F)), 2, median)
+            BH2Ub   <-  apply(exp(lambda2.fin)*exp(matrix(LP2, nrow=dim(lambda2.fin)[1], ncol=dim(lambda2.fin)[2], byrow=F)), 2, quantile, prob = 0.975)
+            BH2Lb   <-  apply(exp(lambda2.fin)*exp(matrix(LP2, nrow=dim(lambda2.fin)[1], ncol=dim(lambda2.fin)[2], byrow=F)), 2, quantile, prob = 0.025)
             
-            BH3Med  <-  apply(exp(lambda3.fin), 2, median)
-            BH3Ub   <-  apply(exp(lambda3.fin), 2, quantile, prob = 0.975)
-            BH3Lb   <-  apply(exp(lambda3.fin), 2, quantile, prob = 0.025)
+            BH3Med  <-  apply(exp(lambda3.fin)*exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)), 2, median)
+            BH3Ub   <-  apply(exp(lambda3.fin)*exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)), 2, quantile, prob = 0.975)
+            BH3Lb   <-  apply(exp(lambda3.fin)*exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)), 2, quantile, prob = 0.025)
             
             dif1    <- diff(c(0, time1hz))
             dif2    <- diff(c(0, time2hz))
@@ -3722,18 +3937,21 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
             BS1     <- matrix(NA, dim(lambda1.fin)[1], dim(lambda1.fin)[2])
             for(i in 1:dim(lambda1.fin)[1])
             {
-                BS1[i,] <- exp(-cumsum(exp(lambda1.fin[i,])* dif1) )
+                BS1[i,] <- cumsum(exp(lambda1.fin[i,])* dif1)
             }
             BS2     <- matrix(NA, dim(lambda2.fin)[1], dim(lambda2.fin)[2])
             for(i in 1:dim(lambda2.fin)[1])
             {
-                BS2[i,] <- exp(-cumsum(exp(lambda2.fin[i,])* dif2) )
+                BS2[i,] <- cumsum(exp(lambda2.fin[i,])* dif2)
             }
             BS3     <- matrix(NA, dim(lambda3.fin)[1], dim(lambda3.fin)[2])
             for(i in 1:dim(lambda3.fin)[1])
             {
-                BS3[i,] <- exp(-cumsum(exp(lambda3.fin[i,])* dif3) )
+                BS3[i,] <- cumsum(exp(lambda3.fin[i,])* dif3)
             }
+            BS1 <- exp(-BS1 * exp(matrix(LP1, nrow=dim(lambda1.fin)[1], ncol=dim(lambda1.fin)[2], byrow=F)))
+            BS2 <- exp(-BS2 * exp(matrix(LP2, nrow=dim(lambda2.fin)[1], ncol=dim(lambda2.fin)[2], byrow=F)))
+            BS3 <- exp(-BS3 * exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)))
             
             BS1Med  <-  apply(BS1, 2, median)
             BS1Ub   <-  apply(BS1, 2, quantile, prob = 0.975)
@@ -3748,7 +3966,7 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
             BS3Lb   <-  apply(BS3, 2, quantile, prob = 0.025)
         }
         
-        if(class(x)[4] == "WB")
+        if(x$class[4] == "WB")
         {
             time1 <- time2 <- time3 <- seq(from=min(tseq), to=max(tseq), length=100)
             nStore <- length(x$chain1$alpha1.p)
@@ -3761,12 +3979,12 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
             basesurv2 <- matrix(NA, numSpl, length(time2))
             basesurv3 <- matrix(NA, numSpl, length(time3))
             
-            alpha1.p	<- x$chain1$alpha1.p
-            alpha2.p	<- x$chain1$alpha2.p
-            alpha3.p	<- x$chain1$alpha3.p
-            kappa1.p	<- x$chain1$kappa1.p
-            kappa2.p	<- x$chain1$kappa2.p
-            kappa3.p	<- x$chain1$kappa3.p
+            alpha1.p    <- x$chain1$alpha1.p
+            alpha2.p    <- x$chain1$alpha2.p
+            alpha3.p    <- x$chain1$alpha3.p
+            kappa1.p    <- x$chain1$kappa1.p
+            kappa2.p    <- x$chain1$kappa2.p
+            kappa3.p    <- x$chain1$kappa3.p
             
             if(nChain > 1){
                 for(i in 2:nChain){
@@ -3786,10 +4004,18 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
                 basehaz2[i, ] <- alpha2.p[i] * kappa2.p[i] * time2^(alpha2.p[i] - 1)
                 basehaz3[i, ] <- alpha3.p[i] * kappa3.p[i] * time3^(alpha3.p[i] - 1)
                 
-                basesurv1[i, ] <- exp(-kappa1.p[i] * time1^(alpha1.p[i]))
-                basesurv2[i, ] <- exp(-kappa2.p[i] * time2^(alpha2.p[i]))
-                basesurv3[i, ] <- exp(-kappa3.p[i] * time3^(alpha3.p[i]))
+                basesurv1[i, ] <- kappa1.p[i] * time1^(alpha1.p[i])
+                basesurv2[i, ] <- kappa2.p[i] * time2^(alpha2.p[i])
+                basesurv3[i, ] <- kappa3.p[i] * time3^(alpha3.p[i])
             }
+            
+            basehaz1 <- basehaz1 * exp(matrix(LP1, nrow=dim(basehaz1)[1], ncol=dim(basehaz1)[2], byrow=F))
+            basehaz2 <- basehaz2 * exp(matrix(LP2, nrow=dim(basehaz2)[1], ncol=dim(basehaz2)[2], byrow=F))
+            basehaz3 <- basehaz3 * exp(matrix(LP3, nrow=dim(basehaz3)[1], ncol=dim(basehaz3)[2], byrow=F))
+            
+            basesurv1 <- exp(-basesurv1 * exp(matrix(LP1, nrow=dim(basehaz1)[1], ncol=dim(basehaz1)[2], byrow=F)))
+            basesurv2 <- exp(-basesurv2 * exp(matrix(LP2, nrow=dim(basehaz2)[1], ncol=dim(basehaz2)[2], byrow=F)))
+            basesurv3 <- exp(-basesurv3 * exp(matrix(LP3, nrow=dim(basehaz3)[1], ncol=dim(basehaz3)[2], byrow=F)))
             
             time1hz <- time1
             time2hz <- time2
@@ -3826,229 +4052,68 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
             BS3Lb <- apply(basesurv3, 2, quantile, prob = 0.025)
         }
         
-        BH1_tbl <- cbind(time1hz, BH1Med, BH1Lb, BH1Ub)
-        dimnames(BH1_tbl) <- list(rep("", length(time1hz)), c("time", "h0.1", "LL.1", "UL.1"))
-        BH2_tbl <- cbind(time2hz, BH2Med, BH2Lb, BH2Ub)
-        dimnames(BH2_tbl) <- list(rep("", length(time2hz)), c("time", "h0.2", "LL.2", "UL.2"))
-        BH3_tbl <- cbind(time3hz, BH3Med, BH3Lb, BH3Ub)
-        dimnames(BH3_tbl) <- list(rep("", length(time3hz)), c("time", "h0.3", "LL.3", "UL.3"))
+        BH1_tbl <- data.frame(time1=time1hz, h.1=BH1Med, LL.1=BH1Lb, UL.1=BH1Ub)
+        BH2_tbl <- data.frame(time2=time2hz, h.2=BH2Med, LL.2=BH2Lb, UL.2=BH2Ub)
+        BH3_tbl <- data.frame(time3=time3hz, h.3=BH3Med, LL.3=BH3Lb, UL.3=BH3Ub)
         
-        BS1_tbl <- cbind(time1, BS1Med, BS1Lb, BS1Ub)
-        dimnames(BS1_tbl) <- list(rep("", length(time1)), c("time", "S0.1", "LL.1", "UL.1"))
-        BS2_tbl <- cbind(time2, BS2Med, BS2Lb, BS2Ub)
-        dimnames(BS2_tbl) <- list(rep("", length(time2)), c("time", "S0.2", "LL.2", "UL.2"))
-        BS3_tbl <- cbind(time3, BS3Med, BS3Lb, BS3Ub)
-        dimnames(BS3_tbl) <- list(rep("", length(time3)), c("time", "S0.3", "LL.3", "UL.3"))
-        
-        value <- list(h0.1=BH1_tbl, h0.2=BH2_tbl, h0.3=BH3_tbl, S0.1=BS1_tbl, S0.2=BS2_tbl, S0.3=BS3_tbl)
-        
-        if(plot == TRUE)
-        {
-            if(is.null(xlab))
-            {
-                xlab <- c("Time", "Time", "Time")
-                if(x$setup$model == "semi-Markov")
-                {
-                    xlab[3] <- "Time since non-terminal event"
-                }
-            }
-            
-            if(plot.est == "BH")
-            {
-                if(is.null(ylab))
-                {
-                    ylab <- "Baseline hazard"
-                }
-                
-                ygrid <- (max(BH1Ub, BH2Ub, BH3Ub) - 0)/5
-                ylim <- seq(from=0, to=max(BH1Ub, BH2Ub, BH3Ub), by=ygrid)
-                
-                ##
-                par(mfrow=c(1,3))
-                ##
-                plot(c(0, max(time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][1](t), "")), axes=FALSE)
-                if(class(x)[4] == "PEM")
-                {
-                    axis(1, at=c(0, max(time1)))
-                }
-                if(class(x)[4] == "WB")
-                {
-                    axis(1, at=tseq)
-                }
-                axis(2, at=round(ylim, 4))
-                
-                
-                #if(time1hz[1] == 0)
-                #{
-                #    lines(time1hz, BH1Med, col="blue", lwd=3)
-                #    lines(time1hz, BH1Ub, col="blue", lwd=3, lty=3)
-                #    lines(time1hz, BH1Lb, col="blue", lwd=3, lty=3)
-                #}else
-                #{
-                #    lines(unique(c(0, time1hz)), c(0, BH1Med), col="red", lwd=3)
-                #    lines(unique(c(0, time1hz)), c(0, BH1Ub), col="red", lwd=3, lty=3)
-                #    lines(unique(c(0, time1hz)), c(0, BH1Lb), col="red", lwd=3, lty=3)
-                #}
-                lines(time1hz, BH1Med, col="blue", lwd=3)
-                lines(time1hz, BH1Ub, col="blue", lwd=3, lty=3)
-                lines(time1hz, BH1Lb, col="blue", lwd=3, lty=3)
-                
-                ##
-                plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][2](t), "")), axes=FALSE)
-                if(class(x)[4] == "PEM")
-                {
-                    axis(1, at=c(0, max(time2)))
-                }
-                if(class(x)[4] == "WB")
-                {
-                    axis(1, at=tseq)
-                }
-                axis(2, at=round(ylim, 4))
-                
-                #if(time2hz[1] == 0)
-                #{
-                #    lines(time2hz, BH2Med, col="blue", lwd=3)
-                #    lines(time2hz, BH2Ub, col="blue", lwd=3, lty=3)
-                #    lines(time2hz, BH2Lb, col="blue", lwd=3, lty=3)
-                #}else
-                #{
-                #    lines(unique(c(0, time2hz)), c(0, BH2Med), col="red", lwd=3)
-                #    lines(unique(c(0, time2hz)), c(0, BH2Ub), col="red", lwd=3, lty=3)
-                #    lines(unique(c(0, time2hz)), c(0, BH2Lb), col="red", lwd=3, lty=3)
-                #}
-                lines(time2hz, BH2Med, col="red", lwd=3)
-                lines(time2hz, BH2Ub, col="red", lwd=3, lty=3)
-                lines(time2hz, BH2Lb, col="red", lwd=3, lty=3)
-                
-                
-                ##
-                plot(c(0, max(time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][3](t), "")), axes=FALSE)
-                if(class(x)[4] == "PEM")
-                {
-                    axis(1, at=c(0, max(time3)))
-                }
-                if(class(x)[4] == "WB")
-                {
-                    axis(1, at=tseq)
-                }
-                axis(2, at=round(ylim, 4))
-                
-                #if(time3hz[1] == 0)
-                #{
-                #    lines(time3hz, BH3Med, col="blue", lwd=3)
-                #    lines(time3hz, BH3Ub, col="blue", lwd=3, lty=3)
-                #    lines(time3hz, BH3Lb, col="blue", lwd=3, lty=3)
-                #}else
-                #{
-                #    lines(unique(c(0, time3hz)), c(0, BH3Med), col="red", lwd=3)
-                #    lines(unique(c(0, time3hz)), c(0, BH3Ub), col="red", lwd=3, lty=3)
-                #    lines(unique(c(0, time3hz)), c(0, BH3Lb), col="red", lwd=3, lty=3)
-                #}
-                lines(time3hz, BH3Med, col="red", lwd=3)
-                lines(time3hz, BH3Ub, col="red", lwd=3, lty=3)
-                lines(time3hz, BH3Lb, col="red", lwd=3, lty=3)
-                
-            }
-            
-            if(plot.est == "BS")
-            {
-                if(is.null(ylab))
-                {
-                    ylab <- "Baseline survival"
-                }
-                ylim <- seq(from=0, to=1, by=0.2)
-                
-                ##
-                par(mfrow=c(1,3))
-                ##
-                plot(c(0, max(time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][1](t), "")), axes=FALSE)
-                if(class(x)[4] == "PEM")
-                {
-                    axis(1, at=c(0, max(time1)))
-                }
-                if(class(x)[4] == "WB")
-                {
-                    axis(1, at=tseq)
-                }
-                axis(2, at=ylim)
-                
-                if(time1[1] == 0)
-                {
-                    lines(time1, BS1Med, col="blue", lwd=3)
-                    lines(time1, BS1Ub, col="blue", lwd=3, lty=3)
-                    lines(time1, BS1Lb, col="blue", lwd=3, lty=3)
-                }else
-                {
-                    lines(unique(c(0, time1)), c(1, BS1Med), col="blue", lwd=3)
-                    lines(unique(c(0, time1)), c(1, BS1Ub), col="blue", lwd=3, lty=3)
-                    lines(unique(c(0, time1)), c(1, BS1Lb), col="blue", lwd=3, lty=3)
-                }
-                
-                ##
-                plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][2](t), "")), axes=FALSE)
-                if(class(x)[4] == "PEM")
-                {
-                    axis(1, at=c(0, max(time2)))
-                }
-                if(class(x)[4] == "WB")
-                {
-                    axis(1, at=tseq)
-                }
-                axis(2, at=ylim)
-                
-                if(time2[1] == 0)
-                {
-                    lines(time2, BS2Med, col="red", lwd=3)
-                    lines(time2, BS2Ub, col="red", lwd=3, lty=3)
-                    lines(time2, BS2Lb, col="red", lwd=3, lty=3)
-                }else
-                {
-                    lines(unique(c(0, time2)), c(1, BS2Med), col="red", lwd=3)
-                    lines(unique(c(0, time2)), c(1, BS2Ub), col="red", lwd=3, lty=3)
-                    lines(unique(c(0, time2)), c(1, BS2Lb), col="red", lwd=3, lty=3)
-                }
-                
-                ##
-                plot(c(0, max(time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][3](t), "")), axes=FALSE)
-                if(class(x)[4] == "PEM")
-                {
-                    axis(1, at=c(0, max(time3)))
-                }
-                if(class(x)[4] == "WB")
-                {
-                    axis(1, at=tseq)
-                }
-                axis(2, at=ylim)
-                
-                if(time3[1] == 0)
-                {
-                    lines(time3, BS3Med, col="red", lwd=3)
-                    lines(time3, BS3Ub, col="red", lwd=3, lty=3)
-                    lines(time3, BS3Lb, col="red", lwd=3, lty=3)
-                }else
-                {
-                    lines(unique(c(0, time3)), c(1, BS3Med), col="red", lwd=3)
-                    lines(unique(c(0, time3)), c(1, BS3Ub), col="red", lwd=3, lty=3)
-                    lines(unique(c(0, time3)), c(1, BS3Lb), col="red", lwd=3, lty=3)
-                }
-                
-            }
-        }
-        if(plot == FALSE)
-        {
-            return(value)
-        }
-        
+        BS1_tbl <- data.frame(time1=time1, S.1=BS1Med, LL.1=BS1Lb, UL.1=BS1Ub)
+        BS2_tbl <- data.frame(time2=time2, S.2=BS2Med, LL.2=BS2Lb, UL.2=BS2Ub)
+        BS3_tbl <- data.frame(time3=time3, S.3=BS3Med, LL.3=BS3Lb, UL.3=BS3Ub)
+
+        value <- list(h.1=BH1_tbl, h.2=BH2_tbl, h.3=BH3_tbl, S.1=BS1_tbl, S.2=BS2_tbl, S.3=BS3_tbl)
     }
     
-    if(class(x)[2] == "Surv")
+    if(x$class[2] == "Surv")
     {
-        if(class(x)[4] == "PEM")
+        if(!is.null(x1new))
+        {
+            stop("'x1new' is for semi-competing risks models so it must be specified as NULL for univariate models")
+        }
+        if(!is.null(x2new))
+        {
+            stop("'x2new' is for semi-competing risks models so it must be specified as NULL for univariate models")
+        }
+        if(!is.null(x3new))
+        {
+            stop("'x3new' is for semi-competing risks models so it must be specified as NULL for univariate models")
+        }
+        if(is.null(x$chain1$beta.p))
+        {
+            if(!is.null(xnew))
+            {
+                stop("xnew does not have the same length as the x specified in the Formula.")
+            }else
+            {
+                LP <- 0
+            }
+        }else if(length(x$chain1$beta.p) != 0)
+        {
+            if(!is.null(xnew))
+            {
+                #beta
+                p    = dim(x$chain1$beta.p)[2]
+                beta.p <- x$chain1$beta.p
+                if(nChain > 1)
+                {
+                    for(i in 2:nChain)
+                    {
+                        nam <- paste("chain", i, sep="")
+                        beta.p <- rbind(beta.p, x[[nam]]$beta.p)
+                    }
+                }
+                LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+            }else
+            {
+                LP <- 0
+            }
+        }
+        
+        if(x$class[4] == "PEM")
         {
             time <- x$chain1$time_lambda
             timehz <- time
             
-            lambda.fin	<- x$chain1$lambda.fin
+            lambda.fin    <- x$chain1$lambda.fin
             
             if(nChain > 1){
                 for(i in 2:nChain){
@@ -4057,24 +4122,25 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
                 }
             }
             
-            BHMed  <-  apply(exp(lambda.fin), 2, median)
-            BHUb   <-  apply(exp(lambda.fin), 2, quantile, prob = 0.975)
-            BHLb   <-  apply(exp(lambda.fin), 2, quantile, prob = 0.025)
+            BHMed  <-  apply(exp(lambda.fin)*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)), 2, median)
+            BHUb   <-  apply(exp(lambda.fin)*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)), 2, quantile, prob = 0.975)
+            BHLb   <-  apply(exp(lambda.fin)*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)), 2, quantile, prob = 0.025)
             
             dif <- diff(c(0, timehz))
             
             BS     <- matrix(NA, dim(lambda.fin)[1], dim(lambda.fin)[2])
             for(i in 1:dim(lambda.fin)[1])
             {
-                BS[i,] <- exp(-cumsum(exp(lambda.fin[i,])* dif) )
+                BS[i,] <- cumsum(exp(lambda.fin[i,])* dif)
             }
+            BS <- exp(-BS*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)))
             
             BSMed  <-  apply(BS, 2, median)
             BSUb   <-  apply(BS, 2, quantile, prob = 0.975)
             BSLb   <-  apply(BS, 2, quantile, prob = 0.025)
         }
         
-        if(class(x)[4] == "WB")
+        if(x$class[4] == "WB")
         {
             time <- seq(from=min(tseq), to=max(tseq), length=100)
             nStore <- length(x$chain1$alpha.p)
@@ -4083,8 +4149,8 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
             basehaz <- matrix(NA, numSpl, length(time))
             basesurv <- matrix(NA, numSpl, length(time))
             
-            alpha.p	<- x$chain1$alpha.p
-            kappa.p	<- x$chain1$kappa.p
+            alpha.p    <- x$chain1$alpha.p
+            kappa.p    <- x$chain1$kappa.p
             
             if(nChain > 1){
                 for(i in 2:nChain){
@@ -4096,8 +4162,11 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
             
             for(i in 1:numSpl){
                 basehaz[i, ] <- alpha.p[i] * kappa.p[i] * time^(alpha.p[i] - 1)
-                basesurv[i, ] <- exp(-kappa.p[i] * time^(alpha.p[i]))
+                basesurv[i, ] <- kappa.p[i] * time^(alpha.p[i])
             }
+            
+            basehaz <- basehaz * exp(matrix(LP, nrow=dim(basehaz)[1], ncol=dim(basehaz)[2], byrow=F))
+            basesurv <- exp(-basesurv * exp(matrix(LP, nrow=dim(basehaz)[1], ncol=dim(basehaz)[2], byrow=F)))
             
             timehz <- time
             
@@ -4115,109 +4184,371 @@ plot.Bayes_HReg <- function(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=
             BSLb <- apply(basesurv, 2, quantile, prob = 0.025)
         }
         
-        BH_tbl <- cbind(timehz, BHMed, BHLb, BHUb)
-        dimnames(BH_tbl) <- list(rep("", length(timehz)), c("time", "h0", "LL", "UL"))
+        BH_tbl <- data.frame(time=timehz, h=BHMed, LL=BHLb, UL=BHUb)
+        BS_tbl <- data.frame(time=time, S=BSMed, LL=BSLb, UL=BSUb)
         
-        BS_tbl <- cbind(time, BSMed, BSLb, BSUb)
-        dimnames(BS_tbl) <- list(rep("", length(time)), c("time", "S0", "LL", "UL"))
-        
-        value <- list(h0=BH_tbl, S0=BS_tbl)
-        
-        
-        if(plot == TRUE)
-        {
-            if(is.null(xlab))
-            {
-                xlab <- "Time"
-            }
-            
-            if(plot.est == "BH")
-            {
-                if(is.null(ylab))
-                {
-                    ylab <- "Baseline hazard"
-                }
-                
-                ygrid <- (max(BHUb) - 0)/5
-                ylim <- seq(from=0, to=max(BHUb), by=ygrid)
-                
-                ##
-                plot(c(0, max(time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", h[0](t), "")), axes=FALSE)
-                if(class(x)[4] == "PEM")
-                {
-                    axis(1, at=c(0, max(time)))
-                }
-                if(class(x)[4] == "WB")
-                {
-                    axis(1, at=tseq)
-                }
-                axis(2, at=round(ylim, 4))
-                
-                #if(timehz[1] == 0)
-                #{
-                #    lines(timehz, BHMed, col="red", lwd=3)
-                #    lines(timehz, BHUb, col="red", lwd=3, lty=3)
-                #    lines(timehz, BHLb, col="red", lwd=3, lty=3)
-                #}else
-                #{
-                #    lines(unique(c(0, timehz)), c(0, BHMed), col="red", lwd=3)
-                #    lines(unique(c(0, timehz)), c(0, BHUb), col="red", lwd=3, lty=3)
-                #    lines(unique(c(0, timehz)), c(0, BHLb), col="red", lwd=3, lty=3)
-                #}
-                lines(timehz, BHMed, col="red", lwd=3)
-                lines(timehz, BHUb, col="red", lwd=3, lty=3)
-                lines(timehz, BHLb, col="red", lwd=3, lty=3)
-                
-            }
-            
-            if(plot.est == "BS")
-            {
-                if(is.null(ylab))
-                {
-                    ylab <- "Baseline survival"
-                }
-                ylim <- seq(from=0, to=1, by=0.2)
-                
-                ##
-                plot(c(0, max(time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", S[0](t), "")), axes=FALSE)
-                if(class(x)[4] == "PEM")
-                {
-                    axis(1, at=c(0, max(time)))
-                }
-                if(class(x)[4] == "WB")
-                {
-                    axis(1, at=tseq)
-                }
-                axis(2, at=ylim)
-                
-                if(time[1] == 0)
-                {
-                    lines(time, BSMed, col="red", lwd=3)
-                    lines(time, BSUb, col="red", lwd=3, lty=3)
-                    lines(time, BSLb, col="red", lwd=3, lty=3)
-                }else
-                {
-                    lines(unique(c(0, time)), c(1, BSMed), col="red", lwd=3)
-                    lines(unique(c(0, time)), c(1, BSUb), col="red", lwd=3, lty=3)
-                    lines(unique(c(0, time)), c(1, BSLb), col="red", lwd=3, lty=3)
-                }
-            }
-        }
-        if(plot == FALSE)
-        {
-            return(value)
-        }
+        value <- list(h=BH_tbl, S=BS_tbl)
     }
-    invisible()
+    
+    value$xnew <- xnew
+    value$x1new <- x1new
+    value$x2new <- x2new
+    value$x3new <- x3new
+    value$tseq <- tseq
+    value$setup$model <- x$setup$model
+    value$class <- x$class
+
+    class(value) <- "pred.Bayes_HReg"
+    return(value)
 }
 
 
-plot.Bayes_AFT <- function(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+
+
+plot.pred.Bayes_HReg <- function(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
 {
+    if(x$class[2] == "ID")
+    {
+        if(is.null(xlab))
+        {
+            xlab <- c("Time", "Time", "Time")
+            if(x$setup$model == "semi-Markov")
+            {
+                xlab[3] <- "Time since non-terminal event"
+            }
+        }
+        
+        if(plot.est == "Haz")
+        {
+            if(is.null(ylab))
+            {
+                ylab <- "Hazard"
+            }
+            
+            ygrid <- (max(x$h.1$UL.1, x$h.2$UL.2, x$h.3$UL.3) - 0)/5
+            ylim <- seq(from=0, to=max(x$h.1$UL.1, x$h.2$UL.2, x$h.3$UL.3), by=ygrid)
+            
+            ##
+            par(mfrow=c(1,3))
+            ##
+            plot(c(0, max(x$h.1$time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", h[1](t), "")), axes=FALSE)
+            if(x$class[4] == "PEM")
+            {
+                axis(1, at=c(0, max(x$h.1$time1)))
+            }
+            if(x$class[4] == "WB")
+            {
+                axis(1, at=x$tseq)
+            }
+            axis(2, at=round(ylim, 4))
+            
+            lines(x$h.1$time1, x$h.1$h.1, col="blue", lwd=3)
+            lines(x$h.1$time1, x$h.1$UL.1, col="blue", lwd=3, lty=3)
+            lines(x$h.1$time1, x$h.1$LL.1, col="blue", lwd=3, lty=3)
+            
+            ##
+            plot(c(0, max(x$h.2$time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[2](t), "")), axes=FALSE)
+            if(x$class[4] == "PEM")
+            {
+                axis(1, at=c(0, max(x$h.2$time2)))
+            }
+            if(x$class[4] == "WB")
+            {
+                axis(1, at=x$tseq)
+            }
+            axis(2, at=round(ylim, 4))
+            
+            lines(x$h.2$time2, x$h.2$h.2, col="red", lwd=3)
+            lines(x$h.2$time2, x$h.2$UL.2, col="red", lwd=3, lty=3)
+            lines(x$h.2$time2, x$h.2$LL.2, col="red", lwd=3, lty=3)
+            
+            
+            ##
+            plot(c(0, max(x$h.3$time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", h[3](t), "")), axes=FALSE)
+            if(x$class[4] == "PEM")
+            {
+                axis(1, at=c(0, max(x$h.3$time3)))
+            }
+            if(x$class[4] == "WB")
+            {
+                axis(1, at=x$tseq)
+            }
+            axis(2, at=round(ylim, 4))
+            
+            lines(x$h.3$time3, x$h.3$h.3, col="red", lwd=3)
+            lines(x$h.3$time3, x$h.3$UL.3, col="red", lwd=3, lty=3)
+            lines(x$h.3$time3, x$h.3$LL.3, col="red", lwd=3, lty=3)
+            
+        }
+        
+        if(plot.est == "Surv")
+        {
+            if(is.null(ylab))
+            {
+                ylab <- "Survival"
+            }
+            ylim <- seq(from=0, to=1, by=0.2)
+            
+            ##
+            par(mfrow=c(1,3))
+            ##
+            plot(c(0, max(x$S.1$time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", S[1](t), "")), axes=FALSE)
+            if(x$class[4] == "PEM")
+            {
+                axis(1, at=c(0, max(x$S.1$time1)))
+            }
+            if(x$class[4] == "WB")
+            {
+                axis(1, at=x$tseq)
+            }
+            axis(2, at=ylim)
+            
+            if(x$S.1$time1[1] == 0)
+            {
+                lines(x$S.1$time1, x$S.1$S.1, col="blue", lwd=3)
+                lines(x$S.1$time1, x$S.1$UL.1, col="blue", lwd=3, lty=3)
+                lines(x$S.1$time1, x$S.1$LL.1, col="blue", lwd=3, lty=3)
+            }else
+            {
+                lines(unique(c(0, x$S.1$time1)), c(1, x$S.1$S.1), col="blue", lwd=3)
+                lines(unique(c(0, x$S.1$time1)), c(1, x$S.1$UL.1), col="blue", lwd=3, lty=3)
+                lines(unique(c(0, x$S.1$time1)), c(1, x$S.1$LL.1), col="blue", lwd=3, lty=3)
+            }
+            
+            ##
+            plot(c(0, max(x$S.2$time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[2](t), "")), axes=FALSE)
+            if(x$class[4] == "PEM")
+            {
+                axis(1, at=c(0, max(x$S.2$time2)))
+            }
+            if(x$class[4] == "WB")
+            {
+                axis(1, at=x$tseq)
+            }
+            axis(2, at=ylim)
+            
+            if(x$S.2$time2[1] == 0)
+            {
+                lines(x$S.2$time2, x$S.2$S.2, col="red", lwd=3)
+                lines(x$S.2$time2, x$S.2$UL.2, col="red", lwd=3, lty=3)
+                lines(x$S.2$time2, x$S.2$LL.2, col="red", lwd=3, lty=3)
+            }else
+            {
+                lines(unique(c(0, x$S.2$time2)), c(1, x$S.2$S.2), col="red", lwd=3)
+                lines(unique(c(0, x$S.2$time2)), c(1, x$S.2$UL.2), col="red", lwd=3, lty=3)
+                lines(unique(c(0, x$S.2$time2)), c(1, x$S.2$LL.2), col="red", lwd=3, lty=3)
+            }
+            
+            ##
+            plot(c(0, max(x$S.3$time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[3](t), "")), axes=FALSE)
+            if(x$class[4] == "PEM")
+            {
+                axis(1, at=c(0, max(x$S.3$time3)))
+            }
+            if(x$class[4] == "WB")
+            {
+                axis(1, at=x$tseq)
+            }
+            axis(2, at=ylim)
+            
+            if(x$S.3$time3[1] == 0)
+            {
+                lines(x$S.3$time3, x$S.3$S.3, col="red", lwd=3)
+                lines(x$S.3$time3, x$S.3$UL.3, col="red", lwd=3, lty=3)
+                lines(x$S.3$time3, x$S.3$LL.3, col="red", lwd=3, lty=3)
+            }else
+            {
+                lines(unique(c(0, x$S.3$time3)), c(1, x$S.3$S.3), col="red", lwd=3)
+                lines(unique(c(0, x$S.3$time3)), c(1, x$S.3$UL.3), col="red", lwd=3, lty=3)
+                lines(unique(c(0, x$S.3$time3)), c(1, x$S.3$LL.3), col="red", lwd=3, lty=3)
+            }
+        }
+    }
+    
+    if(x$class[2] == "Surv")
+    {
+
+        if(is.null(xlab))
+        {
+            xlab <- "Time"
+        }
+        
+        if(plot.est == "Haz")
+        {
+            if(is.null(ylab))
+            {
+                ylab <- "Hazard"
+            }
+            
+            ygrid <- (max(x$h$UL) - 0)/5
+            ylim <- seq(from=0, to=max(x$h$UL), by=ygrid)
+            
+            ##
+            plot(c(0, max(x$h$time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", h(t), "")), axes=FALSE)
+            if(x$class[4] == "PEM")
+            {
+                axis(1, at=c(0, max(x$h$time)))
+            }
+            if(x$class[4] == "WB")
+            {
+                axis(1, at=x$tseq)
+            }
+            axis(2, at=round(ylim, 4))
+            
+            lines(x$h$time, x$h$h, col="red", lwd=3)
+            lines(x$h$time, x$h$UL, col="red", lwd=3, lty=3)
+            lines(x$h$time, x$h$LL, col="red", lwd=3, lty=3)
+            
+        }
+        
+        if(plot.est == "Surv")
+        {
+            if(is.null(ylab))
+            {
+                ylab <- "Survival"
+            }
+            ylim <- seq(from=0, to=1, by=0.2)
+            
+            ##
+            plot(c(0, max(x$S$time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", S(t), "")), axes=FALSE)
+            if(x$class[4] == "PEM")
+            {
+                axis(1, at=c(0, max(x$S$time)))
+            }
+            if(x$class[4] == "WB")
+            {
+                axis(1, at=x$tseq)
+            }
+            axis(2, at=ylim)
+            
+            if(x$S$time[1] == 0)
+            {
+                lines(x$S$time, x$S$S, col="red", lwd=3)
+                lines(x$S$time, x$S$UL, col="red", lwd=3, lty=3)
+                lines(x$S$time, x$S$LL, col="red", lwd=3, lty=3)
+            }else
+            {
+                lines(unique(c(0, x$S$time)), c(1, x$S$S), col="red", lwd=3)
+                lines(unique(c(0, x$S$time)), c(1, x$S$UL), col="red", lwd=3, lty=3)
+                lines(unique(c(0, x$S$time)), c(1, x$S$LL), col="red", lwd=3, lty=3)
+            }
+        }
+        
+    }
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+predict.Bayes_AFT <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=NULL, time, tseq=c(0, 5, 10), ...)
+{
+    x <- object
     nChain = x$setup$nChain
     
-    if(class(x)[2] == "ID")
+    if(x$class[2] == "ID")
     {
+        if(!is.null(xnew))
+        {
+            stop("'xnew' is for univariate models so it must be specified as NULL for semi-competing risks models")
+        }
+        if(is.null(x$chain1$beta1.p))
+        {
+            if(!is.null(x1new))
+            {
+                stop("x1new does not have the same length as the x1 specified in the Formula.")
+            }else
+            {
+                LP1 <- 0
+            }
+        }else if(length(x$chain1$beta1.p) != 0)
+        {
+            if(!is.null(x1new))
+            {
+                #beta1
+                p1    = dim(x$chain1$beta1.p)[2]
+                beta1.p <- x$chain1$beta1.p
+                if(nChain > 1)
+                {
+                    for(i in 2:nChain)
+                    {
+                        nam <- paste("chain", i, sep="")
+                        beta1.p <- rbind(beta1.p, x[[nam]]$beta1.p)
+                    }
+                }
+                LP1 <- rowSums(beta1.p * matrix(x1new, nrow=dim(beta1.p)[1], ncol = dim(beta1.p)[2], byrow=T))
+            }else
+            {
+                LP1 <- 0
+            }
+        }
+        if(is.null(x$chain1$beta2.p))
+        {
+            if(!is.null(x2new))
+            {
+                stop("x2new does not have the same length as the x2 specified in the Formula.")
+            }else
+            {
+                LP2 <- 0
+            }
+        }else if(length(x$chain1$beta2.p) != 0){
+            if(!is.null(x2new))
+            {
+                #beta2
+                p2    = dim(x$chain1$beta2.p)[2]
+                beta2.p <- x$chain1$beta2.p
+                
+                if(nChain > 1){
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep="")
+                        beta2.p <- rbind(beta2.p, x[[nam]]$beta2.p)
+                    }
+                }
+                LP2 <- rowSums(beta2.p * matrix(x2new, nrow=dim(beta2.p)[1], ncol = dim(beta2.p)[2], byrow=T))
+            }else
+            {
+                LP2 <- 0
+            }
+        }
+        
+        if(is.null(x$chain1$beta3.p))
+        {
+            if(!is.null(x3new))
+            {
+                stop("x3new does not have the same length as the x3 specified in the Formula.")
+            }else
+            {
+                LP3 <- 0
+            }
+        }else if(length(x$chain1$beta3.p) != 0){
+            if(!is.null(x3new))
+            {
+                #beta3
+                p3    = dim(x$chain1$beta3.p)[2]
+                beta3.p <- x$chain1$beta3.p
+                
+                if(nChain > 1){
+                    for(i in 2:nChain){
+                        nam <- paste("chain", i, sep="")
+                        beta3.p <- rbind(beta3.p, x[[nam]]$beta3.p)
+                    }
+                }
+                LP3 <- rowSums(beta3.p * matrix(x3new, nrow=dim(beta3.p)[1], ncol = dim(beta3.p)[2], byrow=T))
+            }else
+            {
+                LP3 <- 0
+            }
+        }
+        
         time1 <- time2 <- time3 <- time1hz <- time2hz<- time3hz <- time
         
         if(time[1] == 0){
@@ -4226,38 +4557,38 @@ plot.Bayes_AFT <- function(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", 
             time3hz <- time3hz[-1]
         }
         
-        if(class(x)[4] == "LN")
+        if(x$class[4] == "LN")
         {
-            bsbhN.1 <- BSBH.N(x, time=time1hz, 1, time.trunc=min(time))
-            bsbhN.2 <- BSBH.N(x, time=time2hz, 2, time.trunc=min(time))
-            bsbhN.3 <- BSBH.N(x, time=time3hz, 3, time.trunc=min(time))
+            bsbhN.1 <- BSBH.N(x, time=time1hz, 1, time.trunc=min(time), x1new)
+            bsbhN.2 <- BSBH.N(x, time=time2hz, 2, time.trunc=min(time), x2new)
+            bsbhN.3 <- BSBH.N(x, time=time3hz, 3, time.trunc=min(time), x3new)
             
             basehaz1 <- bsbhN.1$BH
             basehaz2 <- bsbhN.2$BH
             basehaz3 <- bsbhN.3$BH
             
-            bsbhN.1 <- BSBH.N(x, time=time1, 1, time.trunc=min(time))
-            bsbhN.2 <- BSBH.N(x, time=time2, 2, time.trunc=min(time))
-            bsbhN.3 <- BSBH.N(x, time=time3, 3, time.trunc=min(time))
+            bsbhN.1 <- BSBH.N(x, time=time1, 1, time.trunc=min(time), x1new)
+            bsbhN.2 <- BSBH.N(x, time=time2, 2, time.trunc=min(time), x2new)
+            bsbhN.3 <- BSBH.N(x, time=time3, 3, time.trunc=min(time), x3new)
             
             basesurv1 <- bsbhN.1$BS
             basesurv2 <- bsbhN.2$BS
             basesurv3 <- bsbhN.3$BS
         }
         
-        if(class(x)[4] == "DPM")
+        if(x$class[4] == "DPM")
         {
-            bsbhDP.1 <- BSBH.DP(x, time=time1hz, 1, time.trunc=min(time))
-            bsbhDP.2 <- BSBH.DP(x, time=time2hz, 1, time.trunc=min(time))
-            bsbhDP.3 <- BSBH.DP(x, time=time3hz, 1, time.trunc=min(time))
+            bsbhDP.1 <- BSBH.DP(x, time=time1hz, 1, time.trunc=min(time), x1new)
+            bsbhDP.2 <- BSBH.DP(x, time=time2hz, 1, time.trunc=min(time), x2new)
+            bsbhDP.3 <- BSBH.DP(x, time=time3hz, 1, time.trunc=min(time), x3new)
             
             basehaz1 <- bsbhDP.1$BH
             basehaz2 <- bsbhDP.2$BH
             basehaz3 <- bsbhDP.3$BH
             
-            bsbhDP.1 <- BSBH.DP(x, time=time1, 1, time.trunc=min(time))
-            bsbhDP.2 <- BSBH.DP(x, time=time2, 1, time.trunc=min(time))
-            bsbhDP.3 <- BSBH.DP(x, time=time3, 1, time.trunc=min(time))
+            bsbhDP.1 <- BSBH.DP(x, time=time1, 1, time.trunc=min(time), x1new)
+            bsbhDP.2 <- BSBH.DP(x, time=time2, 1, time.trunc=min(time), x2new)
+            bsbhDP.3 <- BSBH.DP(x, time=time3, 1, time.trunc=min(time), x3new)
             
             basesurv1 <- bsbhDP.1$BS
             basesurv2 <- bsbhDP.2$BS
@@ -4284,168 +4615,85 @@ plot.Bayes_AFT <- function(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", 
         BS3Ub <- apply(basesurv3, 2, quantile, prob = 0.975)
         BS3Lb <- apply(basesurv3, 2, quantile, prob = 0.025)
         
-        BH1_tbl <- cbind(time1hz, BH1Med, BH1Lb, BH1Ub)
-        dimnames(BH1_tbl) <- list(rep("", length(time1hz)), c("time", "h0.1", "LL.1", "UL.1"))
-        BH2_tbl <- cbind(time2hz, BH2Med, BH2Lb, BH2Ub)
-        dimnames(BH2_tbl) <- list(rep("", length(time2hz)), c("time", "h0.2", "LL.2", "UL.2"))
-        BH3_tbl <- cbind(time3hz, BH3Med, BH3Lb, BH3Ub)
-        dimnames(BH3_tbl) <- list(rep("", length(time3hz)), c("time", "h0.3", "LL.3", "UL.3"))
+        BH1_tbl <- data.frame(time=time1hz, h.1=BH1Med, LL.1=BH1Lb, UL.1=BH1Ub)
+        BH2_tbl <- data.frame(time=time2hz, h.2=BH2Med, LL.2=BH2Lb, UL.2=BH2Ub)
+        BH3_tbl <- data.frame(time=time3hz, h.3=BH3Med, LL.3=BH3Lb, UL.3=BH3Ub)
         
-        BS1_tbl <- cbind(time1, BS1Med, BS1Lb, BS1Ub)
-        dimnames(BS1_tbl) <- list(rep("", length(time1)), c("time", "S0.1", "LL.1", "UL.1"))
-        BS2_tbl <- cbind(time2, BS2Med, BS2Lb, BS2Ub)
-        dimnames(BS2_tbl) <- list(rep("", length(time2)), c("time", "S0.2", "LL.2", "UL.2"))
-        BS3_tbl <- cbind(time3, BS3Med, BS3Lb, BS3Ub)
-        dimnames(BS3_tbl) <- list(rep("", length(time3)), c("time", "S0.3", "LL.3", "UL.3"))
+        BS1_tbl <- data.frame(time=time1, S.1=BS1Med, LL.1=BS1Lb, UL.1=BS1Ub)
+        BS2_tbl <- data.frame(time=time2, S.2=BS2Med, LL.2=BS2Lb, UL.2=BS2Ub)
+        BS3_tbl <- data.frame(time=time3, S.3=BS3Med, LL.3=BS3Lb, UL.3=BS3Ub)
         
-        value <- list(h0.1=BH1_tbl, h0.2=BH2_tbl, h0.3=BH3_tbl, S0.1=BS1_tbl, S0.2=BS2_tbl, S0.3=BS3_tbl)
-        
-        if(plot == TRUE)
-        {
-            if(is.null(xlab))
-            {
-                xlab <- c("Time", "Time", "Time")
-                xlab[3] <- "Time since non-terminal event"
-            }
-            
-            if(plot.est == "BH")
-            {
-                if(is.null(ylab))
-                {
-                    ylab <- "Baseline hazard"
-                }
-                
-                ygrid <- (max(BH1Ub, BH2Ub, BH3Ub) - 0)/5
-                ylim <- seq(from=0, to=max(BH1Ub, BH2Ub, BH3Ub), by=ygrid)
-                
-                ##
-                par(mfrow=c(1,3))
-                ##
-                plot(c(0, max(time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][1](t), "")), axes=FALSE)
-                
-                axis(1, at=tseq)
-                axis(2, at=round(ylim, 4))
-                
-                lines(time1hz, BH1Med, col="blue", lwd=3)
-                lines(time1hz, BH1Ub, col="blue", lwd=3, lty=3)
-                lines(time1hz, BH1Lb, col="blue", lwd=3, lty=3)
-                
-                ##
-                plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][2](t), "")), axes=FALSE)
-                
-                axis(1, at=tseq)
-                axis(2, at=round(ylim, 4))
-                
-                lines(time2hz, BH2Med, col="red", lwd=3)
-                lines(time2hz, BH2Ub, col="red", lwd=3, lty=3)
-                lines(time2hz, BH2Lb, col="red", lwd=3, lty=3)
-                
-                
-                ##
-                plot(c(0, max(time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", h[0][3](t), "")), axes=FALSE)
-                
-                axis(1, at=tseq)
-                axis(2, at=round(ylim, 4))
-                
-                lines(time3hz, BH3Med, col="red", lwd=3)
-                lines(time3hz, BH3Ub, col="red", lwd=3, lty=3)
-                lines(time3hz, BH3Lb, col="red", lwd=3, lty=3)
-                
-            }
-            
-            if(plot.est == "BS")
-            {
-                if(is.null(ylab))
-                {
-                    ylab <- "Baseline survival"
-                }
-                ylim <- seq(from=0, to=1, by=0.2)
-                
-                ##
-                par(mfrow=c(1,3))
-                ##
-                plot(c(0, max(time1)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][1](t), "")), axes=FALSE)
-                axis(1, at=tseq)
-                axis(2, at=ylim)
-                
-                if(time1[1] == 0)
-                {
-                    lines(time1, BS1Med, col="blue", lwd=3)
-                    lines(time1, BS1Ub, col="blue", lwd=3, lty=3)
-                    lines(time1, BS1Lb, col="blue", lwd=3, lty=3)
-                }else
-                {
-                    lines(unique(c(0, time1)), c(1, BS1Med), col="blue", lwd=3)
-                    lines(unique(c(0, time1)), c(1, BS1Ub), col="blue", lwd=3, lty=3)
-                    lines(unique(c(0, time1)), c(1, BS1Lb), col="blue", lwd=3, lty=3)
-                }
-                
-                ##
-                plot(c(0, max(time2)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][2](t), "")), axes=FALSE)
-                axis(1, at=tseq)
-                axis(2, at=ylim)
-                
-                if(time2[1] == 0)
-                {
-                    lines(time2, BS2Med, col="red", lwd=3)
-                    lines(time2, BS2Ub, col="red", lwd=3, lty=3)
-                    lines(time2, BS2Lb, col="red", lwd=3, lty=3)
-                }else
-                {
-                    lines(unique(c(0, time2)), c(1, BS2Med), col="red", lwd=3)
-                    lines(unique(c(0, time2)), c(1, BS2Ub), col="red", lwd=3, lty=3)
-                    lines(unique(c(0, time2)), c(1, BS2Lb), col="red", lwd=3, lty=3)
-                }
-                
-                ##
-                plot(c(0, max(time3)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[0][3](t), "")), axes=FALSE)
-                axis(1, at=tseq)
-                axis(2, at=ylim)
-                
-                if(time3[1] == 0)
-                {
-                    lines(time3, BS3Med, col="red", lwd=3)
-                    lines(time3, BS3Ub, col="red", lwd=3, lty=3)
-                    lines(time3, BS3Lb, col="red", lwd=3, lty=3)
-                }else
-                {
-                    lines(unique(c(0, time3)), c(1, BS3Med), col="red", lwd=3)
-                    lines(unique(c(0, time3)), c(1, BS3Ub), col="red", lwd=3, lty=3)
-                    lines(unique(c(0, time3)), c(1, BS3Lb), col="red", lwd=3, lty=3)
-                }
-                
-            }
-        }
-        if(plot == FALSE)
-        {
-            return(value)
-        }
+        value <- list(h.1=BH1_tbl, h.2=BH2_tbl, h.3=BH3_tbl, S.1=BS1_tbl, S.2=BS2_tbl, S.3=BS3_tbl)
         
     }
     
-    if(class(x)[2] == "Surv")
+    if(x$class[2] == "Surv")
     {
+        
+        if(!is.null(x1new))
+        {
+            stop("'x1new' is for semi-competing risks models so it must be specified as NULL for univariate models")
+        }
+        if(!is.null(x2new))
+        {
+            stop("'x2new' is for semi-competing risks models so it must be specified as NULL for univariate models")
+        }
+        if(!is.null(x3new))
+        {
+            stop("'x3new' is for semi-competing risks models so it must be specified as NULL for univariate models")
+        }
+        if(is.null(x$chain1$beta.p))
+        {
+            if(!is.null(xnew))
+            {
+                stop("xnew does not have the same length as the x specified in the Formula.")
+            }else
+            {
+                LP <- 0
+            }
+        }else if(length(x$chain1$beta.p) != 0)
+        {
+            if(!is.null(xnew))
+            {
+                #beta
+                p    = dim(x$chain1$beta.p)[2]
+                beta.p <- x$chain1$beta.p
+                if(nChain > 1)
+                {
+                    for(i in 2:nChain)
+                    {
+                        nam <- paste("chain", i, sep="")
+                        beta.p <- rbind(beta.p, x[[nam]]$beta.p)
+                    }
+                }
+                LP <- rowSums(beta.p * matrix(xnew, nrow=dim(beta.p)[1], ncol = dim(beta.p)[2], byrow=T))
+            }else
+            {
+                LP <- 0
+            }
+        }
+        
         timehz <- time
         
         if(time[1] == 0){
             timehz <- timehz[-1]
         }
         
-        if(class(x)[4] == "LN")
+        if(x$class[4] == "LN")
         {
-            bsbhN.0 <- BSBH.N(x, time=timehz, 0, time.trunc=min(time))
+            bsbhN.0 <- BSBH.N(x, time=timehz, 0, time.trunc=min(time), xnew)
             basehaz <- bsbhN.0$BH
             
-            bsbhN.0 <- BSBH.N(x, time=time, 0, time.trunc=min(time))
+            bsbhN.0 <- BSBH.N(x, time=time, 0, time.trunc=min(time), xnew)
             basesurv <- bsbhN.0$BS
         }
         
-        if(class(x)[4] == "DPM")
+        if(x$class[4] == "DPM")
         {
-            bsbhDP.0 <- BSBH.DP(x, time=timehz, 0, time.trunc=min(time))
+            bsbhDP.0 <- BSBH.DP(x, time=timehz, 0, time.trunc=min(time), xnew)
             basehaz <- bsbhDP.0$BH
             
-            bsbhDP.0 <- BSBH.DP(x, time=time, 0, time.trunc=min(time))
+            bsbhDP.0 <- BSBH.DP(x, time=time, 0, time.trunc=min(time), xnew)
             basesurv <- bsbhDP.0$BS
         }
         
@@ -4458,76 +4706,736 @@ plot.Bayes_AFT <- function(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", 
         BSLb <- apply(basesurv, 2, quantile, prob = 0.025)
         
         
-        BH_tbl <- cbind(timehz, BHMed, BHLb, BHUb)
-        dimnames(BH_tbl) <- list(rep("", length(timehz)), c("time", "h0", "LL", "UL"))
+        BH_tbl <- data.frame(time=timehz, h=BHMed, LL=BHLb, UL=BHUb)
+        BS_tbl <- data.frame(time=time, S=BSMed, LL=BSLb, UL=BSUb)
         
-        BS_tbl <- cbind(time, BSMed, BSLb, BSUb)
-        dimnames(BS_tbl) <- list(rep("", length(time)), c("time", "S0", "LL", "UL"))
+        value <- list(h=BH_tbl, S=BS_tbl)
         
-        value <- list(h0=BH_tbl, S0=BS_tbl)
-        
-        
-        if(plot == TRUE)
+    }
+    
+    value$xnew <- xnew
+    value$x1new <- x1new
+    value$x2new <- x2new
+    value$x3new <- x3new
+    value$tseq <- tseq
+    value$setup$model <- x$setup$model
+    value$class <- x$class
+    
+    class(value) <- "pred.Bayes_AFT"
+    return(value)
+}
+
+
+
+
+
+
+
+plot.pred.Bayes_AFT <- function(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
+{
+    if(x$class[2] == "ID")
+    {
+        if(is.null(xlab))
         {
-            if(is.null(xlab))
-            {
-                xlab <- "Time"
-            }
-            
-            if(plot.est == "BH")
-            {
-                if(is.null(ylab))
-                {
-                    ylab <- "Baseline hazard"
-                }
-                
-                ygrid <- (max(BHUb) - 0)/5
-                ylim <- seq(from=0, to=max(BHUb), by=ygrid)
-                
-                ##
-                plot(c(0, max(time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", h[0](t), "")), axes=FALSE)
-                axis(1, at=tseq)
-                axis(2, at=round(ylim, 4))
-                
-                lines(timehz, BHMed, col="red", lwd=3)
-                lines(timehz, BHUb, col="red", lwd=3, lty=3)
-                lines(timehz, BHLb, col="red", lwd=3, lty=3)
-                
-            }
-            
-            if(plot.est == "BS")
-            {
-                if(is.null(ylab))
-                {
-                    ylab <- "Baseline survival"
-                }
-                ylim <- seq(from=0, to=1, by=0.2)
-                
-                ##
-                plot(c(0, max(time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", S[0](t), "")), axes=FALSE)
-                axis(1, at=tseq)
-                axis(2, at=ylim)
-                
-                if(time[1] == 0)
-                {
-                    lines(time, BSMed, col="red", lwd=3)
-                    lines(time, BSUb, col="red", lwd=3, lty=3)
-                    lines(time, BSLb, col="red", lwd=3, lty=3)
-                }else
-                {
-                    lines(unique(c(0, time)), c(1, BSMed), col="red", lwd=3)
-                    lines(unique(c(0, time)), c(1, BSUb), col="red", lwd=3, lty=3)
-                    lines(unique(c(0, time)), c(1, BSLb), col="red", lwd=3, lty=3)
-                }
-            }
+            xlab <- c("Time", "Time", "Time")
+            xlab[3] <- "Time since non-terminal event"
         }
-        if(plot == FALSE)
+        
+        if(plot.est == "Haz")
         {
-            return(value)
+            if(is.null(ylab))
+            {
+                ylab <- "Hazard"
+            }
+            
+            ygrid <- (max(x$h.1$UL.1, x$h.2$UL.2, x$h.3$UL.3) - 0)/5
+            ylim <- seq(from=0, to=max(x$h.1$UL.1, x$h.2$UL.2, x$h.3$UL.3), by=ygrid)
+            
+            ##
+            par(mfrow=c(1,3))
+            ##
+            plot(c(0, max(x$h.1$time)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", h[1](t), "")), axes=FALSE)
+            axis(1, at=x$tseq)
+            axis(2, at=round(ylim, 4))
+            
+            lines(x$h.1$time, x$h.1$h.1, col="blue", lwd=3)
+            lines(x$h.1$time, x$h.1$UL.1, col="blue", lwd=3, lty=3)
+            lines(x$h.1$time, x$h.1$LL.1, col="blue", lwd=3, lty=3)
+            
+            ##
+            plot(c(0, max(x$h.2$time)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[2](t), "")), axes=FALSE)
+            axis(1, at=x$tseq)
+            axis(2, at=round(ylim, 4))
+            
+            lines(x$h.2$time, x$h.2$h.2, col="red", lwd=3)
+            lines(x$h.2$time, x$h.2$UL.2, col="red", lwd=3, lty=3)
+            lines(x$h.2$time, x$h.2$LL.2, col="red", lwd=3, lty=3)
+            
+            ##
+            plot(c(0, max(x$h.3$time)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", h[3](t), "")), axes=FALSE)
+            axis(1, at=x$tseq)
+            axis(2, at=round(ylim, 4))
+            
+            lines(x$h.3$time, x$h.3$h.3, col="red", lwd=3)
+            lines(x$h.3$time, x$h.3$UL.3, col="red", lwd=3, lty=3)
+            lines(x$h.3$time, x$h.3$LL.3, col="red", lwd=3, lty=3)
+            
+        }
+        
+        if(plot.est == "Surv")
+        {
+            if(is.null(ylab))
+            {
+                ylab <- "Survival"
+            }
+            ylim <- seq(from=0, to=1, by=0.2)
+            
+            ##
+            par(mfrow=c(1,3))
+            ##
+            plot(c(0, max(x$S.1$time)), range(ylim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", S[1](t), "")), axes=FALSE)
+            axis(1, at=x$tseq)
+            axis(2, at=ylim)
+            
+            if(x$S.1$time[1] == 0)
+            {
+                lines(x$S.1$time, x$S.1$S.1, col="blue", lwd=3)
+                lines(x$S.1$time, x$S.1$UL.1, col="blue", lwd=3, lty=3)
+                lines(x$S.1$time, x$S.1$LL.1, col="blue", lwd=3, lty=3)
+            }else
+            {
+                lines(unique(c(0, x$S.1$time)), c(1, x$S.1$S.1), col="blue", lwd=3)
+                lines(unique(c(0, x$S.1$time)), c(1, x$S.1$UL.1), col="blue", lwd=3, lty=3)
+                lines(unique(c(0, x$S.1$time)), c(1, x$S.1$LL.1), col="blue", lwd=3, lty=3)
+            }
+            
+            ##
+            plot(c(0, max(x$S.2$time)), range(ylim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[2](t), "")), axes=FALSE)
+            axis(1, at=x$tseq)
+            axis(2, at=ylim)
+            
+            if(x$S.2$time[1] == 0)
+            {
+                lines(x$S.2$time, x$S.2$S.2, col="red", lwd=3)
+                lines(x$S.2$time, x$S.2$UL.2, col="red", lwd=3, lty=3)
+                lines(x$S.2$time, x$S.2$LL.2, col="red", lwd=3, lty=3)
+            }else
+            {
+                lines(unique(c(0, x$S.2$time)), c(1, x$S.2$S.2), col="red", lwd=3)
+                lines(unique(c(0, x$S.2$time)), c(1, x$S.2$UL.2), col="red", lwd=3, lty=3)
+                lines(unique(c(0, x$S.2$time)), c(1, x$S.2$LL.2), col="red", lwd=3, lty=3)
+            }
+            
+            ##
+            plot(c(0, max(x$S.3$time)), range(ylim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[3](t), "")), axes=FALSE)
+            axis(1, at=x$tseq)
+            axis(2, at=ylim)
+            
+            if(x$S.3$time[1] == 0)
+            {
+                lines(x$S.3$time, x$S.3$S.3, col="red", lwd=3)
+                lines(x$S.3$time, x$S.3$UL.3, col="red", lwd=3, lty=3)
+                lines(x$S.3$time, x$S.3$LL.3, col="red", lwd=3, lty=3)
+            }else
+            {
+                lines(unique(c(0, x$S.3$time)), c(1, x$S.3$S.3), col="red", lwd=3)
+                lines(unique(c(0, x$S.3$time)), c(1, x$S.3$UL.3), col="red", lwd=3, lty=3)
+                lines(unique(c(0, x$S.3$time)), c(1, x$S.3$LL.3), col="red", lwd=3, lty=3)
+            }
         }
     }
+    
+    if(x$class[2] == "Surv")
+    {
+        if(is.null(xlab))
+        {
+            xlab <- "Time"
+        }
+        
+        if(plot.est == "Haz")
+        {
+            if(is.null(ylab))
+            {
+                ylab <- "Hazard"
+            }
+            
+            ygrid <- (max(x$h$UL) - 0)/5
+            ylim <- seq(from=0, to=max(x$h$UL), by=ygrid)
+            
+            ##
+            plot(c(0, max(x$h$time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", h(t), "")), axes=FALSE)
+            axis(1, at=x$tseq)
+            axis(2, at=round(ylim, 4))
+            
+            lines(x$h$time, x$h$h, col="red", lwd=3)
+            lines(x$h$time, x$h$UL, col="red", lwd=3, lty=3)
+            lines(x$h$time, x$h$LL, col="red", lwd=3, lty=3)
+        }
+        
+        if(plot.est == "Surv")
+        {
+            if(is.null(ylab))
+            {
+                ylab <- "Survival"
+            }
+            ylim <- seq(from=0, to=1, by=0.2)
+            
+            ##
+            plot(c(0, max(x$S$time)), range(ylim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", S(t), "")), axes=FALSE)
+            axis(1, at=x$tseq)
+            axis(2, at=ylim)
+            
+            if(x$S$time[1] == 0)
+            {
+                lines(x$S$time, x$S$S, col="red", lwd=3)
+                lines(x$S$time, x$S$UL, col="red", lwd=3, lty=3)
+                lines(x$S$time, x$S$LL, col="red", lwd=3, lty=3)
+            }else
+            {
+                lines(unique(c(0, x$S$time)), c(1, x$S$S), col="red", lwd=3)
+                lines(unique(c(0, x$S$time)), c(1, x$S$UL), col="red", lwd=3, lty=3)
+                lines(unique(c(0, x$S$time)), c(1, x$S$LL), col="red", lwd=3, lty=3)
+            }
+        }
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=NULL, tseq=c(0, 5, 10), ...)
+{
+    obj <- object
+    T2seq <- tseq
+    yLim <- NULL
+    ##
+    ## SEs based on the Delta method using log(-log(S0))
+
+    ##
+    if(obj$class[2] == "Surv")
+    {
+        if(!is.null(x1new))
+        {
+            stop("'x1new' is for semi-competing risks models so it must be specified as NULL for univariate models")
+        }
+        if(!is.null(x2new))
+        {
+            stop("'x2new' is for semi-competing risks models so it must be specified as NULL for univariate models")
+        }
+        if(!is.null(x3new))
+        {
+            stop("'x3new' is for semi-competing risks models so it must be specified as NULL for univariate models")
+        }
+        
+        T2 <- seq(from=min(T2seq), to=max(T2seq), length=100)
+        
+        ##
+        kappa    <- exp(obj$estimate[1])
+        alpha    <- exp(obj$estimate[2])
+        log_kappa    <- obj$estimate[1]
+        log_alpha    <- obj$estimate[2]
+        S0     <- exp(-(kappa*(T2)^alpha))
+        ## Delta method based on log(-log(S0))
+        if(!is.null(xnew))
+        {
+            J <- cbind(1, exp(log_alpha)*log(T2), matrix(xnew, nrow=100, ncol=length(xnew), byrow=T))
+            Var.loglogS0 <- J %*% obj$Finv %*% t(J)
+        }else
+        {
+            J <- cbind(1, exp(log_alpha)*log(T2))
+            Var.loglogS0 <- J %*% obj$Finv[1:2, 1:2] %*% t(J)
+        }
+        se.loglogS0  <- sqrt(diag(Var.loglogS0))
+        se.loglogS0[is.na(se.loglogS0)] <- 0
+        LL <- S0^exp(-qnorm(0.025)*se.loglogS0)
+        UL <- S0^exp(qnorm(0.025)*se.loglogS0)
+        ##
+        BS_tbl <- data.frame(time=T2, S=S0, LL=LL, UL=UL)
+        
+        ##
+        h0  <- alpha*kappa*(T2)^(alpha-1)
+        if(!is.null(xnew))
+        {
+            J   <- cbind(h0, h0*(1+alpha*log(T2)), h0*matrix(xnew, nrow=100, ncol=length(xnew), byrow=T))
+            Var.h0 <- J %*% obj$Finv %*% t(J)
+        }else
+        {
+            J   <- cbind(h0, h0*(1+alpha*log(T2)))
+            Var.h0 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
+        }
+        
+        se.h0  <- sqrt(diag(Var.h0))
+        se.h0[is.nan(se.h0)] <- 0
+        LLh0 <- h0 - qnorm(0.025)*se.h0
+        ULh0 <- h0 + qnorm(0.025)*se.h0
+        LLh0[LLh0 < 0] <- 0
+        
+        T2h <- T2
+        if(T2[1] == 0)
+        {
+            T2h <- T2h[-1]
+            h0 <- h0[-1]
+            LLh0 <- LLh0[-1]
+            ULh0 <- ULh0[-1]
+        }
+        
+        BH_tbl <- data.frame(time=T2h, h=h0, LL=LLh0, UL=ULh0)
+        
+        value <- list(h=BH_tbl, S=BS_tbl)
+    }
+    ##
+    if(obj$class[2] == "ID")
+    {
+        if(!is.null(xnew))
+        {
+            stop("'xnew' is for univariate models so it must be specified as NULL for semi-competing risks models")
+        }
+        
+        nP = obj$nP
+        
+        ##
+        T2 <- seq(from=min(T2seq), to=max(T2seq), length=100)
+        ##
+        
+        kappa    <- exp(obj$estimate[1])
+        alpha      <- exp(obj$estimate[2])
+        log_alpha <- obj$estimate[2]
+        S0.1           <- exp(-kappa*(T2)^alpha)
+        if(!is.null(x1new) & nP[1] > 0)
+        {
+            J <- cbind(1, exp(log_alpha)*log(T2), matrix(x1new, nrow=100, ncol=length(x1new), byrow=T))
+            if(obj$frailty == TRUE)
+            {
+                Var.loglogS0 <- J %*% obj$Finv[c(1:2, 8:(8+nP[1]-1)), c(1:2, 8:(8+nP[1]-1))] %*% t(J)
+            }else if(obj$frailty == FALSE)
+            {
+                Var.loglogS0 <- J %*% obj$Finv[c(1:2, 7:(7+nP[1]-1)), c(1:2, 7:(7+nP[1]-1))] %*% t(J)
+            }
+        }else if(is.null(x1new) | nP[1] == 0)
+        {
+            J            <- cbind(1, exp(log_alpha)*log(T2))
+            Var.loglogS0 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
+        }
+        se.loglogS0  <- sqrt(diag(Var.loglogS0))
+        LL.1         <- S0.1^exp(-qnorm(0.025)*se.loglogS0)
+        UL.1         <- S0.1^exp(qnorm(0.025)*se.loglogS0)
+        ##
+        h0.1  <- alpha*kappa*(T2)^(alpha-1)
+        if(!is.null(x1new) & nP[1] > 0)
+        {
+            J   <- cbind(h0.1, h0.1*(1+alpha*log(T2)), h0.1*matrix(x1new, nrow=100, ncol=length(x1new), byrow=T))
+            if(obj$frailty == TRUE)
+            {
+                Var.h0.1 <- J %*% obj$Finv[c(1:2, 8:(8+nP[1]-1)), c(1:2, 8:(8+nP[1]-1))] %*% t(J)
+            }else if(obj$frailty == FALSE)
+            {
+                Var.h0.1 <- J %*% obj$Finv[c(1:2, 7:(7+nP[1]-1)), c(1:2, 7:(7+nP[1]-1))] %*% t(J)
+            }
+        }else if(is.null(x1new) | nP[1] == 0)
+        {
+            J   <- cbind(h0.1, h0.1*(1+alpha*log(T2)))
+            Var.h0.1 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
+        }
+        se.h0.1  <- sqrt(diag(Var.h0.1))
+        se.h0.1[is.nan(se.h0.1)] <- 0
+        LLh0.1 <- h0.1 - qnorm(0.025)*se.h0.1
+        ULh0.1 <- h0.1 + qnorm(0.025)*se.h0.1
+        LLh0.1[LLh0.1 < 0] <- 0
+        
+        ##
+        kappa    <- exp(obj$estimate[3])
+        alpha      <- exp(obj$estimate[4])
+        log_alpha <- obj$estimate[4]
+        S0.2   <- exp(-kappa*(T2)^alpha)
+        if(!is.null(x2new) & nP[2] > 0)
+        {
+            J <- cbind(1, exp(log_alpha)*log(T2), matrix(x2new, nrow=100, ncol=length(x2new), byrow=T))
+            if(obj$frailty == TRUE)
+            {
+                Var.loglogS0 <- J %*% obj$Finv[c(3:4, (8+nP[1]):(8+nP[1]+nP[2]-1)), c(3:4, (8+nP[1]):(8+nP[1]+nP[2]-1))] %*% t(J)
+            }else if(obj$frailty == FALSE)
+            {
+                Var.loglogS0 <- J %*% obj$Finv[c(3:4, (7+nP[1]):(7+nP[1]+nP[2]-1)), c(3:4, (7+nP[1]):(7+nP[1]+nP[2]-1))] %*% t(J)
+            }
+        }else if(is.null(x2new) | nP[2] == 0)
+        {
+            J            <- cbind(1, exp(log_alpha)*log(T2))
+            Var.loglogS0 <- J %*% obj$Finv[3:4,3:4] %*% t(J)
+        }
+        se.loglogS0  <- sqrt(diag(Var.loglogS0))
+        LL.2         <- S0.2^exp(-qnorm(0.025)*se.loglogS0)
+        UL.2         <- S0.2^exp(qnorm(0.025)*se.loglogS0)
+        ##
+        h0.2  <- alpha*kappa*(T2)^(alpha-1)
+        if(!is.null(x2new) & nP[2] > 0)
+        {
+            J   <- cbind(h0.2, h0.2*(1+alpha*log(T2)), h0.2*matrix(x2new, nrow=100, ncol=length(x2new), byrow=T))
+            if(obj$frailty == TRUE)
+            {
+                Var.h0.2 <- J %*% obj$Finv[c(3:4, (8+nP[1]):(8+nP[1]+nP[2]-1)), c(3:4, (8+nP[1]):(8+nP[1]+nP[2]-1))] %*% t(J)
+            }else if(obj$frailty == FALSE)
+            {
+                Var.h0.2 <-J %*% obj$Finv[c(3:4, (7+nP[1]):(7+nP[1]+nP[2]-1)), c(3:4, (7+nP[1]):(7+nP[1]+nP[2]-1))] %*% t(J)
+            }
+        }else if(is.null(x2new) | nP[2] == 0)
+        {
+            J   <- cbind(h0.2, h0.2*(1+alpha*log(T2)))
+            Var.h0.2 <- J %*% obj$Finv[3:4,3:4] %*% t(J)
+        }
+        se.h0.2  <- sqrt(diag(Var.h0.2))
+        se.h0.2[is.nan(se.h0.2)] <- 0
+        LLh0.2 <- h0.2 - qnorm(0.025)*se.h0.2
+        ULh0.2 <- h0.2 + qnorm(0.025)*se.h0.2
+        LLh0.2[LLh0.2 < 0] <- 0
+        
+        ##
+        kappa    <- exp(obj$estimate[5])
+        alpha      <- exp(obj$estimate[6])
+        log_alpha <- obj$estimate[6]
+        S0.3   <- exp(-kappa*(T2)^alpha)
+        if(!is.null(x3new) & nP[3] > 0)
+        {
+            J <- cbind(1, exp(log_alpha)*log(T2), matrix(x3new, nrow=100, ncol=length(x3new), byrow=T))
+            if(obj$frailty == TRUE)
+            {
+                Var.loglogS0 <- J %*% obj$Finv[c(5:6, (8+nP[1]+nP[2]):(8+nP[1]+nP[2]++nP[3]-1)), c(5:6, (8+nP[1]+nP[3]):(8+nP[1]+nP[2]+nP[3]-1))] %*% t(J)
+            }else if(obj$frailty == FALSE)
+            {
+                Var.loglogS0 <- J %*% obj$Finv[c(5:6, (7+nP[1]+nP[2]):(7+nP[1]+nP[2]++nP[3]-1)), c(5:6, (7+nP[1]+nP[3]):(7+nP[1]+nP[2]+nP[3]-1))] %*% t(J)
+            }
+        }else if(is.null(x3new) | nP[3] == 0)
+        {
+            J            <- cbind(1, exp(log_alpha)*log(T2))
+            Var.loglogS0 <- J %*% obj$Finv[5:6,5:6] %*% t(J)
+        }
+        se.loglogS0  <- sqrt(diag(Var.loglogS0))
+        LL.3         <- S0.3^exp(-qnorm(0.025)*se.loglogS0)
+        UL.3         <- S0.3^exp(qnorm(0.025)*se.loglogS0)
+        ##
+        h0.3  <- alpha*kappa*(T2)^(alpha-1)
+        if(!is.null(x3new) & nP[3] > 0)
+        {
+            J   <- cbind(h0.3, h0.3*(1+alpha*log(T2)), h0.3*matrix(x3new, nrow=100, ncol=length(x3new), byrow=T))
+            if(obj$frailty == TRUE)
+            {
+                Var.h0.3 <- J %*% obj$Finv[c(5:6, (8+nP[1]+nP[2]):(8+nP[1]+nP[2]++nP[3]-1)), c(5:6, (8+nP[1]+nP[3]):(8+nP[1]+nP[2]+nP[3]-1))] %*% t(J)
+            }else if(obj$frailty == FALSE)
+            {
+                Var.h0.3 <- J %*% obj$Finv[c(5:6, (7+nP[1]+nP[2]):(7+nP[1]+nP[2]++nP[3]-1)), c(5:6, (7+nP[1]+nP[3]):(7+nP[1]+nP[2]+nP[3]-1))] %*% t(J)
+            }
+        }else if(is.null(x3new) | nP[3] == 0)
+        {
+            J   <- cbind(h0.3, h0.3*(1+alpha*log(T2)))
+            Var.h0.3 <- J %*% obj$Finv[5:6,5:6] %*% t(J)
+        }
+        se.h0.3  <- sqrt(diag(Var.h0.3))
+        se.h0.3[is.nan(se.h0.3)] <- 0
+        LLh0.3 <- h0.3 - qnorm(0.025)*se.h0.3
+        ULh0.3 <- h0.3 + qnorm(0.025)*se.h0.3
+        LLh0.3[LLh0.3 < 0] <- 0
+        
+        T2h <- T2
+        if(T2[1] == 0)
+        {
+            T2h <- T2h[-1]
+            h0.1 <- h0.1[-1]
+            LLh0.1 <- LLh0.1[-1]
+            ULh0.1 <- ULh0.1[-1]
+            
+            h0.2 <- h0.2[-1]
+            LLh0.2 <- LLh0.2[-1]
+            ULh0.2 <- ULh0.2[-1]
+            
+            h0.3 <- h0.3[-1]
+            LLh0.3 <- LLh0.3[-1]
+            ULh0.3 <- ULh0.3[-1]
+        }
+        
+        BH1_tbl <- data.frame(time=T2h, h.1=h0.1, LL.1=LLh0.1, UL.1=ULh0.1)
+        BH2_tbl <- data.frame(time=T2h, h.2=h0.2, LL.2=LLh0.2, UL.2=ULh0.2)
+        BH3_tbl <- data.frame(time=T2h, h.3=h0.3, LL.3=LLh0.3, UL.3=ULh0.3)
+        
+        BS1_tbl <- data.frame(time=T2, S.1=S0.1, LL.1=LL.1, UL.1=UL.1)
+        BS2_tbl <- data.frame(time=T2, S.2=S0.2, LL.2=LL.2, UL.2=UL.2)
+        BS3_tbl <- data.frame(time=T2, S.3=S0.3, LL.3=LL.3, UL.3=UL.3)
+        
+        value <- list(h.1=BH1_tbl, h.2=BH2_tbl, h.3=BH3_tbl, S.1=BS1_tbl, S.2=BS2_tbl, S.3=BS3_tbl)
+    }
+    
+    value$xnew <- xnew
+    value$x1new <- x1new
+    value$x2new <- x2new
+    value$x3new <- x3new
+    value$tseq <- tseq
+    value$setup$model <- obj$setup$model
+    value$class <- obj$class
+
+    class(value) <- "pred.Freq_HReg"
+    return(value)
+}
+
+
+
+
+
+
+
+
+plot.pred.Freq_HReg <- function(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
+{
+    obj <- x
+    T2seq <- x$tseq
+    yLim <- NULL
+    ##
+    ## SEs based on the Delta method using log(-log(S0))
+    
+    ##
+    if(obj$class[2] == "Surv")
+    {
+        ##
+        if(is.null(yLim))
+        {
+            if(plot.est=="Surv")
+            {
+                yLim <- seq(from=0, to=1, by=0.2)
+            }
+            if(plot.est=="Haz")
+            {
+                grid <- (max(obj$h$UL) - min(obj$h$LL))/5
+                yLim <- seq(from=min(obj$h$LL), to=max(obj$h$UL), by=grid)
+            }
+        }
+        
+        ##
+        if(is.null(ylab))
+        {
+            if(plot.est=="Surv")
+            {
+                ylab <- "Survival"
+            }
+            if(plot.est=="Haz")
+            {
+                ylab <- "Hazard"
+            }
+        }
+        
+        ##
+        if(is.null(xlab)) xlab <- "Time"
+        
+        ##
+        if(plot.est == "Surv")
+        {
+            ##
+            plot(range(T2seq), range(yLim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", S(t), "")), axes=FALSE)
+            axis(1, at=T2seq)
+            axis(2, at=yLim)
+            lines(obj$S$time, obj$S$S, col="red", lwd=3)
+            lines(obj$S$time, obj$S$LL, col="red", lwd=3, lty=3)
+            lines(obj$S$time, obj$S$UL, col="red", lwd=3, lty=3)
+        }
+        if(plot.est == "Haz")
+        {
+            ##
+            plot(range(T2seq), range(yLim), xlab=xlab, ylab=ylab, type="n", main = expression(paste("Estimated ", h(t), "")), axes=FALSE)
+            axis(1, at=T2seq)
+            axis(2, at=round(yLim, 4))
+            lines(obj$h$time, obj$h$h, col="red", lwd=3)
+            lines(obj$h$time, obj$h$LL, col="red", lwd=3, lty=3)
+            lines(obj$h$time, obj$h$UL, col="red", lwd=3, lty=3)
+        }
+    }
+    
+    ##
+    if(obj$class[2] == "ID")
+    {
+        ##
+        if(is.null(ylab))
+        {
+            if(plot.est=="Surv")
+            {
+                ylab <- "Survival"
+            }
+            if(plot.est=="Haz")
+            {
+                ylab <- "Hazard"
+            }
+        }
+        
+        ##
+        if(is.null(xlab))
+        {
+            xlab <- c("Time", "Time", "Time")
+            if(obj$class[5] == "semi-Markov")
+            {
+                xlab[3] <- "Time since non-terminal event"
+            }
+        }
+        
+        ##
+        if(is.null(yLim))
+        {
+            if(plot.est=="Surv")
+            {
+                yLim <- seq(from=0, to=1, by=0.2)
+            }
+            if(plot.est=="Haz")
+            {
+                ygrid <- (max(x$h.1$UL.1, x$h.2$UL.2, x$h.3$UL.3) - 0)/5
+                yLim <- seq(from=0, to=max(x$h.1$UL.1, x$h.2$UL.2, x$h.3$UL.3), by=ygrid)
+            }
+        }
+        
+        ##
+        if(plot.est == "Surv")
+        {
+            ##
+            par(mfrow=c(1,3))
+            ##
+            plot(range(T2seq), range(yLim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", S[1](t), "")), axes=FALSE)
+            axis(1, at=T2seq)
+            axis(2, at=yLim)
+            lines(obj$S.1$time, obj$S.1$S.1, col="blue", lwd=3)
+            lines(obj$S.1$time, obj$S.1$LL.1, col="blue", lwd=3, lty=3)
+            lines(obj$S.1$time, obj$S.1$UL.1, col="blue", lwd=3, lty=3)
+            ##
+            plot(range(T2seq), range(yLim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", S[2](t), "")), axes=FALSE)
+            axis(1, at=T2seq)
+            axis(2, at=yLim)
+            lines(obj$S.2$time, obj$S.2$S.2, col="red", lwd=3)
+            lines(obj$S.2$time, obj$S.2$LL.2, col="red", lwd=3, lty=3)
+            lines(obj$S.2$time, obj$S.2$UL.2, col="red", lwd=3, lty=3)
+            ##
+            plot(range(T2seq), range(yLim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", S[3](t), "")), axes=FALSE)
+            axis(1, at=T2seq)
+            axis(2, at=yLim)
+            lines(obj$S.3$time, obj$S.3$S.3, col="red", lwd=3)
+            lines(obj$S.3$time, obj$S.3$LL.3, col="red", lwd=3, lty=3)
+            lines(obj$S.3$time, obj$S.3$UL.3, col="red", lwd=3, lty=3)
+        }
+        if(plot.est == "Haz")
+        {
+            ##
+            par(mfrow=c(1,3))
+            ##
+            plot(range(T2seq), range(yLim), xlab=xlab[1], ylab=ylab, type="n", main = expression(paste("Estimated ", h[1](t), "")), axes=FALSE)
+            axis(1, at=T2seq)
+            axis(2, at=round(yLim, 4))
+            lines(obj$h.1$time, obj$h.1$h.1, col="blue", lwd=3)
+            lines(obj$h.1$time, obj$h.1$LL.1, col="blue", lwd=3, lty=3)
+            lines(obj$h.1$time, obj$h.1$UL.1, col="blue", lwd=3, lty=3)
+            ##
+            plot(range(T2seq), range(yLim), xlab=xlab[2], ylab=ylab, type="n", main = expression(paste("Estimated ", h[2](t), "")), axes=FALSE)
+            axis(1, at=T2seq)
+            axis(2, at=round(yLim, 4))
+            lines(obj$h.2$time, obj$h.2$h.2, col="red", lwd=3)
+            lines(obj$h.2$time, obj$h.2$LL.2, col="red", lwd=3, lty=3)
+            lines(obj$h.2$time, obj$h.2$UL.2, col="red", lwd=3, lty=3)
+            ##
+            plot(range(T2seq), range(yLim), xlab=xlab[3], ylab=ylab, type="n", main = expression(paste("Estimated ", h[3](t), "")), axes=FALSE)
+            axis(1, at=T2seq)
+            axis(2, at=round(yLim, 4))
+            lines(obj$h.3$time, obj$h.3$h.3, col="red", lwd=3)
+            lines(obj$h.3$time, obj$h.3$LL.3, col="red", lwd=3, lty=3)
+            lines(obj$h.3$time, obj$h.3$UL.3, col="red", lwd=3, lty=3)
+        }
+    }
+    ##
     invisible()
 }
+
+
+
+
+
+
+
+
+
+####
+## VCOV METHOD
+####
+##
+
+vcov.Freq_HReg <- function(object, ...)
+{
+    obj <- object
+    
+    value <- obj$Finv
+    dimnames(value) <- list(obj$myLabels, obj$myLabels)
+
+    return(value)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

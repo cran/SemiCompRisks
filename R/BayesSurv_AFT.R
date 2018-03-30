@@ -1,7 +1,4 @@
-
-
-BayesSurv_AFT <- function(Y,
-lin.pred,
+BayesSurv_AFT <- function(Formula,
 data,
 model = "LN",
 hyperParams,
@@ -17,7 +14,12 @@ path = NULL)
         
         hz.type 	<- model[1]
         
-        Xmat <- model.frame(lin.pred, data=data)
+        LT <- model.part(Formula, data=data, lhs=1)
+        y.mat <- model.part(Formula, data=data, lhs=2)
+        
+        Y <- cbind(y.mat, LT)
+        
+        Xmat <- model.frame(formula(Formula, lhs=0, rhs=1), data=data)
         
         p <- ncol(Xmat)
         
@@ -237,18 +239,20 @@ path = NULL)
         
         if(hz.type == "LN")
         {
-            class(ret) <- c("Bayes_AFT", "Surv", "Ind", "LN")
+            ret$class <- c("Bayes_AFT", "Surv", "Ind", "LN")
         }
         if(hz.type == "DPM")
         {
-            class(ret) <- c("Bayes_AFT", "Surv", "Ind", "DPM")
+            ret$class <- c("Bayes_AFT", "Surv", "Ind", "DPM")
         }
+        
+        class(ret) <- "Bayes_AFT"
         
         return(ret)
         
     }
     else{
-        print(" (numReps * burninPerc) must be divisible by (thin)")
+        warning(" (numReps * burninPerc) must be divisible by (thin)")
     }
     
 }

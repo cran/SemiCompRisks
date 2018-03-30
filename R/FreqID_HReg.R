@@ -1,18 +1,23 @@
-FreqID_HReg <- function(Y, lin.pred, data, model = "semi-Markov", frailty=TRUE)
+FreqID_HReg <- function(Formula, data, model = "semi-Markov", frailty=TRUE)
 {
-    
     ##
+    time1 <- model.part(Formula, data=data, lhs=1)
+    time2 <- model.part(Formula, data=data, lhs=2)
+    
+    Y <- cbind(time1[1], time1[2], time2[1], time2[2])
     y1     <- as.vector(Y[,1])
     delta1 <- as.vector(Y[,2])
     y2     <- as.vector(Y[,3])
     delta2 <- as.vector(Y[,4])
-    Xmat1  <- as.matrix(model.frame(lin.pred[[1]], data=data))
-    Xmat2  <- as.matrix(model.frame(lin.pred[[2]], data=data))
-    Xmat3  <- as.matrix(model.frame(lin.pred[[3]], data=data))
+    
+    Xmat1 <- model.frame(formula(Formula, lhs=0, rhs=1), data=data)
+    Xmat2 <- model.frame(formula(Formula, lhs=0, rhs=2), data=data)
+    Xmat3 <- model.frame(formula(Formula, lhs=0, rhs=3), data=data)
+    
     ##
-    fit.survreg.1 <- survreg(as.formula(paste("Surv(y1, delta1) ", as.character(lin.pred[[1]])[1], as.character(lin.pred[[1]])[2])), dist="weibull", data=data)
-    fit.survreg.2 <- survreg(as.formula(paste("Surv(y2, delta2) ", as.character(lin.pred[[2]])[1], as.character(lin.pred[[2]])[2])), dist="weibull", data=data)
-    fit.survreg.3 <- survreg(as.formula(paste("Surv(y2, delta2) ", as.character(lin.pred[[3]])[1], as.character(lin.pred[[3]])[2])), dist="weibull", data=data)
+    fit.survreg.1 <- survreg(as.formula(paste("Surv(y1, delta1) ", as.character(formula(Formula, lhs=0, rhs=1))[1], as.character(formula(Formula, lhs=0, rhs=1))[2])), dist="weibull", data=data)
+    fit.survreg.2 <- survreg(as.formula(paste("Surv(y2, delta2) ", as.character(formula(Formula, lhs=0, rhs=2))[1], as.character(formula(Formula, lhs=0, rhs=2))[2])), dist="weibull", data=data)
+    fit.survreg.3 <- survreg(as.formula(paste("Surv(y2, delta2) ", as.character(formula(Formula, lhs=0, rhs=3))[1], as.character(formula(Formula, lhs=0, rhs=3))[2])), dist="weibull", data=data)
     alpha1      <- 1 / fit.survreg.1$scale
     alpha2      <- 1 / fit.survreg.2$scale
     alpha3     	<- 1 / fit.survreg.3$scale
@@ -31,14 +36,14 @@ FreqID_HReg <- function(Y, lin.pred, data, model = "semi-Markov", frailty=TRUE)
     {
         ##
         fit0  <- suppressWarnings(nlm(logLike.weibull.SCR, p=startVals * runif(length(startVals), 0.9, 1.1),
-        y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
+        y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=as.matrix(Xmat1), Xmat2=as.matrix(Xmat2), Xmat3=as.matrix(Xmat3), frailty=frailty,
         iterlim=1000, hessian=TRUE))
     }
     if(model == "semi-Markov")
     {
         ##
         fit0  <- suppressWarnings(nlm(logLike.weibull.SCR.SM, p=startVals * runif(length(startVals), 0.9, 1.1),
-        y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=Xmat1, Xmat2=Xmat2, Xmat3=Xmat3, frailty=frailty,
+        y1=y1, delta1=delta1, y2=y2, delta2=delta2, Xmat1=as.matrix(Xmat1), Xmat2=as.matrix(Xmat2), Xmat3=as.matrix(Xmat3), frailty=frailty,
         iterlim=1000, hessian=TRUE))
     }
     
@@ -55,12 +60,14 @@ FreqID_HReg <- function(Y, lin.pred, data, model = "semi-Markov", frailty=TRUE)
         
         if(model == "semi-Markov")
         {
-            class(value) <- c("Freq_HReg", "ID", "Ind", "WB", "semi-Markov")
+            value$class <- c("Freq_HReg", "ID", "Ind", "WB", "semi-Markov")
         }
         if(model == "Markov")
         {
-            class(value) <- c("Freq_HReg", "ID", "Ind", "WB", "Markov")
+            value$class <- c("Freq_HReg", "ID", "Ind", "WB", "Markov")
         }
+        
+        class(value) <- "Freq_HReg"
         
         return(value)
     }

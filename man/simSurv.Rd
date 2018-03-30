@@ -8,11 +8,11 @@ The function that simulates independent/cluster-correlated right-censored surviv
 The function to simulate independent/cluster-correlated right-censored survival data under Weibull/Weibull-Normal model.
 }
 \usage{
-simSurv(cluster=NULL, x, beta.true, alpha.true, kappa.true, sigmaV.true=NULL, cens)
+simSurv(id=NULL, x, beta.true, alpha.true, kappa.true, sigmaV.true=NULL, cens)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{cluster}{
+  \item{id}{
 	a vector of cluster information for \code{n} subjects. The cluster membership must be set to consecutive positive integers, \eqn{1:J}. 
 	Required only when generating clustered data.
 }
@@ -58,7 +58,7 @@ Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 	nj = 50
 	n = J * nj
 
-	cluster <- rep(1:J, each = nj)	
+	id <- rep(1:J, each = nj)
 
 	x	= matrix(0, n, 2)	
 	x[,1]	= rnorm(n, 0, 2)	
@@ -72,7 +72,7 @@ Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
 
 	cens <- c(30, 40)		
 
-	simData <- simSurv(cluster, x, beta.true, alpha.true, kappa.true, 
+	simData <- simSurv(id, x, beta.true, alpha.true, kappa.true, 
 				sigmaV.true, cens) 		 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

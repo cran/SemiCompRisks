@@ -29,8 +29,8 @@ The package includes following functions:
 \tabular{ll}{
 Package: \tab SemiCompRisks\cr
 Type: \tab Package\cr
-Version: \tab 2.8\cr
-Date: \tab 2018-1-3\cr
+Version: \tab 3.0\cr
+Date: \tab 2018-3-30\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }
@@ -46,7 +46,9 @@ investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Jo
 Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S. (2016),
 Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, 111, 515, 1075-1095. \cr \cr
 Lee, K. H., Rondeau, V., and Haneuse, S. (2017),
-Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, 73, 4, 1401-1412. \cr
+Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, 73, 4, 1401-1412. \cr \cr
+Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2018+),
+SemiCompRisks: an R package for independent and cluster-correlated analyses of semi-competing risks data, \emph{submitted}, arXiv:1801.03567. \cr
 }
 %Optionally other standard keywords, one per line, from file KEYWORDS in the R ~~
 %documentation directory ~~

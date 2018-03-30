@@ -76,7 +76,7 @@ kappa3 <- CIBMTR_Params$kappa3.true
 theta <- CIBMTR_Params$theta.true
 
 set.seed(1405)
-simCIBMTR <- simID(cluster=NULL, x, x, x, beta1, beta2, beta3, alpha1, alpha2, alpha3,
+simCIBMTR <- simID(id=NULL, x, x, x, beta1, beta2, beta3, alpha1, alpha2, alpha3,
           kappa1, kappa2, kappa3, theta, SigmaV.true=NULL, cens=c(365,365))
           
 names(simCIBMTR) <- c("time1", "event1", "time2", "event2")

@@ -8,21 +8,18 @@ The function to implement Bayesian parametric and semi-parametric regression ana
 Independent/cluster-correlated univariate right-censored survival data can be analyzed using hierarchical models. The prior for the baseline hazard function can be specified by either parametric (Weibull) model or non-parametric mixture of piecewise exponential models (PEM).
 }
 \usage{
-BayesSurv_HReg(Y, lin.pred, data, cluster=NULL, model="Weibull", 
+BayesSurv_HReg(Formula, data, id=NULL, model="Weibull", 
           hyperParams, startValues, mcmcParams, path=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{Y}{
-	a data.frame containing univariate time-to-event outcomes from \code{n} subjects. It is of dimension \eqn{n\times 2}: the columns correspond to \eqn{y}, \eqn{\delta}.
-}
-  \item{lin.pred}{
-	a formula object that corresponds to \eqn{h}.
+  \item{Formula}{
+    a \code{Formula} object of the form \eqn{y}+\eqn{\delta} ~ \eqn{x}. See Details and Examples below.
 }
   \item{data}{
-	a data.frame in which to interpret the variables named in the formula in \code{lin.pred}.
+	a data.frame in which to interpret the variables named in \code{Formula}.
 }
-  \item{cluster}{
+  \item{id}{
 	a vector of cluster information for \code{n} subjects. The cluster membership must be consecutive positive integers, \eqn{1:J}.  
 }
   \item{model}{
@@ -57,7 +54,7 @@ BayesSurv_HReg(Y, lin.pred, data, cluster=NULL, model="Weibull",
 	If \code{rj.scheme}=1, the birth update will draw the proposal time split from \eqn{1:s_{max}}.
 	If \code{rj.scheme}=2, the birth update will draw the proposal time split from uniquely ordered failure times in the data. Only required for PEM models;
 	\code{K_max}, the maximum number of splits allowed at each iteration in MHG algorithm for PEM models;
-	\code{time_lambda} - time points at which the log-hazard function is calculated for \code{\link{plot.Bayes_HReg}}, Only required for PEM models).
+	\code{time_lambda} - time points at which the log-hazard function is calculated for \code{\link{predict.Bayes_HReg}}, Only required for PEM models).
 	See Details and Examples below.
 }
   \item{path}{
@@ -114,7 +111,9 @@ Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015),
 Bayesian semiparametric analysis of semicompeting risks data: 
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
 Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S. (2016),
-Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, 111, 515, 1075-1095. \cr
+Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, 111, 515, 1075-1095. \cr \cr
+Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2018+),
+SemiCompRisks: an R package for independent and cluster-correlated analyses of semi-competing risks data, \emph{submitted}, arXiv:1801.03567. \cr
 }
 \author{
 Kyu Ha Lee and Sebastien Haneuse \cr
@@ -127,7 +126,7 @@ The posterior samples of \eqn{V_g} are saved separately in \code{working directo
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-	\code{\link{initiate.startValues_HReg}}, \code{\link{print.Bayes_HReg}}, \code{\link{summary.Bayes_HReg}}, \code{\link{plot.Bayes_HReg}}
+	\code{\link{initiate.startValues_HReg}}, \code{\link{print.Bayes_HReg}}, \code{\link{summary.Bayes_HReg}}, \code{\link{predict.Bayes_HReg}}
 }
 
 \examples{
@@ -135,9 +134,9 @@ The posterior samples of \eqn{V_g} are saved separately in \code{working directo
 \dontrun{		
 # loading a data set	
 data(survData)
-Y <- survData[,c(1,2)]
-cluster <- survData[,3]
-lin.pred <- as.formula( ~ cov1 + cov2)
+id=survData$cluster
+
+form <- Formula(time + event ~ cov1 + cov2)
 
 #####################
 ## Hyperparameters ##
@@ -198,7 +197,7 @@ C        <- 0.2
 delPert  <- 0.5
 rj.scheme <- 1
 K_max    <- 50
-s_max    <- max(Y$time[Y$event == 1])
+s_max    <- max(survData$time[survData$event == 1])
 time_lambda <- seq(1, s_max, 1)
 
 ##
@@ -215,29 +214,26 @@ mcmc.PEM <- list(run=list(numReps=numReps, thin=thin, burninPerc=burninPerc),
 ## Analysis of Independent Univariate Survival Data ############
 ################################################################
 
-####################
+#############
 ## WEIBULL ##
-####################
+#############
 
 ##
 myModel <- "Weibull"
 myPath  <- "Output/01-Results-WB/"
 
-startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel)
-startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, 
-WB.alpha=1.12)
-                
+startValues      <- initiate.startValues_HReg(form, survData, model=myModel, nChain=2)
+
 ##
-fit_WB <- BayesSurv_HReg(Y, lin.pred, survData, cluster=NULL, model=myModel, 
+fit_WB <- BayesSurv_HReg(form, survData, id=NULL, model=myModel, 
                   hyperParams, startValues, mcmc.WB, path=myPath)
                   
 fit_WB
 summ.fit_WB <- summary(fit_WB); names(summ.fit_WB)
 summ.fit_WB
-plot(fit_WB, tseq=seq(from=0, to=30, by=5))
-plot(fit_WB, tseq=seq(from=0, to=30, by=5), plot.est = "BH")
-names(fit_WB.plot <- plot(fit_WB, tseq=seq(0, 30, 5), plot=FALSE))                  
+pred_WB <- predict(fit_WB, tseq=seq(from=0, to=30, by=5))
+plot(pred_WB, plot.est="Haz")
+plot(pred_WB, plot.est="Surv")
 
 #########
 ## PEM ##
@@ -247,21 +243,18 @@ names(fit_WB.plot <- plot(fit_WB, tseq=seq(0, 30, 5), plot=FALSE))
 myModel <- "PEM"
 myPath  <- "Output/02-Results-PEM/"
 
-startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel)
-startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, 
-beta=rep(0.1,2))                                
-                
+startValues      <- initiate.startValues_HReg(form, survData, model=myModel, nChain=2)
+
 ##
-fit_PEM <- BayesSurv_HReg(Y, lin.pred, survData, cluster=NULL, model=myModel,
+fit_PEM <- BayesSurv_HReg(form, survData, id=NULL, model=myModel,
                    hyperParams, startValues, mcmc.PEM, path=myPath)
                    
 fit_PEM
 summ.fit_PEM <- summary(fit_PEM); names(summ.fit_PEM)
 summ.fit_PEM
-plot(fit_PEM)
-plot(fit_PEM, plot.est = "BH")
-names(fit_PEM.plot <- plot(fit_PEM, plot=FALSE))                   
+pred_PEM <- predict(fit_PEM)
+plot(pred_PEM, plot.est="Haz")
+plot(pred_PEM, plot.est="Surv")
 
 ###############################################################
 ## Analysis of Correlated Univariate Survival Data ############
@@ -275,22 +268,18 @@ names(fit_PEM.plot <- plot(fit_PEM, plot=FALSE))
 myModel <- c("Weibull", "Normal")
 myPath  <- "Output/03-Results-WB_Normal/"
 
-startValues      <- vector("list", 2)
-
-startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster,
-Normal.zeta=0.95)
+startValues      <- initiate.startValues_HReg(form, survData, model=myModel, id, nChain=2)
 
 ##
-fit_WB_N <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel,
+fit_WB_N <- BayesSurv_HReg(form, survData, id, model=myModel,
                         hyperParams, startValues, mcmc.WB, path=myPath)
                         
 fit_WB_N
 summ.fit_WB_N <- summary(fit_WB_N); names(summ.fit_WB_N)
 summ.fit_WB_N
-plot(fit_WB_N, tseq=seq(from=0, to=30, by=5))
-plot(fit_WB_N, tseq=seq(from=0, to=30, by=5), plot.est = "BH")
-names(fit_WB_N.plot <- plot(fit_WB_N, tseq=seq(0, 30, 5), plot=FALSE))                        
+pred_WB_N <- predict(fit_WB_N, tseq=seq(from=0, to=30, by=5))
+plot(pred_WB_N, plot.est="Haz")
+plot(pred_WB_N, plot.est="Surv")
 
 #################
 ## WEIBULL-DPM ##
@@ -300,21 +289,18 @@ names(fit_WB_N.plot <- plot(fit_WB_N, tseq=seq(0, 30, 5), plot=FALSE))
 myModel <- c("Weibull", "DPM")
 myPath  <- "Output/04-Results-WB_DPM/"
 
-startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster,
-Normal.zeta=0.95)
+startValues      <- initiate.startValues_HReg(form, survData, model=myModel, id, nChain=2)
 
 ##
-fit_WB_DPM <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel,
+fit_WB_DPM <- BayesSurv_HReg(form, survData, id, model=myModel,
                         hyperParams, startValues, mcmc.WB, path=myPath)
 
 fit_WB_DPM
 summ.fit_WB_DPM <- summary(fit_WB_DPM); names(summ.fit_WB_DPM)
 summ.fit_WB_DPM
-plot(fit_WB_DPM, tseq=seq(from=0, to=30, by=5))
-plot(fit_WB_DPM, tseq=seq(from=0, to=30, by=5), plot.est = "BH")
-names(fit_WB_DPM.plot <- plot(fit_WB_DPM, tseq=seq(0, 30, 5), plot=FALSE))
+pred_WB_DPM <- predict(fit_WB_DPM, tseq=seq(from=0, to=30, by=5))
+plot(pred_WB_DPM, plot.est="Haz")
+plot(pred_WB_DPM, plot.est="Surv")
 
 ################
 ## PEM-NORMAL ##
@@ -324,21 +310,18 @@ names(fit_WB_DPM.plot <- plot(fit_WB_DPM, tseq=seq(0, 30, 5), plot=FALSE))
 myModel <- c("PEM", "Normal")
 myPath  <- "Output/05-Results-PEM_Normal/"
 
-startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster,
-Normal.zeta=0.95)
+startValues      <- initiate.startValues_HReg(form, survData, model=myModel, id, nChain=2)
 
 ##
-fit_PEM_N <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel,
+fit_PEM_N <- BayesSurv_HReg(form, survData, id, model=myModel,
                             hyperParams, startValues, mcmc.PEM, path=myPath)
 
 fit_PEM_N
 summ.fit_PEM_N <- summary(fit_PEM_N); names(summ.fit_PEM_N)
 summ.fit_PEM_N
-plot(fit_PEM_N)
-plot(fit_PEM_N, plot.est = "BH")
-names(fit_PEM_N.plot <- plot(fit_PEM_N, plot=FALSE)) 
+pred_PEM_N <- predict(fit_PEM_N)
+plot(pred_PEM_N, plot.est="Haz")
+plot(pred_PEM_N, plot.est="Surv")
 
 #############
 ## PEM-DPM ##
@@ -348,21 +331,18 @@ names(fit_PEM_N.plot <- plot(fit_PEM_N, plot=FALSE))
 myModel <- c("PEM", "DPM")
 myPath  <- "Output/06-Results-PEM_DPM/"
 
-startValues      <- vector("list", 2)
-startValues[[1]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster)
-startValues[[2]] <- initiate.startValues_HReg(Y, lin.pred, survData, model=myModel, cluster,
-Normal.zeta=0.95)
+startValues      <- initiate.startValues_HReg(form, survData, model=myModel, id, nChain=2)
 
 ##
-fit_PEM_DPM <- BayesSurv_HReg(Y, lin.pred, survData, cluster, model=myModel,
+fit_PEM_DPM <- BayesSurv_HReg(form, survData, id, model=myModel,
                         hyperParams, startValues, mcmc.PEM, path=myPath)
                         
 fit_PEM_DPM
 summ.fit_PEM_DPM <- summary(fit_PEM_DPM); names(summ.fit_PEM_DPM)
 summ.fit_PEM_DPM
-plot(fit_PEM_DPM)
-plot(fit_PEM_DPM, plot.est = "BH")
-names(fit_PEM_DPM.plot <- plot(fit_PEM_DPM, plot=FALSE))                          
+pred_PEM_DPM <- predict(fit_PEM_DPM)
+plot(pred_PEM_DPM, plot.est="Haz")
+plot(pred_PEM_DPM, plot.est="Surv")
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

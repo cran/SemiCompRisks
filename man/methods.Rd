@@ -8,9 +8,16 @@
 \alias{summary.Bayes_HReg}
 \alias{summary.Bayes_AFT}
 \alias{summary.Freq_HReg}
-\alias{plot.Bayes_HReg}
-\alias{plot.Bayes_AFT}
-\alias{plot.Freq_HReg}
+\alias{coef.Bayes_HReg}
+\alias{coef.Bayes_AFT}
+\alias{coef.Freq_HReg}
+\alias{predict.Bayes_HReg}
+\alias{plot.pred.Bayes_HReg}
+\alias{predict.Bayes_AFT}
+\alias{plot.pred.Bayes_AFT}
+\alias{predict.Freq_HReg}
+\alias{plot.pred.Freq_HReg}
+\alias{vcov.Freq_HReg}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
     Methods for objects of classes, \code{Bayes_HReg}/\code{Bayes_AFT}/\code{Freq_HReg}.
@@ -30,9 +37,19 @@ The \code{Freq_HReg} class represents results from Frequentist analysis of semi-
 \method{summary}{Bayes_HReg}(object, digits=3, ...)
 \method{summary}{Bayes_AFT}(object, digits=3, ...)
 \method{summary}{Freq_HReg}(object, digits=3, ...)
-\method{plot}{Freq_HReg}(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
-\method{plot}{Bayes_HReg}(x, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
-\method{plot}{Bayes_AFT}(x, time, tseq=c(0, 5, 10), plot=TRUE, plot.est="BS", xlab=NULL, ylab=NULL, ...)
+\method{coef}{Bayes_HReg}(object, ...)
+\method{coef}{Bayes_AFT}(object, ...)
+\method{coef}{Freq_HReg}(object, ...)
+\method{predict}{Bayes_HReg}(object, xnew=NULL, x1new=NULL, x2new=NULL,
+x3new=NULL, tseq=c(0, 5, 10), ...)
+\method{plot}{pred.Bayes_HReg}(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
+\method{predict}{Bayes_AFT}(object, xnew=NULL, x1new=NULL, x2new=NULL,
+x3new=NULL, time, tseq=c(0, 5, 10), ...)
+\method{plot}{pred.Bayes_AFT}(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
+\method{predict}{Freq_HReg}(object, xnew=NULL, x1new=NULL, x2new=NULL,
+x3new=NULL, tseq=c(0, 5, 10), ...)
+\method{plot}{pred.Freq_HReg}(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
+\method{vcov}{Freq_HReg}(object, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -52,20 +69,28 @@ The \code{Freq_HReg} class represents results from Frequentist analysis of semi-
 	the points at which tick-marks are to be drawn. 
 	Required only if the object \code{x} is returned by parametric Weibull-HReg/log-Normal-AFT/DPM-AFT models.
 }
-  \item{plot}{
-	If \code{TRUE} (the default) then either estimated baseline hazard functions or estimated baseline survival functions are produced depending on the value of \code{plot.est}. 
-	If \code{FALSE}, the summaries which the plots are based on are returned.
-}
   \item{plot.est}{
   	used only if \code{plot} is \code{TRUE}. 
-  	If \code{BS} (the default) then estimated baseline survival functions are produced. 
-  	If \code{BH} then estimated baseline hazard functions are produced.
+  	If \code{Surv} (the default) then estimated survival functions are produced.
+  	If \code{Haz} then estimated hazard functions are produced.
 }
   \item{xlab}{
 	a title for the x axis.
 }
   \item{ylab}{
 	a title for the y axis.
+}
+    \item{xnew}{
+    a vector of covariate values with which to predict for which to predict for \eqn{h}.
+}
+    \item{x1new}{
+    a vector of covariate values with which to predict for which to predict for \eqn{h_1}.
+}
+    \item{x2new}{
+    a vector of covariate values with which to predict for which to predict for \eqn{h_2}.
+}
+    \item{x3new}{
+    a vector of covariate values with which to predict for which to predict for \eqn{h_3}.
 }
 	\item{...}{
 	additional arguments.
