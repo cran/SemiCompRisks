@@ -5,9 +5,45 @@ model = c("semi-Markov", "Weibull"),
 hyperParams,
 startValues,
 mcmcParams,
+na.action = "na.fail",
+subset=NULL,
 path = NULL)
 {
-	mcmc <- mcmcParams
+    if(na.action != "na.fail" & na.action != "na.omit")
+    {
+        stop("na.action should be either na.fail or na.omit")
+    }
+    if(!is.null(id))
+    {
+        data$id <- id
+        form2 <- as.Formula(paste(Formula[2], Formula[1], Formula[3], "| id", sep = ""))
+    }else
+    {
+        form2 <- as.Formula(paste(Formula[2], Formula[1], Formula[3], sep = ""))
+    }
+    
+    nChain <- length(startValues)
+    for(i in 1:nChain)
+    {
+        nam <- paste("gam", i, sep = "")
+        data[[nam]] <- startValues[[i]]$common$gamma.ji
+        form2 <- as.Formula(paste(form2[2], form2[1], form2[3], "| ", nam, sep = ""))
+    }
+    
+    data <- model.frame(form2, data=data, na.action = na.action, subset = subset)
+    if(!is.null(id))
+    {
+        id <- data$id
+    }
+
+
+    for(i in 1:nChain)
+    {
+        nam <- paste("gam", i, sep = "")
+        startValues[[i]]$common$gamma.ji <- data[[nam]]
+    }
+    
+	mcmc        <- mcmcParams
     hyperP      <- hyperParams
     mcmcList    <- mcmc
     
@@ -451,13 +487,22 @@ path = NULL)
                         theta <- startV[(p1+p2+p3+1)]
                         gamma <- startV[(p1+p2+p3+2):(p1+p2+p3+n+1)]
                         
-                        startV <- as.vector(c(startV[1:(p1+p2+p3)],
-                        K1, K2, K3,
-                        mu_lam1, mu_lam2, mu_lam3,
-                        sigSq_lam1, sigSq_lam2, sigSq_lam3,
-                        theta, gamma,
-                        lambda1, lambda2, lambda3, s1, s2, s3))
-                        
+                        if(p1+p2+p3 > 0)
+                        {
+                            startV <- as.vector(c(startV[1:(p1+p2+p3)],
+                            K1, K2, K3,
+                            mu_lam1, mu_lam2, mu_lam3,
+                            sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                            theta, gamma,
+                            lambda1, lambda2, lambda3, s1, s2, s3))
+                        }else
+                        {
+                            startV <- as.vector(c(K1, K2, K3,
+                            mu_lam1, mu_lam2, mu_lam3,
+                            sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                            theta, gamma,
+                            lambda1, lambda2, lambda3, s1, s2, s3))
+                        }
                         
                         mcmcRet <- .C("BpeScrmcmc",
                         survData            = as.double(as.matrix(survData)),
@@ -602,14 +647,22 @@ path = NULL)
                         theta <- startV[(p1+p2+p3+1)]
                         gamma <- startV[(p1+p2+p3+2):(p1+p2+p3+n+1)]
                         
-                        startV <- as.vector(c(startV[1:(p1+p2+p3)],
-                        K1, K2, K3,
-                        mu_lam1, mu_lam2, mu_lam3,
-                        sigSq_lam1, sigSq_lam2, sigSq_lam3,
-                        theta, gamma,
-                        lambda1, lambda2, lambda3, s1, s2, s3))
-                        
-                        
+                        if(p1+p2+p3 > 0)
+                        {
+                            startV <- as.vector(c(startV[1:(p1+p2+p3)],
+                            K1, K2, K3,
+                            mu_lam1, mu_lam2, mu_lam3,
+                            sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                            theta, gamma,
+                            lambda1, lambda2, lambda3, s1, s2, s3))
+                        }else
+                        {
+                            startV <- as.vector(c(K1, K2, K3,
+                            mu_lam1, mu_lam2, mu_lam3,
+                            sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                            theta, gamma,
+                            lambda1, lambda2, lambda3, s1, s2, s3))
+                        }
                         
                         mcmcRet <- .C("BpeScrSMmcmc",
                         survData            = as.double(as.matrix(survData)),
@@ -1864,14 +1917,24 @@ path = NULL)
                             theta <- startV[(p1+p2+p3+1)]
                             gamma <- startV[(p1+p2+p3+2):(p1+p2+p3+n+1)]
                             
-                            startV <- as.vector(c(startV[1:(p1+p2+p3)],
-                            K1, K2, K3,
-                            mu_lam1, mu_lam2, mu_lam3,
-                            sigSq_lam1, sigSq_lam2, sigSq_lam3,
-                            theta, gamma,
-                            lambda1, lambda2, lambda3, s1, s2, s3,
-                            startV[(p1+p2+p3+n+1+1):length(startV)]))
-                            
+                            if(p1+p2+p3 > 0)
+                            {
+                                startV <- as.vector(c(startV[1:(p1+p2+p3)],
+                                K1, K2, K3,
+                                mu_lam1, mu_lam2, mu_lam3,
+                                sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                                theta, gamma,
+                                lambda1, lambda2, lambda3, s1, s2, s3,
+                                startV[(p1+p2+p3+n+1+1):length(startV)]))
+                            }else
+                            {
+                                startV <- as.vector(c(K1, K2, K3,
+                                mu_lam1, mu_lam2, mu_lam3,
+                                sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                                theta, gamma,
+                                lambda1, lambda2, lambda3, s1, s2, s3,
+                                startV[(p1+p2+p3+n+1+1):length(startV)]))
+                            }
                             
                             startValues1 <- startV[1:(p1+p2+p3+10+n+2*(K_1+1)+2*(K_2+1)+2*(K_3+1))]
                             startValues2 <- startV[(p1+p2+p3+10+n+2*(K_1+1)+2*(K_2+1)+2*(K_3+1)+1):length(startV)]
@@ -2121,13 +2184,24 @@ path = NULL)
                             theta <- startV[(p1+p2+p3+1)]
                             gamma <- startV[(p1+p2+p3+2):(p1+p2+p3+n+1)]
                             
-                            startV <- as.vector(c(startV[1:(p1+p2+p3)],
-                            K1, K2, K3,
-                            mu_lam1, mu_lam2, mu_lam3,
-                            sigSq_lam1, sigSq_lam2, sigSq_lam3,
-                            theta, gamma,
-                            lambda1, lambda2, lambda3, s1, s2, s3,
-                            startV[(p1+p2+p3+n+1+1):length(startV)]))
+                            if(p1+p2+p3 > 0)
+                            {
+                                startV <- as.vector(c(startV[1:(p1+p2+p3)],
+                                K1, K2, K3,
+                                mu_lam1, mu_lam2, mu_lam3,
+                                sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                                theta, gamma,
+                                lambda1, lambda2, lambda3, s1, s2, s3,
+                                startV[(p1+p2+p3+n+1+1):length(startV)]))
+                            }else
+                            {
+                                startV <- as.vector(c(K1, K2, K3,
+                                mu_lam1, mu_lam2, mu_lam3,
+                                sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                                theta, gamma,
+                                lambda1, lambda2, lambda3, s1, s2, s3,
+                                startV[(p1+p2+p3+n+1+1):length(startV)]))
+                            }
                             
                             
                             startValues1 <- startV[1:(p1+p2+p3+10+n+2*(K_1+1)+2*(K_2+1)+2*(K_3+1))]
@@ -2378,14 +2452,25 @@ path = NULL)
                             
                             theta <- startV[(p1+p2+p3+1)]
                             gamma <- startV[(p1+p2+p3+2):(p1+p2+p3+n+1)]
-                            
-                            startV <- as.vector(c(startV[1:(p1+p2+p3)],
-                            K1, K2, K3,
-                            mu_lam1, mu_lam2, mu_lam3,
-                            sigSq_lam1, sigSq_lam2, sigSq_lam3,
-                            theta, gamma,
-                            lambda1, lambda2, lambda3, s1, s2, s3,
-                            startV[(p1+p2+p3+n+1+1):length(startV)]))
+
+                            if(p1+p2+p3 > 0)
+                            {
+                                startV <- as.vector(c(startV[1:(p1+p2+p3)],
+                                K1, K2, K3,
+                                mu_lam1, mu_lam2, mu_lam3,
+                                sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                                theta, gamma,
+                                lambda1, lambda2, lambda3, s1, s2, s3,
+                                startV[(p1+p2+p3+n+1+1):length(startV)]))
+                            }else
+                            {
+                                startV <- as.vector(c(K1, K2, K3,
+                                mu_lam1, mu_lam2, mu_lam3,
+                                sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                                theta, gamma,
+                                lambda1, lambda2, lambda3, s1, s2, s3,
+                                startV[(p1+p2+p3+n+1+1):length(startV)]))
+                            }
                             
                             
                             startValues1 <- startV[1:(p1+p2+p3+10+n+2*(K_1+1)+2*(K_2+1)+2*(K_3+1))]
@@ -2638,14 +2723,24 @@ path = NULL)
                             theta <- startV[(p1+p2+p3+1)]
                             gamma <- startV[(p1+p2+p3+2):(p1+p2+p3+n+1)]
                             
-                            startV <- as.vector(c(startV[1:(p1+p2+p3)],
-                            K1, K2, K3,
-                            mu_lam1, mu_lam2, mu_lam3,
-                            sigSq_lam1, sigSq_lam2, sigSq_lam3,
-                            theta, gamma,
-                            lambda1, lambda2, lambda3, s1, s2, s3,
-                            startV[(p1+p2+p3+n+1+1):length(startV)]))
-                            
+                            if(p1+p2+p3 > 0)
+                            {
+                                startV <- as.vector(c(startV[1:(p1+p2+p3)],
+                                K1, K2, K3,
+                                mu_lam1, mu_lam2, mu_lam3,
+                                sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                                theta, gamma,
+                                lambda1, lambda2, lambda3, s1, s2, s3,
+                                startV[(p1+p2+p3+n+1+1):length(startV)]))
+                            }else
+                            {
+                                startV <- as.vector(c(K1, K2, K3,
+                                mu_lam1, mu_lam2, mu_lam3,
+                                sigSq_lam1, sigSq_lam2, sigSq_lam3,
+                                theta, gamma,
+                                lambda1, lambda2, lambda3, s1, s2, s3,
+                                startV[(p1+p2+p3+n+1+1):length(startV)]))
+                            }
                             
                             startValues1 <- startV[1:(p1+p2+p3+10+n+2*(K_1+1)+2*(K_2+1)+2*(K_3+1))]
                             startValues2 <- startV[(p1+p2+p3+10+n+2*(K_1+1)+2*(K_2+1)+2*(K_3+1)+1):length(startV)]

@@ -8,7 +8,8 @@ The function to fit parametric Weibull models for the frequentist anlaysis of se
 Independent semi-competing risks data can be analyzed using hierarchical models. Markov or semi-Markov assumption can be adopted for the conditional hazard function for time to the terminal event given time to non-terminal event.
 }
 \usage{
-FreqID_HReg(Formula, data, model="semi-Markov", frailty = TRUE)
+FreqID_HReg(Formula, data, model="semi-Markov", frailty = TRUE, na.action = "na.fail",
+subset=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,6 +24,12 @@ FreqID_HReg(Formula, data, model="semi-Markov", frailty = TRUE)
 }
   \item{frailty}{
 	a logical value to determine whether to include the subject-specific shared frailty term, \eqn{\gamma}, into the model.
+}
+\item{na.action}{
+how NAs are treated. See \code{model.frame}.
+}
+\item{subset}{
+a specification of the rows to be used: defaults to all rows. See \code{model.frame}.
 }
 }
 \details{

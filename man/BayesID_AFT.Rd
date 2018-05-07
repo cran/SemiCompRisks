@@ -9,7 +9,7 @@ Independent semi-competing risks data can be analyzed using AFT models that have
 }
 \usage{
 BayesID_AFT(Formula, data, model = "LN", hyperParams, startValues,
-mcmcParams, path=NULL)
+mcmcParams, na.action = "na.fail", subset=NULL, path=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -42,6 +42,12 @@ a list containing variables required for MCMC sampling. Components include,
 \code{betag.prop.var}, the variance of proposal density for \eqn{\beta_g}; \code{mug.prop.var}, the variance of proposal density for \eqn{\mu_{g}}; \code{zetag.prop.var}, the variance of proposal density for \eqn{1/\sigma_g^2};
 \code{gamma.prop.var}, the variance of proposal density for \eqn{\gamma}).
 See Details and Examples below.
+}
+\item{na.action}{
+how NAs are treated. See \code{model.frame}.
+}
+\item{subset}{
+a specification of the rows to be used: defaults to all rows. See \code{model.frame}.
 }
 \item{path}{
 the name of directory where the results are saved.

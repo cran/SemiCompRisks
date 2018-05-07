@@ -114,7 +114,7 @@ myModel <- "Weibull"
 myPath  <- "Output/01-Results-WB/"
 startValues <- initiate.startValues_HReg(form, survData, model=myModel, nChain=2)
 ##
-fit_WB <- BayesSurv_HReg(form, survData, id=NULL, model=myModel, hyperParams, startValues, mcmc, myPath)
+fit_WB <- BayesSurv_HReg(form, survData, id=NULL, model=myModel, hyperParams, startValues, mcmc, path=myPath)
 summary(fit_WB)
 pred_WB <- predict(fit_WB, tseq=seq(from=0, to=30, by=5))
 plot(pred_WB, plot.est="Haz")
@@ -197,7 +197,7 @@ form <- Formula(time + event ~ cov1 + cov2)
 ##   
 PEM.ab <- c(0.7, 0.7) # prior parameters for 1/sigma^2
 PEM.alpha <- 10 # prior parameters for K
-hyperParams <- list(PEM=list(PEM.ab, PEM.alpha))
+hyperParams <- list(PEM=list(PEM.ab=PEM.ab, PEM.alpha=PEM.alpha))
 ##
 numReps <- 2000
 burninPerc <- 0.5
@@ -512,8 +512,8 @@ myModel.WB.Normal <- c("Weibull","Normal")
 myPath.WB.Normal  <- "Output/03-Results-WB_Normal/"
 startValues.WB.Normal <- initiate.startValues_HReg(form, survData, id, model=myModel.WB.Normal, nChain=2)
 ##
-fit_WB_Normal <- BayesSurv_HReg(form, survData, id, model=myModel.WB.Normal, hyperParams.WB.Normal,
- 		startValues.WB.Normal, mcmc.WB, myPath.WB.Normal)
+fit_WB_N <- BayesSurv_HReg(form, survData, id, model=myModel.WB.Normal, hyperParams.WB.Normal,
+ 		startValues.WB.Normal, mcmc.WB, path=myPath.WB.Normal)
 summary(fit_WB_Normal)
 pred_WB_N <- predict(fit_WB_N, tseq=seq(from=0, to=30, by=5))
 plot(pred_WB_N, plot.est="Haz")
@@ -524,7 +524,7 @@ myPath.WB.DPM  <- "Output/04-Results-WB_DPM/"
 startValues.WB.DPM <- initiate.startValues_HReg(form, survData, id, model=myModel.WB.DPM, nChain=2)
 ##
 fit_WB_DPM <- BayesSurv_HReg(form, survData, id, model=myModel.WB.DPM, hyperParams.WB.DPM,
- 		startValues.WB.DPM, mcmc.WB, myPath.WB.DPM)
+ 		startValues.WB.DPM, mcmc.WB, path=myPath.WB.DPM)
 summary(fit_WB_DPM)
 pred_WB_DPM <- predict(fit_WB_DPM, tseq=seq(from=0, to=30, by=5))
 plot(pred_WB_DPM, plot.est="Haz")
@@ -656,7 +656,7 @@ myModel.PEM.Normal <- c("PEM","Normal")
 myPath.PEM.Normal  <- "Output/05-Results-PEM_Normal/"
 startValues.PEM.Normal <- initiate.startValues_HReg(form, survData, id, model=myModel.PEM.Normal, nChain=2)
 ##
-fit_PEM_Normal <- BayesSurv_HReg(form, survData, id, model=myModel.PEM.Normal, hyperParams.PEM.Normal,
+fit_PEM_N <- BayesSurv_HReg(form, survData, id, model=myModel.PEM.Normal, hyperParams.PEM.Normal,
  		startValues.PEM.Normal, mcmc.PEM, path=myPath.PEM.Normal)
 summary(fit_PEM_Normal)
 pred_PEM_N <- predict(fit_PEM_N)

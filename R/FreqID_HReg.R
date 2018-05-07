@@ -1,5 +1,14 @@
-FreqID_HReg <- function(Formula, data, model = "semi-Markov", frailty=TRUE)
+FreqID_HReg <- function(Formula, data, model = "semi-Markov", frailty=TRUE, na.action = "na.fail",
+subset=NULL)
 {
+    if(na.action != "na.fail" & na.action != "na.omit")
+    {
+        stop("na.action should be either na.fail or na.omit")
+    }
+    
+    form2 <- as.Formula(paste(Formula[2], Formula[1], Formula[3], sep = ""))    
+    data <- model.frame(form2, data=data, na.action = na.action, subset = subset)
+    
     ##
     time1 <- model.part(Formula, data=data, lhs=1)
     time2 <- model.part(Formula, data=data, lhs=2)
@@ -21,7 +30,6 @@ FreqID_HReg <- function(Formula, data, model = "semi-Markov", frailty=TRUE)
     alpha1      <- 1 / fit.survreg.1$scale
     alpha2      <- 1 / fit.survreg.2$scale
     alpha3     	<- 1 / fit.survreg.3$scale
-    
     
     startVals     <- c(-alpha1*coef(fit.survreg.1)[1], log(alpha1),
     -alpha2*coef(fit.survreg.2)[1], log(alpha2),

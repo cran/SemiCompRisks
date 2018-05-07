@@ -29,8 +29,8 @@ The package includes following functions:
 \tabular{ll}{
 Package: \tab SemiCompRisks\cr
 Type: \tab Package\cr
-Version: \tab 3.0\cr
-Date: \tab 2018-3-30\cr
+Version: \tab 3.1\cr
+Date: \tab 2018-5-6\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }

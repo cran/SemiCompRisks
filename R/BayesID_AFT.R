@@ -4,6 +4,8 @@ model = "LN",
 hyperParams,
 startValues,
 mcmcParams,
+na.action = "na.fail",
+subset=NULL,
 path=NULL)
 {
     mcmcList    <- mcmcParams
@@ -13,6 +15,93 @@ path=NULL)
         nChain <- length(startValues)
         
         hz.type     <- model[1]
+        
+        if(na.action != "na.fail" & na.action != "na.omit")
+        {
+            stop("na.action should be either na.fail or na.omit")
+        }
+        
+        form2 <- as.Formula(paste(Formula[2], Formula[1], Formula[3], sep = ""))
+        
+        if(hz.type == "DPM")
+        {
+            for(i in 1:nChain)
+            {
+                nam1 <- paste("DPM.class1ch", i, sep = "")
+                data[[nam1]] <- startValues[[i]]$DPM$DPM.class1
+                nam2 <- paste("DPM.class2ch", i, sep = "")
+                data[[nam2]] <- startValues[[i]]$DPM$DPM.class2
+                nam3 <- paste("DPM.class3ch", i, sep = "")
+                data[[nam3]] <- startValues[[i]]$DPM$DPM.class3
+                
+                nam4 <- paste("DPM.mu1ch", i, sep = "")
+                data[[nam4]] <- startValues[[i]]$DPM$DPM.mu1
+                nam5 <- paste("DPM.mu2ch", i, sep = "")
+                data[[nam5]] <- startValues[[i]]$DPM$DPM.mu2
+                nam6 <- paste("DPM.mu3ch", i, sep = "")
+                data[[nam6]] <- startValues[[i]]$DPM$DPM.mu3
+                
+                nam7 <- paste("DPM.zeta1ch", i, sep = "")
+                data[[nam7]] <- startValues[[i]]$DPM$DPM.zeta1
+                nam8 <- paste("DPM.zeta2ch", i, sep = "")
+                data[[nam8]] <- startValues[[i]]$DPM$DPM.zeta2
+                nam9 <- paste("DPM.zeta3ch", i, sep = "")
+                data[[nam9]] <- startValues[[i]]$DPM$DPM.zeta3
+                
+                form2 <- as.Formula(paste(form2[2], form2[1], form2[3], "| ", nam1, "| ", nam2, "| ", nam3, "| ", nam4, "| ", nam5, "| ", nam6, "| ", nam7, "| ", nam8, "| ", nam9, sep = ""))
+            }
+        }
+        
+        for(i in 1:nChain)
+        {
+            nam1 <- paste("y1ch", i, sep = "")
+            data[[nam1]] <- startValues[[i]]$common$y1
+            nam2 <- paste("y2ch", i, sep = "")
+            data[[nam2]] <- startValues[[i]]$common$y2
+            nam3<- paste("gamch", i, sep = "")
+            data[[nam3]] <- startValues[[i]]$common$gamma
+            
+            form2 <- as.Formula(paste(form2[2], form2[1], form2[3], "| ", nam1, "| ", nam2, "| ", nam3, sep = ""))
+        }
+    
+        data <- model.frame(form2, data=data, na.action = na.action, subset = subset)
+        
+        if(hz.type == "DPM")
+        {
+            for(i in 1:nChain)
+            {
+                nam1 <- paste("DPM.class1ch", i, sep = "")
+                startValues[[i]]$DPM$DPM.class1 <- data[[nam1]]
+                nam2 <- paste("DPM.class2ch", i, sep = "")
+                startValues[[i]]$DPM$DPM.class2 <- data[[nam2]]
+                nam3 <- paste("DPM.class3ch", i, sep = "")
+                startValues[[i]]$DPM$DPM.class3 <- data[[nam3]]
+                
+                nam4 <- paste("DPM.mu1ch", i, sep = "")
+                startValues[[i]]$DPM$DPM.mu1 <- data[[nam4]]
+                nam5 <- paste("DPM.mu2ch", i, sep = "")
+                startValues[[i]]$DPM$DPM.mu2 <- data[[nam5]]
+                nam6 <- paste("DPM.mu3ch", i, sep = "")
+                startValues[[i]]$DPM$DPM.mu3 <- data[[nam6]]
+                
+                nam7 <- paste("DPM.zeta1ch", i, sep = "")
+                startValues[[i]]$DPM$DPM.zeta1 <- data[[nam7]]
+                nam8 <- paste("DPM.zeta2ch", i, sep = "")
+                startValues[[i]]$DPM$DPM.zeta2 <- data[[nam8]]
+                nam9 <- paste("DPM.zeta3ch", i, sep = "")
+                startValues[[i]]$DPM$DPM.zeta3 <- data[[nam9]]
+            }
+        }
+
+        for(i in 1:nChain)
+        {
+            nam1 <- paste("y1ch", i, sep = "")
+            startValues[[i]]$common$y1 <- data[[nam1]]
+            nam2 <- paste("y2ch", i, sep = "")
+            startValues[[i]]$common$y2 <- data[[nam2]]
+            nam3<- paste("gamch", i, sep = "")
+            startValues[[i]]$common$gamma <- data[[nam3]]
+        }
         
         LT <- model.part(Formula, data=data, lhs=1)
         y1.mat <- model.part(Formula, data=data, lhs=2)

@@ -8,7 +8,7 @@ The function to fit parametric Weibull models for the frequentist analysis of un
 Independent univariate right-censored survival data can be analyzed using hierarchical models.
 }
 \usage{
-FreqSurv_HReg(Formula, data)
+FreqSurv_HReg(Formula, data, na.action = "na.fail", subset=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,6 +17,12 @@ FreqSurv_HReg(Formula, data)
 }
 \item{data}{
     a data.frame in which to interpret the variables named in \code{Formula}.
+}
+\item{na.action}{
+how NAs are treated. See \code{model.frame}.
+}
+\item{subset}{
+a specification of the rows to be used: defaults to all rows. See \code{model.frame}.
 }
 }
 \details{

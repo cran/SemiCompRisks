@@ -9,7 +9,7 @@ Independent/cluster-correlated semi-competing risks data can be analyzed using H
 }
 \usage{
 BayesID_HReg(Formula, data, id=NULL, model=c("semi-Markov", "Weibull"),
-        hyperParams, startValues, mcmcParams, path=NULL)
+hyperParams, startValues, mcmcParams, na.action = "na.fail", subset=NULL, path=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -59,6 +59,12 @@ BayesID_HReg(Formula, data, id=NULL, model=c("semi-Markov", "Weibull"),
 	\code{Kg_max}, the maximum number of splits allowed at each iteration in MHG algorithm for PEM models;
 	\code{time_lambda1}, \code{time_lambda2}, \code{time_lambda3} - time points at which the log-hazard functions are calculated for \code{\link{predict.Bayes_HReg}}, Only required for PEM models).
 	See Details and Examples below.
+}
+\item{na.action}{
+    how NAs are treated. See \code{model.frame}.
+}
+\item{subset}{
+    a specification of the rows to be used: defaults to all rows. See \code{model.frame}.
 }
   \item{path}{
 	the name of directory where the results are saved.

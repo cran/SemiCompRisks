@@ -8,8 +8,8 @@ The function to implement Bayesian parametric and semi-parametric regression ana
 Independent/cluster-correlated univariate right-censored survival data can be analyzed using hierarchical models. The prior for the baseline hazard function can be specified by either parametric (Weibull) model or non-parametric mixture of piecewise exponential models (PEM).
 }
 \usage{
-BayesSurv_HReg(Formula, data, id=NULL, model="Weibull", 
-          hyperParams, startValues, mcmcParams, path=NULL)
+BayesSurv_HReg(Formula, data, id=NULL, model="Weibull", hyperParams,
+        startValues, mcmcParams, na.action = "na.fail", subset=NULL, path=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -56,6 +56,12 @@ BayesSurv_HReg(Formula, data, id=NULL, model="Weibull",
 	\code{K_max}, the maximum number of splits allowed at each iteration in MHG algorithm for PEM models;
 	\code{time_lambda} - time points at which the log-hazard function is calculated for \code{\link{predict.Bayes_HReg}}, Only required for PEM models).
 	See Details and Examples below.
+}
+\item{na.action}{
+how NAs are treated. See \code{model.frame}.
+}
+\item{subset}{
+a specification of the rows to be used: defaults to all rows. See \code{model.frame}.
 }
   \item{path}{
 	the name of directory where the results are saved.

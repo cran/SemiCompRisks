@@ -1,5 +1,12 @@
-FreqSurv_HReg <- function(Formula, data)
+FreqSurv_HReg <- function(Formula, data, na.action = "na.fail", subset=NULL)
 {
+    if(na.action != "na.fail" & na.action != "na.omit")
+    {
+        stop("na.action should be either na.fail or na.omit")
+    }
+    form2 <- as.Formula(paste(Formula[2], Formula[1], Formula[3], sep = ""))
+    data <- model.frame(form2, data=data, na.action = na.action, subset = subset)
+    
     ##
     time1 <- model.part(Formula, data=data, lhs=1)    
     Y <- cbind(time1[1], time1[2])

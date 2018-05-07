@@ -4,6 +4,8 @@ model = "LN",
 hyperParams,
 startValues,
 mcmcParams,
+na.action = "na.fail",
+subset=NULL,
 path = NULL)
 {
     mcmcList    <- mcmcParams
@@ -13,6 +15,62 @@ path = NULL)
         nChain <- length(startValues)
         
         hz.type 	<- model[1]
+        
+        if(na.action != "na.fail" & na.action != "na.omit")
+        {
+            stop("na.action should be either na.fail or na.omit")
+        }
+        
+        form2 <- as.Formula(paste(Formula[2], Formula[1], Formula[3], sep = ""))
+        
+        if(hz.type == "DPM")
+        {
+            for(i in 1:nChain)
+            {
+                nam1 <- paste("DPM.classch", i, sep = "")
+                data[[nam1]] <- startValues[[i]]$DPM$DPM.class
+                
+                nam2 <- paste("DPM.much", i, sep = "")
+                data[[nam2]] <- startValues[[i]]$DPM$DPM.mu
+                
+                nam3 <- paste("DPM.zetach", i, sep = "")
+                data[[nam3]] <- startValues[[i]]$DPM$DPM.zeta
+                
+                form2 <- as.Formula(paste(form2[2], form2[1], form2[3], "| ", nam1, "| ", nam2, "| ", nam3, sep = ""))
+            }
+        }
+        
+        for(i in 1:nChain)
+        {
+            nam1 <- paste("ych", i, sep = "")
+            data[[nam1]] <- startValues[[i]]$common$y
+            
+            form2 <- as.Formula(paste(form2[2], form2[1], form2[3], "| ", nam1, sep = ""))
+        }
+        
+        data <- model.frame(form2, data=data, na.action = na.action, subset = subset)
+        
+        if(hz.type == "DPM")
+        {
+            for(i in 1:nChain)
+            {
+                nam1 <- paste("DPM.classch", i, sep = "")
+                startValues[[i]]$DPM$DPM.class <- data[[nam1]]
+                
+                nam2 <- paste("DPM.much", i, sep = "")
+                startValues[[i]]$DPM$DPM.mu <- data[[nam2]]
+                
+                nam3 <- paste("DPM.zetach", i, sep = "")
+                startValues[[i]]$DPM$DPM.zeta <- data[[nam3]]
+            }
+        }
+        
+        for(i in 1:nChain)
+        {
+            nam1 <- paste("ych", i, sep = "")
+            startValues[[i]]$common$y <- data[[nam1]]
+        }
+        
         
         LT <- model.part(Formula, data=data, lhs=1)
         y.mat <- model.part(Formula, data=data, lhs=2)

@@ -5,8 +5,29 @@ model = "Weibull",
 hyperParams,
 startValues,
 mcmcParams,
+na.action = "na.fail",
+subset=NULL,
 path = NULL)
 {
+    if(na.action != "na.fail" & na.action != "na.omit")
+    {
+        stop("na.action should be either na.fail or na.omit")
+    }
+    if(!is.null(id))
+    {
+        data$id <- id
+        form2 <- as.Formula(paste(Formula[2], Formula[1], Formula[3], "| id", sep = ""))
+    }else
+    {
+        form2 <- as.Formula(paste(Formula[2], Formula[1], Formula[3], sep = ""))
+    }
+    
+    data <- model.frame(form2, data=data, na.action=na.action, subset=subset)
+    if(!is.null(id))
+    {
+        id <- data$id
+    }
+    
 	mcmc 		<- mcmcParams
     hyperP      <- hyperParams
     mcmcList    <- mcmc
@@ -96,8 +117,6 @@ path = NULL)
                 }
                 
                 
-                
-                
                 # hz.type = "Weibull"
                 
                 if(hz.type == "Weibull"){
@@ -109,7 +128,6 @@ path = NULL)
                     nStore <- round(numReps/thin*(1-burninPerc))
                     
                     mcmcParams <- mcmc[1]
-                    
                     
                     mcmcRet <- .C("BweibSurvmcmc",
                     survData 		= as.double(as.matrix(survData)),
@@ -295,7 +313,15 @@ path = NULL)
             re.type 	<- model[2]
             
             ##
-            survData <- cbind(Y, id, Xmat)
+            ##
+            
+            if(p == 0){
+                survData <- cbind(Y, id)
+            }
+            
+            if(p > 0){
+                survData <- cbind(Y, id, Xmat)
+            }
             
             n	<- dim(survData)[1]
             
@@ -607,13 +633,22 @@ path = NULL)
                         ###
                         K_ <- K
                         
-                        startV <- as.vector(c(startV[1:(p)],
-                        K,
-                        mu_lam,
-                        sigSq_lam,
-                        lambda, s,
-                        startV[(p+1):length(startV)]))
-                        
+                        if(p > 0)
+                        {
+                            startV <- as.vector(c(startV[1:(p)],
+                            K,
+                            mu_lam,
+                            sigSq_lam,
+                            lambda, s,
+                            startV[(p+1):length(startV)]))
+                        }else if(p == 0)
+                        {
+                            startV <- as.vector(c(K,
+                            mu_lam,
+                            sigSq_lam,
+                            lambda, s,
+                            startV))
+                        }
                         
                         mcmcRet <- .C("BpeMvnCorSurvmcmc",
                         survData 		= as.double(as.matrix(survData)),
@@ -703,13 +738,22 @@ path = NULL)
                         ###
                         K_ <- K
                         
-                        startV <- as.vector(c(startV[1:(p)],
-                        K,
-                        mu_lam,
-                        sigSq_lam,
-                        lambda, s,
-                        startV[(p+1):length(startV)]))
-                        
+                        if(p > 0)
+                        {
+                            startV <- as.vector(c(startV[1:(p)],
+                            K,
+                            mu_lam,
+                            sigSq_lam,
+                            lambda, s,
+                            startV[(p+1):length(startV)]))
+                        }else if(p == 0)
+                        {
+                            startV <- as.vector(c(K,
+                            mu_lam,
+                            sigSq_lam,
+                            lambda, s,
+                            startV))
+                        }
                         
                         
                         mcmcRet <- .C("BpeDpCorSurvmcmc",
@@ -848,6 +892,7 @@ path = NULL)
     
     
 }
+
 
 
 

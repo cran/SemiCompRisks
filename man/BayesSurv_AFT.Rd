@@ -9,7 +9,7 @@ Independent univariate survival data can be analyzed using AFT models that have 
 }
 \usage{
 BayesSurv_AFT(Formula, data, model = "LN", hyperParams, startValues,
-                mcmcParams, path = NULL)
+                mcmcParams, na.action = "na.fail", subset=NULL, path=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -38,6 +38,12 @@ a list containing variables required for MCMC sampling. Components include,
 \code{tuning} (a list containing numeric values relevant to tuning parameters for specific updates in Metropolis-Hastings (MH) algorithm:
 \code{beta.prop.var}, the variance of proposal density for \eqn{\beta}; \code{mu.prop.var}, the variance of proposal density for \eqn{\mu}; \code{zeta.prop.var}, the variance of proposal density for \eqn{1/\sigma^2}).
 
+}
+\item{na.action}{
+    how NAs are treated. See \code{model.frame}.
+}
+\item{subset}{
+    a specification of the rows to be used: defaults to all rows. See \code{model.frame}.
 }
   \item{path}{
     the name of directory where the results are saved.

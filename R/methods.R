@@ -669,6 +669,8 @@ print.Bayes_HReg <- function(x, digits=3, ...)
     
     if(x$class[2] == "Surv")
     {
+        tbl_beta <- NULL
+        
         if(length(x$chain1$beta.p) != 0){
             
             p	= dim(x$chain1$beta.p)[2]
@@ -1146,6 +1148,8 @@ print.Bayes_AFT <- function(x, digits=3, ...)
     
     if(x$class[2] == "Surv")
     {
+        tbl_beta <- NULL
+        
         if(length(x$chain1$beta.p) != 0){
             
             p	= dim(x$chain1$beta.p)[2]
