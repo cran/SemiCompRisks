@@ -647,3 +647,4 @@ BSBH.N <- function(fit, time, g, time.trunc, xnew=NULL)
     
 }
 
+

@@ -138,7 +138,7 @@ SemiCompRisks: an R package for independent and cluster-correlated analyses of s
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr
-Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
+Maintainer: Kyu Ha Lee <klee15239@gmail.com>
 }
 %\note{
 %Function that initiates starting values for a single chain

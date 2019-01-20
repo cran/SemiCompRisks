@@ -14,7 +14,7 @@ subset=NULL)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 \item{Formula}{
-    a \code{Formula} object of the form \eqn{y_1}+\eqn{\delta_1} | \eqn{y_2}+\eqn{\delta_2} ~ \eqn{x_1} | \eqn{x_2} | \eqn{x_3}. See Details and Examples below.
+    a \code{Formula} object, with the outcome on the left of a \eqn{\sim}, and covariates on the right. It is of the form, time to non-terminal event + corresponding censoring indicator | time to terminal event + corresponding censoring indicator \eqn{\sim} covariates for \eqn{h_1} | covariates for \eqn{h_2} | covariates for \eqn{h_3}: i.e., \eqn{y_1}+\eqn{\delta_1} | \eqn{y_2}+\eqn{\delta_2} ~ \eqn{x_1} | \eqn{x_2} | \eqn{x_3}. 
 }
   \item{data}{
 	a data.frame in which to interpret the variables named in \code{Formula}.
@@ -47,7 +47,7 @@ SemiCompRisks: an R package for independent and cluster-correlated analyses of s
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr
-Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
+Maintainer: Kyu Ha Lee <klee15239@gmail.com>
 }
 %%\note{
 %%further notes

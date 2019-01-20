@@ -49,6 +49,8 @@ void BweibScrmcmc(double survData[],
                   double samples_theta[],
                   double samples_gamma[],
                   double samples_misc[],
+                  double dev[],
+                  double invLH[],
                   double moveVec[])
 {
     GetRNGstate();
@@ -206,7 +208,23 @@ void BweibScrmcmc(double survData[],
     int accept_alpha3 = 0;
     int accept_theta  = 0;
     
-
+    gsl_vector *beta1_mean = gsl_vector_calloc(nP1);
+    gsl_vector *beta2_mean = gsl_vector_calloc(nP2);
+    gsl_vector *beta3_mean = gsl_vector_calloc(nP3);
+    
+    double alpha1_mean = 0;
+    double alpha2_mean = 0;
+    double alpha3_mean = 0;
+    double kappa1_mean = 0;
+    double kappa2_mean = 0;
+    double kappa3_mean = 0;
+    double theta_mean = 0;
+    
+    double logLH, invLHval;
+    
+    gsl_vector *invLH_vec = gsl_vector_calloc(*n);
+    gsl_vector *invLH_mean = gsl_vector_calloc(*n);
+    
     
     /* Compute probabilities for various types of moves */
     
@@ -232,9 +250,6 @@ void BweibScrmcmc(double survData[],
     
     
     
-    
-    
-    
     for(M = 0; M < *numReps; M++)
     {
         /* selecting a move */
@@ -253,8 +268,6 @@ void BweibScrmcmc(double survData[],
         if(choice > pRP1 + pRP2 + pRP3 + pSH1 + pSH2 + pSH3 + pSC1 + pSC2) move = 9;
         if(choice > pRP1 + pRP2 + pRP3 + pSH1 + pSH2 + pSH3 + pSC1 + pSC2 + pSC3) move = 10;
         if(choice > pRP1 + pRP2 + pRP3 + pSH1 + pSH2 + pSH3 + pSC1 + pSC2 + pSC3 + pDP) move = 11;
-        
-        
         
         moveVec[M] = (double) move;
         
@@ -394,26 +407,99 @@ void BweibScrmcmc(double survData[],
                 }
             }
             
-            if(M == (*numReps - 1))
+            /* deviance */
+            
+            BweibScr_logMLH(beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, theta, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, &logLH);
+            
+            dev[StoreInx - 1] = -2*logLH;
+            
+            if(*p1 >0)
             {
-                if(*p1 >0)
-                {
-                    for(j = 0; j < *p1; j++) samples_misc[j] = (int) gsl_vector_get(accept_beta1, j);
-                }
-                if(*p2 >0)
-                {
-                    for(j = 0; j < *p2; j++) samples_misc[*p1 + j] = (int) gsl_vector_get(accept_beta2, j);
-                }
-                if(*p3 >0)
-                {
-                for(j = 0; j < *p3; j++) samples_misc[*p1 + *p2 + j] = (int) gsl_vector_get(accept_beta3, j);
-                }
-                samples_misc[*p1 + *p2 + *p3]       = accept_alpha1;
-                samples_misc[*p1 + *p2 + *p3 + 1]   = accept_alpha2;
-                samples_misc[*p1 + *p2 + *p3 + 2]   = accept_alpha3;
-                samples_misc[*p1 + *p2 + *p3 + 3]   = accept_theta;
+                gsl_vector_scale(beta1_mean, (double) StoreInx - 1);
+                gsl_vector_add(beta1_mean, beta1);
+                gsl_vector_scale(beta1_mean, (double)1/StoreInx);
+            }
+            if(*p2 >0)
+            {
+                gsl_vector_scale(beta2_mean, (double) StoreInx - 1);
+                gsl_vector_add(beta2_mean, beta2);
+                gsl_vector_scale(beta2_mean, (double)1/StoreInx);
+            }
+            if(*p3 >0)
+            {
+                gsl_vector_scale(beta3_mean, (double) StoreInx - 1);
+                gsl_vector_add(beta3_mean, beta3);
+                gsl_vector_scale(beta3_mean, (double)1/StoreInx);
             }
             
+            alpha1_mean = ((double) StoreInx - 1) * alpha1_mean;
+            alpha1_mean = alpha1_mean + alpha1;
+            alpha1_mean = alpha1_mean/((double) StoreInx);
+            
+            alpha2_mean = ((double) StoreInx - 1) * alpha2_mean;
+            alpha2_mean = alpha2_mean + alpha2;
+            alpha2_mean = alpha2_mean/((double) StoreInx);
+            
+            alpha3_mean = ((double) StoreInx - 1) * alpha3_mean;
+            alpha3_mean = alpha3_mean + alpha3;
+            alpha3_mean = alpha3_mean/((double) StoreInx);
+            
+            kappa1_mean = ((double) StoreInx - 1) * kappa1_mean;
+            kappa1_mean = kappa1_mean + kappa1;
+            kappa1_mean = kappa1_mean/((double) StoreInx);
+            
+            kappa2_mean = ((double) StoreInx - 1) * kappa2_mean;
+            kappa2_mean = kappa2_mean + kappa2;
+            kappa2_mean = kappa2_mean/((double) StoreInx);
+            
+            kappa3_mean = ((double) StoreInx - 1) * kappa3_mean;
+            kappa3_mean = kappa3_mean + kappa3;
+            kappa3_mean = kappa3_mean/((double) StoreInx);
+            
+            theta_mean = ((double) StoreInx - 1) * theta_mean;
+            theta_mean = theta_mean + theta;
+            theta_mean = theta_mean/((double) StoreInx);
+            
+            
+            /* CPO_i */
+            
+            for(i = 0; i < *n; i++)
+            {
+                BweibScr_logMLH_i(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, theta, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, &invLHval);
+                
+                invLHval = 1/exp(invLHval);
+                gsl_vector_set(invLH_vec, i, invLHval);
+            }
+            
+            gsl_vector_scale(invLH_mean, (double) StoreInx - 1);
+            gsl_vector_add(invLH_mean, invLH_vec);
+            gsl_vector_scale(invLH_mean, (double)1/StoreInx);
+            
+        }
+        
+        if(M == (*numReps - 1))
+        {
+            if(*p1 >0)
+            {
+                for(j = 0; j < *p1; j++) samples_misc[j] = (int) gsl_vector_get(accept_beta1, j);
+            }
+            if(*p2 >0)
+            {
+                for(j = 0; j < *p2; j++) samples_misc[*p1 + j] = (int) gsl_vector_get(accept_beta2, j);
+            }
+            if(*p3 >0)
+            {
+                for(j = 0; j < *p3; j++) samples_misc[*p1 + *p2 + j] = (int) gsl_vector_get(accept_beta3, j);
+            }
+            samples_misc[*p1 + *p2 + *p3]       = accept_alpha1;
+            samples_misc[*p1 + *p2 + *p3 + 1]   = accept_alpha2;
+            samples_misc[*p1 + *p2 + *p3 + 2]   = accept_alpha3;
+            samples_misc[*p1 + *p2 + *p3 + 3]   = accept_theta;
+            
+            for(i = 0; i < *n; i++)
+            {
+                invLH[i] = gsl_vector_get(invLH_mean, i);
+            }
         }
         
         

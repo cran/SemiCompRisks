@@ -1159,8 +1159,6 @@ void BpeMvnCorScrSMmcmc(double survData[],
             
             BpeMvnCorScrSM_logMLH(beta1_mean, beta2_mean, beta3_mean, xbeta1_mean, xbeta2_mean, xbeta3_mean, theta_mean, lambda1_mean, lambda2_mean, lambda3_mean, time_lambda1, time_lambda2, time_lambda3, V1_mean, V2_mean, V3_mean, survTime1, survTime2, yStar, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, cluster, nTime_lambda1-1, nTime_lambda2-1, nTime_lambda3-1, logLH_fin);
             
-            
-            
         }
         
         

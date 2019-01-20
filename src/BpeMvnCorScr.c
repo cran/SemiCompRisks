@@ -15,8 +15,6 @@
 #include "gsl/gsl_sort_vector.h"
 #include "gsl/gsl_heapsort.h"
 
-
-
 #include "R.h"
 #include "Rmath.h"
 
@@ -77,10 +75,10 @@ void BpeMvnCorScrmcmc(double survData[],
 {
     GetRNGstate();
     
-    time_t now;    
+    time_t now;
     
     int i, j, MM;
-
+    
     
     /* Survival Data */
     
@@ -97,7 +95,7 @@ void BpeMvnCorScrmcmc(double survData[],
         gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
         gsl_vector_set(cluster, i, survData[(4* *n) + i]);
     }
-
+    
     int nP1, nP2, nP3;
     
     if(*p1 > 0) nP1 = *p1;
@@ -163,7 +161,7 @@ void BpeMvnCorScrmcmc(double survData[],
     {
         gsl_vector_set(n_j, j, nj[j]);
     }
-   
+    
     
     /* Hyperparameters */
     
@@ -192,7 +190,7 @@ void BpeMvnCorScrmcmc(double survData[],
         }
     }
     
-       
+    
     /* varialbes for birth and death moves */
     
     double C1               = mcmcParams[0];
@@ -249,16 +247,10 @@ void BpeMvnCorScrmcmc(double survData[],
     
     double mhProp_theta_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3];
     
-
+    
     double mhProp_V1_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+2];
     double mhProp_V2_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+3];
     double mhProp_V3_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+4];
-
-    
-
-    
-    
-    
     
     
     /* Starting values */
@@ -342,11 +334,7 @@ void BpeMvnCorScrmcmc(double survData[],
     gsl_blas_dgemv(CblasNoTrans, 1, survCov2, beta2, 0, xbeta2);
     gsl_blas_dgemv(CblasNoTrans, 1, survCov3, beta3, 0, xbeta3);
     
-    
-    
-    
     /* Calculating Sigma_lam (from W and Q) */
-    
     
     gsl_matrix *Sigma_lam1       = gsl_matrix_calloc(K1_max+1, K1_max+1);
     gsl_matrix *Sigma_lam2       = gsl_matrix_calloc(K2_max+1, K2_max+1);
@@ -366,8 +354,6 @@ void BpeMvnCorScrmcmc(double survData[],
     cal_Sigma(Sigma_lam3, invSigma_lam3, W3, Q3, s3, c_lam3, K3);
     
     
-    
-    
     /* Variables required for storage of samples */
     
     int StoreInx;
@@ -376,7 +362,6 @@ void BpeMvnCorScrmcmc(double survData[],
     gsl_vector *accept_beta2 = gsl_vector_calloc(nP2);
     gsl_vector *accept_beta3 = gsl_vector_calloc(nP3);
     
-
     gsl_vector *accept_V1       = gsl_vector_calloc(*J);
     gsl_vector *accept_V2       = gsl_vector_calloc(*J);
     gsl_vector *accept_V3       = gsl_vector_calloc(*J);
@@ -388,14 +373,9 @@ void BpeMvnCorScrmcmc(double survData[],
     int accept_BI3      = 0;
     int accept_DI3      = 0;
     int accept_theta    = 0;
-
-
-    
-
-    
     
     /* For posterior predictive checks */
-        
+    
     gsl_vector *beta1_mean = gsl_vector_calloc(nP1);
     gsl_vector *beta2_mean = gsl_vector_calloc(nP2);
     gsl_vector *beta3_mean = gsl_vector_calloc(nP3);
@@ -418,7 +398,7 @@ void BpeMvnCorScrmcmc(double survData[],
     gsl_vector *V2_mean = gsl_vector_calloc(*J);
     gsl_vector *V3_mean = gsl_vector_calloc(*J);
     
-    double logLH;    
+    double logLH;
     
     gsl_vector *invLH_vec = gsl_vector_calloc(*n);
     gsl_vector *invLH_mean = gsl_vector_calloc(*n);
@@ -430,7 +410,8 @@ void BpeMvnCorScrmcmc(double survData[],
     
     double invLHval, invfVal, lpml_temp, lpml_temp2;
     
- 
+    double theta_mean;
+    
     
     /* Compute probabilities for various types of moves (22 moves)*/
     
@@ -479,19 +460,9 @@ void BpeMvnCorScrmcmc(double survData[],
     if(*p3 > 0) numUpdate += 1;
     
     
-    
-    
-   
-
-    
-    
-    
-    
     for(MM = 0; MM < *numReps; MM++)
     {
-        
 
-        
         if(K1 < K1_max)
         {
             pBI1 = rho_lam1 * c_min(1, alpha1/(K1+1));
@@ -524,9 +495,9 @@ void BpeMvnCorScrmcmc(double survData[],
         }
         
         
-
         
-        double pMP, pCP1, pCP2, pCP3, pVP, choice;        
+        
+        double pMP, pCP1, pCP2, pCP3, pVP, choice;
         
         
         pDP = 0.2;
@@ -548,16 +519,16 @@ void BpeMvnCorScrmcmc(double survData[],
         pCP2 = probSub;
         pCP3 = probSub;
         pVP  = probSub;
-         
-         
-
+        
+        
+        
         
         /* selecting a move */
         /* move: 1=RP1, 2=RP2, 3=RP3, 4=BH1, 5=BH2, 6=BH3, 7=SP1, 8=SP2, 9=SP3, 10=FP,
          11=DP, 12=BI1, 13=BI2, 14=BI3, 15=DI1, 16=DI2, 17=DI3, 18=CP1, 19=CP2, 20=CP3, 21=VP, 22=MP */
         
         
-
+        
         
         choice  = runif(0, 1);
         move    = 1;
@@ -583,18 +554,18 @@ void BpeMvnCorScrmcmc(double survData[],
         if(choice > pRP1+pRP2+pRP3+pBH1+pBH2+pBH3+pSP1+pSP2+pSP3+pFP+pDP+pBI1+pBI2+pBI3+pDI1+pDI2+pDI3+pCP1+pCP2+pCP3) move = 21;
         if(choice > pRP1+pRP2+pRP3+pBH1+pBH2+pBH3+pSP1+pSP2+pSP3+pFP+pDP+pBI1+pBI2+pBI3+pDI1+pDI2+pDI3+pCP1+pCP2+pCP3+pVP) move = 22;
         
-         
-         
+        
+        
         moveVec[MM] = (double) move;
         
         
-        /* updating regression parameter: beta1         
-        
-        move = 1;
+        /* updating regression parameter: beta1
          
-          */
+         move = 1;
+         
+         */
         
-
+        
         
         if(move == 1)
         {
@@ -605,24 +576,24 @@ void BpeMvnCorScrmcmc(double survData[],
         /* updating regression parameter: beta2
          
          move = 2;
-          */
+         */
         
         
-
-         
+        
+        
         if(move == 2)
         {
             BpeMvnCorScr_updateRP2(beta2, xbeta2, nu2, gamma, V2, lambda2, s2, survTime1, case01, cluster, survCov2, K2, accept_beta2);
         }
- 
         
         
         
-        /* updating regression parameter: beta3         
+        
+        /* updating regression parameter: beta3
          
          move = 3;
-
-        */
+         
+         */
         
         
         
@@ -636,13 +607,13 @@ void BpeMvnCorScrmcmc(double survData[],
         
         
         
-        /* updating log-baseline hazard function parameter: lambda1 
+        /* updating log-baseline hazard function parameter: lambda1
+         
+         move = 4;*/
         
-        move = 4;*/
         
         
-
-
+        
         if(move == 4)
         {
             BpeMvnCorScr_updateBH1(lambda1, s1, xbeta1, gamma, V1, survTime1, survEvent1, cluster, Sigma_lam1, invSigma_lam1, W1, Q1, mu_lam1, sigSq_lam1, K1);
@@ -651,13 +622,13 @@ void BpeMvnCorScrmcmc(double survData[],
         
         
         
-
-        /* updating log-baseline hazard function parameter: lambda2 
         
-        move = 5;*/
+        /* updating log-baseline hazard function parameter: lambda2
+         
+         move = 5;*/
         
         
-
+        
         
         
         if(move == 5)
@@ -666,12 +637,12 @@ void BpeMvnCorScrmcmc(double survData[],
         }
         
         
-        /* updating log-baseline hazard function parameter: lambda3 
+        /* updating log-baseline hazard function parameter: lambda3
+         
+         move = 6;*/
         
-        move = 6;*/
         
         
-
         
         if(move == 6)
         {
@@ -681,9 +652,9 @@ void BpeMvnCorScrmcmc(double survData[],
         
         
         
-        /* updating second stage survival components: mu_lam1 and sigSq_lam1 
+        /* updating second stage survival components: mu_lam1 and sigSq_lam1
          
-        move = 7;*/
+         move = 7;*/
         
         
         if(move == 7)
@@ -693,11 +664,11 @@ void BpeMvnCorScrmcmc(double survData[],
         
         
         
-        /* updating second stage survival components: mu_lam2 and sigSq_lam2         
+        /* updating second stage survival components: mu_lam2 and sigSq_lam2
          
          move = 8;*/
-
-
+        
+        
         
         if(move == 8)
         {
@@ -705,11 +676,11 @@ void BpeMvnCorScrmcmc(double survData[],
         }
         
         
-        /* updating second stage survival components: mu_lam3 and sigSq_lam3 
+        /* updating second stage survival components: mu_lam3 and sigSq_lam3
+         
+         move = 9;*/
         
-        move = 9;*/
         
-
         
         if(move == 9)
         {
@@ -721,7 +692,7 @@ void BpeMvnCorScrmcmc(double survData[],
          
          move = 10;*/
         
-
+        
         
         if(move == 10)
         {
@@ -744,9 +715,9 @@ void BpeMvnCorScrmcmc(double survData[],
         }
         
         
-        /* Updating the number of splits and their positions: K1 and s1 (Birth move) 
-        
-        move = 12;*/
+        /* Updating the number of splits and their positions: K1 and s1 (Birth move)
+         
+         move = 12;*/
         
         if(move == 12)
         {
@@ -764,9 +735,9 @@ void BpeMvnCorScrmcmc(double survData[],
         }
         
         
-        /* Updating the number of splits and their positions: K3 and s3 (Birth move) 
-        
-        move = 14;*/
+        /* Updating the number of splits and their positions: K3 and s3 (Birth move)
+         
+         move = 14;*/
         
         if(move == 14)
         {
@@ -775,9 +746,9 @@ void BpeMvnCorScrmcmc(double survData[],
         
         
         
-        /* Updating the number of splits and their positions: K1 and s1 (Death move) 
-        
-        move = 15;*/
+        /* Updating the number of splits and their positions: K1 and s1 (Death move)
+         
+         move = 15;*/
         
         
         
@@ -788,9 +759,9 @@ void BpeMvnCorScrmcmc(double survData[],
         
         
         
-        /* Updating the number of splits and their positions: K2 and s2 (Death move) 
-        
-        move = 16;*/
+        /* Updating the number of splits and their positions: K2 and s2 (Death move)
+         
+         move = 16;*/
         
         
         if(move == 16)
@@ -799,16 +770,16 @@ void BpeMvnCorScrmcmc(double survData[],
         }
         
         
-        /* Updating the number of splits and their positions: K3 and K3 (Death move) 
-        
-        move = 17;*/
+        /* Updating the number of splits and their positions: K3 and K3 (Death move)
+         
+         move = 17;*/
         
         if(move == 17)
         {
             BpeMvnCorScr_updateDI3(s3, &K3, &accept_DI3, survTime1, survTime2, case11, gamma, xbeta3, V3, cluster, Sigma_lam3, invSigma_lam3, W3, Q3, lambda3, s_propBI3, num_s_propBI3, delPert3, alpha3, c_lam3, mu_lam3, sigSq_lam3, s3_max, K3_max);
         }
         
-  
+        
         /* updating cluster-specific random effect: V1
          
          move = 18;*/
@@ -821,8 +792,8 @@ void BpeMvnCorScrmcmc(double survData[],
         
         
         /* updating cluster-specific random effect: V2
-        
-        move = 19;*/
+         
+         move = 19;*/
         
         if(move == 19)
         {
@@ -833,8 +804,8 @@ void BpeMvnCorScrmcmc(double survData[],
         
         
         /* updating cluster-specific random effect: V3
-        
-        move = 20;*/
+         
+         move = 20;*/
         
         if(move == 20)
         {
@@ -842,7 +813,7 @@ void BpeMvnCorScrmcmc(double survData[],
             
         }
         
-        /* updating variance covariance matrix of cluster-specific random effect: Sigma_V 
+        /* updating variance covariance matrix of cluster-specific random effect: Sigma_V
          
          
          move = 21;*/
@@ -856,8 +827,8 @@ void BpeMvnCorScrmcmc(double survData[],
         
         
         
-             
-     
+        
+        
         /* Storing posterior samples */
         
         
@@ -977,7 +948,7 @@ void BpeMvnCorScrmcmc(double survData[],
             
             /* deviance */
             
-            BpeMvnCorScr_logLH(beta1, beta2, beta3, xbeta1, xbeta2, xbeta3, gamma, lambda1, lambda2, lambda3, s1, s2, s3, V1, V2, V3, survTime1, survTime2, survEvent1, case01, case11, survCov1, survCov2, survCov3, cluster, K1, K2, K3, &logLH);            
+            BpeMvnCorScr_logMLH(beta1, beta2, beta3, xbeta1, xbeta2, xbeta3, theta, lambda1, lambda2, lambda3, s1, s2, s3, V1, V2, V3, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, cluster, K1, K2, K3, &logLH);
             
             dev[StoreInx - 1] = -2*logLH;
             
@@ -1029,12 +1000,16 @@ void BpeMvnCorScrmcmc(double survData[],
             gsl_vector_add(V3_mean, V3);
             gsl_vector_scale(V3_mean, (double)1/StoreInx);
             
+            theta_mean = ((double) StoreInx - 1) * theta_mean;
+            theta_mean = theta_mean + theta;
+            theta_mean = theta_mean/((double) StoreInx);
+            
             
             /* CPO_i */
             
             for(i = 0; i < *n; i++)
             {
-                BpeMvnCorScr_logLH_i(i, beta1, beta2, beta3, xbeta1, xbeta2, xbeta3, gamma, lambda1, lambda2, lambda3, s1, s2, s3, V1, V2, V3, survTime1, survTime2, survEvent1, case01, case11, survCov1, survCov2, survCov3, cluster, K1, K2, K3, &invLHval);
+                BpeMvnCorScr_logMLH_i(i, beta1, beta2, beta3, xbeta1, xbeta2, xbeta3, theta, lambda1, lambda2, lambda3, s1, s2, s3, V1, V2, V3, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, cluster, K1, K2, K3, &invLHval);
                 
                 invLHval = 1/exp(invLHval);
                 
@@ -1042,20 +1017,11 @@ void BpeMvnCorScrmcmc(double survData[],
                 
             }
             
-           
-            
             gsl_vector_scale(invLH_mean, (double) StoreInx - 1);
-            
-           
             
             gsl_vector_add(invLH_mean, invLH_vec);
             
-          
-            
             gsl_vector_scale(invLH_mean, (double)1/StoreInx);
-            
-          
-            
             
             for(i = 0; i < *n; i++)
             {
@@ -1072,10 +1038,6 @@ void BpeMvnCorScrmcmc(double survData[],
             lpml[StoreInx - 1] = lpml_temp;
             
             
-            
-            
-            
-            
             /* CPO_i version 2 */
             
             for(i = 0; i < *n; i++)
@@ -1086,23 +1048,13 @@ void BpeMvnCorScrmcmc(double survData[],
                 invfVal = 1/exp(invfVal);
                 
                 gsl_vector_set(invf_vec, i, invfVal);
-                
             }
-            
-           
             
             gsl_vector_scale(invf_mean, (double) StoreInx - 1);
             
-           
-            
             gsl_vector_add(invf_mean, invf_vec);
             
-           
-            
             gsl_vector_scale(invf_mean, (double)1/StoreInx);
-            
-           
-            
             
             for(i = 0; i < *n; i++)
             {
@@ -1117,18 +1069,7 @@ void BpeMvnCorScrmcmc(double survData[],
             }
             
             lpml2[StoreInx - 1] = lpml_temp2;
-            
-            
-            
         }
-        
-            
-            
-            
-            
-                
-       
-        
         
         
         if(MM == (*numReps - 1))
@@ -1178,8 +1119,8 @@ void BpeMvnCorScrmcmc(double survData[],
             gsl_blas_dgemv(CblasNoTrans, 1, survCov2, beta2_mean, 0, xbeta2_mean);
             gsl_blas_dgemv(CblasNoTrans, 1, survCov3, beta3_mean, 0, xbeta3_mean);
             
-             BpeMvnCorScr_logLH(beta1_mean, beta2_mean, beta3_mean, xbeta1_mean, xbeta2_mean, xbeta3_mean, gamma_mean, lambda1_mean, lambda2_mean, lambda3_mean, time_lambda1, time_lambda2, time_lambda3, V1_mean, V2_mean, V3_mean, survTime1, survTime2, survEvent1, case01, case11, survCov1, survCov2, survCov3, cluster, nTime_lambda1-1, nTime_lambda2-1, nTime_lambda3-1, logLH_fin);     
-
+            BpeMvnCorScr_logMLH(beta1_mean, beta2_mean, beta3_mean, xbeta1_mean, xbeta2_mean, xbeta3_mean, theta_mean, lambda1_mean, lambda2_mean, lambda3_mean, time_lambda1, time_lambda2, time_lambda3, V1_mean, V2_mean, V3_mean, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, cluster, nTime_lambda1-1, nTime_lambda2-1, nTime_lambda3-1, logLH_fin);
+            
         }
         
         if( ( (MM+1) % 10000 ) == 0)
@@ -1195,14 +1136,15 @@ void BpeMvnCorScrmcmc(double survData[],
             
         }
         
-                
-    }    
+        
+    }
     
     PutRNGstate();
     return;
     
     
 }
+
 
 
 

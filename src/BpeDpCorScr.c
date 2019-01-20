@@ -984,8 +984,6 @@ void BpeDpCorScrmcmc(double survData[],
                     samples_gamma[(StoreInx - 1) * (*nGam_save) + i] = gsl_vector_get(gamma, i);
                 }
             }
-
-            
             
             /* deviance */
             
@@ -1026,8 +1024,7 @@ void BpeDpCorScrmcmc(double survData[],
             
             gsl_vector_scale(lambda3_mean, (double) StoreInx - 1);
             gsl_vector_add(lambda3_mean, lambda3_vec);
-            gsl_vector_scale(lambda3_mean, (double)1/StoreInx);
-            
+            gsl_vector_scale(lambda3_mean, (double)1/StoreInx);            
             
             gsl_vector_scale(V1_mean, (double) StoreInx - 1);
             gsl_vector_add(V1_mean, V1);

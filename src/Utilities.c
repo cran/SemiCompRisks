@@ -68,7 +68,7 @@ void BpeDpCorSurv_logLH(gsl_vector *beta,
 {
     double logLH = 0;
     
-
+    
     int n = survTime -> size;
     
     int i, j, jj;
@@ -148,7 +148,7 @@ void BpeMvnCorSurv_logLH(gsl_vector *beta,
 {
     double logLH = 0;
     
-
+    
     int n = survTime -> size;
     
     int i, j, jj;
@@ -209,10 +209,10 @@ void BpeMvnCorSurv_logLH(gsl_vector *beta,
 /********* For Weibull-DPM (univariate) model *************/
 
 double Qfunc_univ(double V,
-             double mu0,
-             double zeta0,
-             double a0,
-             double b0)
+                  double mu0,
+                  double zeta0,
+                  double a0,
+                  double b0)
 {
     double lterm1, term2, term3, val;
     
@@ -272,7 +272,7 @@ void BpeDpCorScrSM_logMLH(gsl_vector *beta1,
     double gfunc;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -393,12 +393,7 @@ void BpeDpCorScrSM_logMLH_i(int i,
     double gfunc;
     double logLH = 0;
     
-
-
-    
     int j, jj;
-    
-    
     
     jj = (int) gsl_vector_get(cluster, i) - 1;
     
@@ -508,7 +503,7 @@ void BpeDpCorScrSM_logLH(gsl_vector *beta1,
     double gam;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -625,8 +620,8 @@ void BpeDpCorScrSM_logLH_i(int i,
     double gam;
     double logLH = 0;
     
-
-
+    
+    
     
     int j, jj;
     
@@ -770,7 +765,7 @@ double BpeDpCorScrSM_wFunc(int subjInx,
     }
     
     
-
+    
     wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
     
     return wVal;
@@ -871,7 +866,7 @@ void BpeDpCorScr_logMLH(gsl_vector *beta1,
     double gfunc;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -985,8 +980,8 @@ void BpeDpCorScr_logMLH_i(int i,
     double gfunc;
     double logLH = 0;
     
-
-
+    
+    
     
     int j, jj;
     
@@ -1095,7 +1090,7 @@ void BpeDpCorScr_logLH(gsl_vector *beta1,
     double gam;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -1210,8 +1205,8 @@ void BpeDpCorScr_logLH_i(int i,
     double gam;
     double logLH = 0;
     
-
-
+    
+    
     
     int j, jj;
     
@@ -1354,7 +1349,7 @@ double BpeDpCorScr_wFunc(int subjInx,
         cumHaz3diff += Del* exp(gsl_vector_get(lambda3, j)) * exp(gsl_vector_get(xbeta3, i)+gsl_vector_get(V3, jj));
     }
     
-
+    
     
     wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
     
@@ -1448,12 +1443,7 @@ void BpeMvnCorScrSM_logMLH_i(int i,
     double gfunc;
     double logLH = 0;
     
-
-
-    
     int j, jj;
-    
-    
     
     jj = (int) gsl_vector_get(cluster, i) - 1;
     
@@ -1565,15 +1555,13 @@ void BpeMvnCorScrSM_logMLH(gsl_vector *beta1,
     double gfunc;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, j, jj;
     
     for(i = 0; i < n; i++)
     {
-        
-        
         jj = (int) gsl_vector_get(cluster, i) - 1;
         
         if(gsl_vector_get(survEvent1, i) == 1)
@@ -1685,8 +1673,8 @@ void BpeMvnCorScrSM_logLH_i(int i,
     double gam;
     double logLH = 0;
     
-
-
+    
+    
     
     int j, jj;
     
@@ -1798,7 +1786,7 @@ void BpeMvnCorScrSM_logLH(gsl_vector *beta1,
     double gam;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -1946,7 +1934,7 @@ double BpeMvnCorScrSM_wFunc(int subjInx,
         cumHaz3diff += Del* exp(gsl_vector_get(lambda3, j)) * exp(gsl_vector_get(xbeta3, i)+gsl_vector_get(V3, jj));
     }
     
-
+    
     
     wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
     
@@ -1994,6 +1982,216 @@ double BpeMvnCorScrSM_wFunc(int subjInx,
 /********* For PEM-MVN-M model *************/
 
 
+void BpeMvnCorScr_logMLH_i(int i,
+                           gsl_vector *beta1,
+                           gsl_vector *beta2,
+                           gsl_vector *beta3,
+                           gsl_vector *xbeta1,
+                           gsl_vector *xbeta2,
+                           gsl_vector *xbeta3,
+                           double theta,
+                           gsl_vector *lambda1,
+                           gsl_vector *lambda2,
+                           gsl_vector *lambda3,
+                           gsl_vector *s1,
+                           gsl_vector *s2,
+                           gsl_vector *s3,
+                           gsl_vector *V1,
+                           gsl_vector *V2,
+                           gsl_vector *V3,
+                           gsl_vector *survTime1,
+                           gsl_vector *survTime2,
+                           gsl_vector *survEvent1,
+                           gsl_vector *survEvent2,
+                           gsl_vector *case01,
+                           gsl_vector *case11,
+                           gsl_matrix *survCov1,
+                           gsl_matrix *survCov2,
+                           gsl_matrix *survCov3,
+                           gsl_vector *cluster,
+                           int K1,
+                           int K2,
+                           int K3,
+                           double *val)
+{
+    double gfunc;
+    double logLH = 0;
+    
+    int j, jj;
+    
+    jj = (int) gsl_vector_get(cluster, i) - 1;
+    
+    if(gsl_vector_get(survEvent1, i) == 1)
+    {
+        for(j = 0; j < K1+1; j++)
+        {
+            if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+            {
+                logLH += gsl_vector_get(lambda1, j);
+            }
+            if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+            {
+                logLH += gsl_vector_get(lambda1, j);
+            }
+        }
+        
+        logLH += gsl_vector_get(xbeta1, i);
+        logLH += gsl_vector_get(V1, jj);
+    }
+    
+    if(gsl_vector_get(case01, i) ==  1)
+    {
+        for(j = 0; j < K2+1; j++)
+        {
+            if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+            {
+                logLH += gsl_vector_get(lambda2, j);
+            }
+            if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+            {
+                logLH += gsl_vector_get(lambda2, j);
+            }
+        }
+        
+        logLH += gsl_vector_get(xbeta2, i);
+        logLH += gsl_vector_get(V2, jj);
+    }
+    
+    if(gsl_vector_get(case11, i) == 1)
+    {
+        for(j = 0; j < K3+1; j++)
+        {
+            if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, 0))
+            {
+                logLH += gsl_vector_get(lambda3, j);
+            }
+            if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, j))
+            {
+                logLH += gsl_vector_get(lambda3, j);
+            }
+        }
+        
+        logLH += gsl_vector_get(xbeta3, i);
+        logLH += gsl_vector_get(V3, jj);
+    }
+    
+    gfunc = BpeMvnCorScr_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, jj, V1, V2, V3, s1, s2, s3, K1, K2, K3, survTime1, survTime2);
+    
+    
+    logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+void BpeMvnCorScr_logMLH(gsl_vector *beta1,
+                         gsl_vector *beta2,
+                         gsl_vector *beta3,
+                         gsl_vector *xbeta1,
+                         gsl_vector *xbeta2,
+                         gsl_vector *xbeta3,
+                         double theta,
+                         gsl_vector *lambda1,
+                         gsl_vector *lambda2,
+                         gsl_vector *lambda3,
+                         gsl_vector *s1,
+                         gsl_vector *s2,
+                         gsl_vector *s3,
+                         gsl_vector *V1,
+                         gsl_vector *V2,
+                         gsl_vector *V3,
+                         gsl_vector *survTime1,
+                         gsl_vector *survTime2,
+                         gsl_vector *survEvent1,
+                         gsl_vector *survEvent2,
+                         gsl_vector *case01,
+                         gsl_vector *case11,
+                         gsl_matrix *survCov1,
+                         gsl_matrix *survCov2,
+                         gsl_matrix *survCov3,
+                         gsl_vector *cluster,
+                         int K1,
+                         int K2,
+                         int K3,
+                         double *val)
+{
+    double gfunc;
+    double logLH = 0;
+    
+    int n = survTime1 -> size;
+    
+    int i, j, jj;
+    
+    for(i = 0; i < n; i++)
+    {
+        jj = (int) gsl_vector_get(cluster, i) - 1;
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            for(j = 0; j < K1+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta1, i);
+            logLH += gsl_vector_get(V1, jj);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            for(j = 0; j < K2+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta2, i);
+            logLH += gsl_vector_get(V2, jj);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            for(j = 0; j < K3+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, 0))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, j))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta3, i);
+            logLH += gsl_vector_get(V3, jj);
+        }
+        gfunc = BpeMvnCorScr_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, jj, V1, V2, V3, s1, s2, s3, K1, K2, K3, survTime1, survTime2);
+        
+        logLH +=  (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
 
 /* evaluating log-likelihood function */
 
@@ -2032,7 +2230,7 @@ void BpeMvnCorScr_logLH(gsl_vector *beta1,
     double gam;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, j, jj;
@@ -2147,9 +2345,6 @@ void BpeMvnCorScr_logLH_i(int i,
     double gam;
     double logLH = 0;
     
-
-
-    
     int j, jj;
     
     gam = gsl_vector_get(gamma, i);
@@ -2260,8 +2455,8 @@ void BpeMvnCorScr_logf_i(int i,
     double gam;
     double logf = 0;
     
-
-
+    
+    
     
     int j, jj;
     
@@ -2347,31 +2542,31 @@ void c_dmvnormSH(gsl_vector *x,
                  double     *value)
 {
     int signum, K = x->size;
-	double sigmaSqInv = pow(sigma, -2);
+    double sigmaSqInv = pow(sigma, -2);
     
-	gsl_vector *muVec      = gsl_vector_alloc(K);
+    gsl_vector *muVec      = gsl_vector_alloc(K);
     gsl_vector *diff       = gsl_vector_alloc(K);
-	gsl_matrix *SigmaInv   = gsl_matrix_alloc(K, K);
+    gsl_matrix *SigmaInv   = gsl_matrix_alloc(K, K);
     gsl_matrix *SigmaInvLU = gsl_matrix_alloc(K, K);
     gsl_permutation *p     = gsl_permutation_alloc(K);
     
-	gsl_vector_set_all(muVec, mu);
-	gsl_vector_memcpy(diff, x);
-	gsl_vector_sub(diff, muVec);
+    gsl_vector_set_all(muVec, mu);
+    gsl_vector_memcpy(diff, x);
+    gsl_vector_sub(diff, muVec);
     
-	gsl_matrix_memcpy(SigmaInv, AInv);
-	gsl_matrix_scale(SigmaInv, sigmaSqInv);
+    gsl_matrix_memcpy(SigmaInv, AInv);
+    gsl_matrix_scale(SigmaInv, sigmaSqInv);
     gsl_matrix_memcpy(SigmaInvLU, SigmaInv);
     gsl_linalg_LU_decomp(SigmaInvLU, p, &signum);
     
-	c_quadform_vMv(diff, SigmaInv, value);
-	*value = (log(gsl_linalg_LU_det(SigmaInvLU, signum)) - log(pow(2*Pi, K)) - *value) / 2;
+    c_quadform_vMv(diff, SigmaInv, value);
+    *value = (log(gsl_linalg_LU_det(SigmaInvLU, signum)) - log(pow(2*Pi, K)) - *value) / 2;
     
-	gsl_vector_free(muVec);
-	gsl_vector_free(diff);
-	gsl_matrix_free(SigmaInv);
-	gsl_matrix_free(SigmaInvLU);
-	gsl_permutation_free(p);
+    gsl_vector_free(muVec);
+    gsl_vector_free(diff);
+    gsl_matrix_free(SigmaInv);
+    gsl_matrix_free(SigmaInvLU);
+    gsl_permutation_free(p);
     return;
 }
 
@@ -2447,16 +2642,6 @@ double BpeMvnCorScr_wFunc(int subjInx,
         cumHaz3diff += Del* exp(gsl_vector_get(lambda3, j)) * exp(gsl_vector_get(xbeta3, i)+gsl_vector_get(V3, jj));
     }
     
-    
-    
-    /*
-     printf("ch1 = %.3f\n", cumHaz1);
-     printf("ch2 = %.3f\n", cumHaz2);
-     printf("ch3 = %.3f\n", cumHaz3diff);
-     
-     */
-    
-    
     wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
     
     return wVal;
@@ -2514,15 +2699,13 @@ void BweibDpCorScrSM_logMLH(gsl_vector *beta1,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, jj;
     
     for(i = 0; i < n; i++)
     {
-        
-        
         gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
         gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
         gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
@@ -2606,8 +2789,8 @@ void BweibDpCorScrSM_logMLH_i(int i,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-
-
+    
+    
     
     int jj;
     
@@ -2694,7 +2877,7 @@ void BweibDpCorScrSM_logLH(gsl_vector *beta1,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, jj;
@@ -2782,8 +2965,8 @@ void BweibDpCorScrSM_logLH_i(int i,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-
-
+    
+    
     
     int jj;
     
@@ -2980,7 +3163,7 @@ void BweibDpCorScr_logLH(gsl_vector *beta1,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, jj;
@@ -3067,8 +3250,8 @@ void BweibDpCorScr_logLH_i(int i,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-
-
+    
+    
     
     int jj;
     
@@ -3152,7 +3335,7 @@ void BweibDpCorScr_logMLH(gsl_vector *beta1,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, jj;
@@ -3237,8 +3420,8 @@ void BweibDpCorScr_logMLH_i(int i,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-
-
+    
+    
     
     int jj;
     
@@ -3591,14 +3774,12 @@ void BweibMvnCorScrSM_logMLH(gsl_vector *beta1,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-
     int n = survTime1 -> size;
     
     int i, jj;
     
     for(i = 0; i < n; i++)
     {
-        
         gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
         gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
         gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
@@ -3678,12 +3859,7 @@ void BweibMvnCorScrSM_logMLH_i(int i,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-
-
-    
     int jj;
-    
-    
     
     gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
     gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
@@ -3761,7 +3937,7 @@ void BweibMvnCorScrSM_logLH(gsl_vector *beta1,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, jj;
@@ -3849,8 +4025,8 @@ void BweibMvnCorScrSM_logLH_i(int i,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-
-
+    
+    
     
     int jj;
     
@@ -4038,7 +4214,7 @@ void BweibMvnCorScr_logLH(gsl_vector *beta1,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, jj;
@@ -4125,9 +4301,6 @@ void BweibMvnCorScr_logLH_i(int i,
     double gam, LP1, LP2, LP3;
     double logLH = 0;
     
-
-
-    
     int jj;
     
     gam = gsl_vector_get(gamma, i);
@@ -4213,7 +4386,7 @@ void BweibMvnCorScr_logMLH(gsl_vector *beta1,
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
     
-
+    
     int n = survTime1 -> size;
     
     int i, jj;
@@ -4263,6 +4436,7 @@ void BweibMvnCorScr_logMLH(gsl_vector *beta1,
 
 
 
+
 /* evaluating log-likelihood function for subject i */
 
 /**/
@@ -4295,9 +4469,6 @@ void BweibMvnCorScr_logMLH_i(int i,
 {
     double gfunc, LP1, LP2, LP3;
     double logLH = 0;
-    
-
-
     
     int jj;
     
@@ -4507,35 +4678,35 @@ double BweibMvnCorScr_wFunc_old(int subjInx,
  Density calculation for a multivariate normal distribution
  */
 void c_dmvnorm2(gsl_vector *x,
-               gsl_vector *mu,
-               double     sigma,
-               gsl_matrix *AInv,
-               double     *value)
+                gsl_vector *mu,
+                double     sigma,
+                gsl_matrix *AInv,
+                double     *value)
 {
     int signum, K = x->size;
-	double sigmaSqInv = pow(sigma, -2);
+    double sigmaSqInv = pow(sigma, -2);
     
     gsl_vector *diff       = gsl_vector_alloc(K);
-	gsl_matrix *SigmaInv   = gsl_matrix_alloc(K, K);
+    gsl_matrix *SigmaInv   = gsl_matrix_alloc(K, K);
     gsl_matrix *SigmaInvLU = gsl_matrix_alloc(K, K);
     gsl_permutation *p     = gsl_permutation_alloc(K);
     
-	gsl_vector_memcpy(diff, x);
-	gsl_vector_sub(diff, mu);
+    gsl_vector_memcpy(diff, x);
+    gsl_vector_sub(diff, mu);
     
-	gsl_matrix_memcpy(SigmaInv, AInv);
-	gsl_matrix_scale(SigmaInv, sigmaSqInv);
+    gsl_matrix_memcpy(SigmaInv, AInv);
+    gsl_matrix_scale(SigmaInv, sigmaSqInv);
     gsl_matrix_memcpy(SigmaInvLU, SigmaInv);
     gsl_linalg_LU_decomp(SigmaInvLU, p, &signum);
     
-	c_quadform_vMv(diff, SigmaInv, value);
+    c_quadform_vMv(diff, SigmaInv, value);
     
     *value = (log(gsl_linalg_LU_det(SigmaInvLU, signum)) - log(pow(2*Pi, K)) - *value) / 2;
     
-	gsl_vector_free(diff);
-	gsl_matrix_free(SigmaInv);
-	gsl_matrix_free(SigmaInvLU);
-	gsl_permutation_free(p);
+    gsl_vector_free(diff);
+    gsl_matrix_free(SigmaInv);
+    gsl_matrix_free(SigmaInvLU);
+    gsl_permutation_free(p);
     return;
 }
 
@@ -4565,20 +4736,20 @@ void c_dmvnorm2(gsl_vector *x,
  Evaluate w(y1, y2) function
  */
 double Bscr_wFunc(int subjInx,
-             gsl_vector *xbeta1,
-             gsl_vector *xbeta2,
-             gsl_vector *xbeta3,
-             gsl_vector *lambda1,
-             gsl_vector *lambda2,
-             gsl_vector *lambda3,
-             gsl_vector *s1,
-             gsl_vector *s2,
-             gsl_vector *s3,
-             int J1,
-             int J2,
-             int J3,
-             gsl_vector *survTime1,
-             gsl_vector *survTime2)
+                  gsl_vector *xbeta1,
+                  gsl_vector *xbeta2,
+                  gsl_vector *xbeta3,
+                  gsl_vector *lambda1,
+                  gsl_vector *lambda2,
+                  gsl_vector *lambda3,
+                  gsl_vector *s1,
+                  gsl_vector *s2,
+                  gsl_vector *s3,
+                  int J1,
+                  int J2,
+                  int J3,
+                  gsl_vector *survTime1,
+                  gsl_vector *survTime2)
 {
     int i = subjInx;
     double cumHaz1, cumHaz2, cumHaz3diff;
@@ -4625,7 +4796,7 @@ double Bscr_wFunc(int subjInx,
         }
         cumHaz3diff += Del* exp(gsl_vector_get(lambda3, j)) * exp(gsl_vector_get(xbeta3, i));
     }
-        
+    
     wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
     
     return wVal;
@@ -4700,7 +4871,7 @@ double BscrSM_wFunc(int subjInx,
         }
         cumHaz3diff += Del* exp(gsl_vector_get(lambda3, j)) * exp(gsl_vector_get(xbeta3, i));
     }
-        
+    
     wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
     
     return wVal;
@@ -4758,20 +4929,20 @@ double BweibScr_wFunc(int subjInx,
  Evaluate w(y1, y2) function
  */
 double BweibScrSM_wFunc(int subjInx,
-                      gsl_vector *beta1,
-                      gsl_vector *beta2,
-                      gsl_vector *beta3,
-                      double alpha1,
-                      double alpha2,
-                      double alpha3,
-                      double kappa1,
-                      double kappa2,
-                      double kappa3,
-                      gsl_vector *survTime1,
-                      gsl_vector *yStar,
-                      gsl_matrix *survCov1,
-                      gsl_matrix *survCov2,
-                      gsl_matrix *survCov3)
+                        gsl_vector *beta1,
+                        gsl_vector *beta2,
+                        gsl_vector *beta3,
+                        double alpha1,
+                        double alpha2,
+                        double alpha3,
+                        double kappa1,
+                        double kappa2,
+                        double kappa3,
+                        gsl_vector *survTime1,
+                        gsl_vector *yStar,
+                        gsl_matrix *survCov1,
+                        gsl_matrix *survCov2,
+                        gsl_matrix *survCov3)
 {
     int i = subjInx;
     double LP1, LP2, LP3, cumHaz1, cumHaz2, cumHaz3diff;
@@ -4829,7 +5000,7 @@ void cal_Sigma(gsl_matrix *Sigma_lam,
         
         gsl_matrix_set(&Sigma_lam_sub.matrix, 0, 0, gsl_matrix_get(&Q_sub.matrix, 0, 0));
         gsl_matrix_set(&invSigma_lam_sub.matrix, 0, 0, 1/gsl_matrix_get(&Sigma_lam_sub.matrix, 0, 0));
-
+        
     }
     
     if(J+1 ==2)
@@ -5049,31 +5220,31 @@ void c_dmvnorm(gsl_vector *x,
                double     *value)
 {
     int signum, K = x->size;
-	double sigmaSqInv = pow(sigma, -2);
+    double sigmaSqInv = pow(sigma, -2);
     
-	gsl_vector *muVec      = gsl_vector_alloc(K);
+    gsl_vector *muVec      = gsl_vector_alloc(K);
     gsl_vector *diff       = gsl_vector_alloc(K);
-	gsl_matrix *SigmaInv   = gsl_matrix_alloc(K, K);
+    gsl_matrix *SigmaInv   = gsl_matrix_alloc(K, K);
     gsl_matrix *SigmaInvLU = gsl_matrix_alloc(K, K);
     gsl_permutation *p     = gsl_permutation_alloc(K);
     
-	gsl_vector_set_all(muVec, mu);
-	gsl_vector_memcpy(diff, x);
-	gsl_vector_sub(diff, muVec);
+    gsl_vector_set_all(muVec, mu);
+    gsl_vector_memcpy(diff, x);
+    gsl_vector_sub(diff, muVec);
     
-	gsl_matrix_memcpy(SigmaInv, AInv);
-	gsl_matrix_scale(SigmaInv, sigmaSqInv);
+    gsl_matrix_memcpy(SigmaInv, AInv);
+    gsl_matrix_scale(SigmaInv, sigmaSqInv);
     gsl_matrix_memcpy(SigmaInvLU, SigmaInv);
     gsl_linalg_LU_decomp(SigmaInvLU, p, &signum);
     
-	c_quadform_vMv(diff, SigmaInv, value);
-	*value = (log(gsl_linalg_LU_det(SigmaInvLU, signum)) - log(pow(2*Pi, K)) - *value) / 2;
+    c_quadform_vMv(diff, SigmaInv, value);
+    *value = (log(gsl_linalg_LU_det(SigmaInvLU, signum)) - log(pow(2*Pi, K)) - *value) / 2;
     
-	gsl_vector_free(muVec);
-	gsl_vector_free(diff);
-	gsl_matrix_free(SigmaInv);
-	gsl_matrix_free(SigmaInvLU);
-	gsl_permutation_free(p);
+    gsl_vector_free(muVec);
+    gsl_vector_free(diff);
+    gsl_matrix_free(SigmaInv);
+    gsl_matrix_free(SigmaInvLU);
+    gsl_permutation_free(p);
     return;
 }
 
@@ -5085,7 +5256,7 @@ void c_dmvnorm(gsl_vector *x,
 void matrixInv(gsl_matrix *X, gsl_matrix *Xinv)
 {
     int signum;
-	int d = X->size1;
+    int d = X->size1;
     gsl_matrix      *XLU = gsl_matrix_calloc(d, d);
     gsl_permutation *p   = gsl_permutation_alloc(d);
     
@@ -5105,7 +5276,7 @@ void matrixInv(gsl_matrix *X, gsl_matrix *Xinv)
 void c_colSums(gsl_matrix *X, gsl_vector *v)
 {
     int numCol = X->size2;
-    int numRow = X->size1;    
+    int numRow = X->size1;
     int i, j;
     double sum = 0;
     for(j = 0; j < numCol; j++)
@@ -5129,7 +5300,7 @@ void c_colSums(gsl_matrix *X, gsl_vector *v)
 void c_rowSums(gsl_matrix *X, gsl_vector *v)
 {
     int numCol = X->size2;
-    int numRow = X->size1;    
+    int numRow = X->size1;
     int i, j;
     double sum = 0;
     for(i = 0; i < numRow; i++)
@@ -5220,7 +5391,7 @@ void c_solve(gsl_matrix *M,
              gsl_matrix *Minv)
 {
     int signum;
-	int d = M->size1;
+    int d = M->size1;
     gsl_matrix      *MLU = gsl_matrix_calloc(d, d);
     gsl_permutation *p   = gsl_permutation_alloc(d);
     
@@ -6405,6 +6576,1986 @@ double fmixTN(double y,
 
 
 
+void BweibMvnCorScr_logMLH_DIC(double survData[],
+                               int *n,
+                               int *p1,
+                               int *p2,
+                               int *p3,
+                               int *J,
+                               double be1[],
+                               double be2[],
+                               double be3[],
+                               double *alp1,
+                               double *alp2,
+                               double *alp3,
+                               double *kap1,
+                               double *kap2,
+                               double *kap3,
+                               double *thet,
+                               double V_1[],
+                               double V_2[],
+                               double V_3[],
+                               double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    int i, j, jj;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    gsl_vector *cluster      = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+        gsl_vector_set(cluster, i, survData[(4* *n) + i]);
+    }
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((5+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((5+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((5+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    double alpha1 = *alp1;
+    double alpha2 = *alp2;
+    double alpha3 = *alp3;
+    double kappa1 = *kap1;
+    double kappa2 = *kap2;
+    double kappa3 = *kap3;
+    double theta  = *thet;
+    
+    gsl_vector *V1 = gsl_vector_calloc(*J);
+    gsl_vector *V2 = gsl_vector_calloc(*J);
+    gsl_vector *V3 = gsl_vector_calloc(*J);
+    
+    for(j = 0; j < *J; j++)
+    {
+        gsl_vector_set(V1, j, V_1[j]);
+        gsl_vector_set(V2, j, V_2[j]);
+        gsl_vector_set(V3, j, V_3[j]);
+    }
+    
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+        gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+        gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+        gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+        gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+        gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+        
+        jj = (int) gsl_vector_get(cluster, i) - 1;
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+            logLH += LP1;
+            logLH += gsl_vector_get(V1, jj);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP2;
+            logLH += gsl_vector_get(V2, jj);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP3;
+            logLH += gsl_vector_get(V3, jj);
+        }
+        gfunc = BweibMvnCorScr_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, V1, V2, V3, survTime1, survTime2, cluster, survCov1, survCov2, survCov3);
+        
+        logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    return;
+}
+
+
+
+
+
+void BweibMvnCorScrSM_logMLH_DIC(double survData[],
+                                 int *n,
+                                 int *p1,
+                                 int *p2,
+                                 int *p3,
+                                 int *J,
+                                 double be1[],
+                                 double be2[],
+                                 double be3[],
+                                 double *alp1,
+                                 double *alp2,
+                                 double *alp3,
+                                 double *kap1,
+                                 double *kap2,
+                                 double *kap3,
+                                 double *thet,
+                                 double V_1[],
+                                 double V_2[],
+                                 double V_3[],
+                                 double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    int i, j, jj;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    gsl_vector *cluster      = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+        gsl_vector_set(cluster, i, survData[(4* *n) + i]);
+    }
+    
+    gsl_vector *yStar = gsl_vector_calloc(*n);
+    gsl_vector_memcpy(yStar, survTime2);
+    gsl_vector_sub(yStar, survTime1);
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((5+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((5+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((5+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    double alpha1 = *alp1;
+    double alpha2 = *alp2;
+    double alpha3 = *alp3;
+    double kappa1 = *kap1;
+    double kappa2 = *kap2;
+    double kappa3 = *kap3;
+    double theta  = *thet;
+    
+    gsl_vector *V1 = gsl_vector_calloc(*J);
+    gsl_vector *V2 = gsl_vector_calloc(*J);
+    gsl_vector *V3 = gsl_vector_calloc(*J);
+    
+    for(j = 0; j < *J; j++)
+    {
+        gsl_vector_set(V1, j, V_1[j]);
+        gsl_vector_set(V2, j, V_2[j]);
+        gsl_vector_set(V3, j, V_3[j]);
+    }
+    
+    for(i = 0; i < *n; i++)
+    {
+        
+        gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+        gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+        gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+        gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+        gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+        gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+        
+        jj = (int) gsl_vector_get(cluster, i) - 1;
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+            logLH += LP1;
+            logLH += gsl_vector_get(V1, jj);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP2;
+            logLH += gsl_vector_get(V2, jj);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1 && gsl_vector_get(yStar, i) != 0)
+        {
+            logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(yStar, i));
+            logLH += LP3;
+            logLH += gsl_vector_get(V3, jj);
+        }
+        gfunc = BweibMvnCorScrSM_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, V1, V2, V3, survTime1, yStar, cluster, survCov1, survCov2, survCov3);
+        
+        logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    return;
+}
+
+
+
+
+void BweibDpCorScr_logMLH_DIC(double survData[],
+                              int *n,
+                              int *p1,
+                              int *p2,
+                              int *p3,
+                              int *J,
+                              double be1[],
+                              double be2[],
+                              double be3[],
+                              double *alp1,
+                              double *alp2,
+                              double *alp3,
+                              double *kap1,
+                              double *kap2,
+                              double *kap3,
+                              double *thet,
+                              double V_1[],
+                              double V_2[],
+                              double V_3[],
+                              double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    int i, j, jj;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    gsl_vector *cluster      = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+        gsl_vector_set(cluster, i, survData[(4* *n) + i]);
+    }
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((5+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((5+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((5+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    double alpha1 = *alp1;
+    double alpha2 = *alp2;
+    double alpha3 = *alp3;
+    double kappa1 = *kap1;
+    double kappa2 = *kap2;
+    double kappa3 = *kap3;
+    double theta  = *thet;
+    
+    gsl_vector *V1 = gsl_vector_calloc(*J);
+    gsl_vector *V2 = gsl_vector_calloc(*J);
+    gsl_vector *V3 = gsl_vector_calloc(*J);
+    
+    for(j = 0; j < *J; j++)
+    {
+        gsl_vector_set(V1, j, V_1[j]);
+        gsl_vector_set(V2, j, V_2[j]);
+        gsl_vector_set(V3, j, V_3[j]);
+    }
+    
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+        gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+        gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+        gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+        gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+        gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+        
+        jj = (int) gsl_vector_get(cluster, i) - 1;
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+            logLH += LP1;
+            logLH += gsl_vector_get(V1, jj);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP2;
+            logLH += gsl_vector_get(V2, jj);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP3;
+            logLH += gsl_vector_get(V3, jj);
+        }
+        gfunc = BweibDpCorScr_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, V1, V2, V3, survTime1, survTime2, cluster, survCov1, survCov2, survCov3);
+        
+        logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+
+void BweibDpCorScrSM_logMLH_DIC(double survData[],
+                                int *n,
+                                int *p1,
+                                int *p2,
+                                int *p3,
+                                int *J,
+                                double be1[],
+                                double be2[],
+                                double be3[],
+                                double *alp1,
+                                double *alp2,
+                                double *alp3,
+                                double *kap1,
+                                double *kap2,
+                                double *kap3,
+                                double *thet,
+                                double V_1[],
+                                double V_2[],
+                                double V_3[],
+                                double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    int i, j, jj;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    gsl_vector *cluster      = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+        gsl_vector_set(cluster, i, survData[(4* *n) + i]);
+    }
+    
+    gsl_vector *yStar = gsl_vector_calloc(*n);
+    gsl_vector_memcpy(yStar, survTime2);
+    gsl_vector_sub(yStar, survTime1);
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((5+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((5+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((5+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    double alpha1 = *alp1;
+    double alpha2 = *alp2;
+    double alpha3 = *alp3;
+    double kappa1 = *kap1;
+    double kappa2 = *kap2;
+    double kappa3 = *kap3;
+    double theta  = *thet;
+    
+    gsl_vector *V1 = gsl_vector_calloc(*J);
+    gsl_vector *V2 = gsl_vector_calloc(*J);
+    gsl_vector *V3 = gsl_vector_calloc(*J);
+    
+    for(j = 0; j < *J; j++)
+    {
+        gsl_vector_set(V1, j, V_1[j]);
+        gsl_vector_set(V2, j, V_2[j]);
+        gsl_vector_set(V3, j, V_3[j]);
+    }
+    
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+        gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+        gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+        gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+        gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+        gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+        
+        jj = (int) gsl_vector_get(cluster, i) - 1;
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+            
+            logLH += LP1;
+            logLH += gsl_vector_get(V1, jj);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+            
+            logLH += LP2;
+            logLH += gsl_vector_get(V2, jj);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1 && gsl_vector_get(yStar, i) != 0)
+        {
+            logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(yStar, i));
+            
+            logLH += LP3;
+            logLH += gsl_vector_get(V3, jj);
+        }
+        
+        gfunc = BweibDpCorScrSM_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, V1, V2, V3, survTime1, yStar, cluster, survCov1, survCov2, survCov3);
+        
+        logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+
+
+void BpeMvnCorScr_logMLH_DIC(double survData[],
+                             int *n,
+                             int *p1,
+                             int *p2,
+                             int *p3,
+                             int *J,
+                             double be1[],
+                             double be2[],
+                             double be3[],
+                             double *thet,
+                             double lam1[],
+                             double lam2[],
+                             double lam3[],
+                             double s_1[],
+                             double s_2[],
+                             double s_3[],
+                             double V_1[],
+                             double V_2[],
+                             double V_3[],
+                             int *K_1,
+                             int *K_2,
+                             int *K_3,
+                             double *val)
+{
+    int i, j, jj;
+    
+    double gfunc;
+    double logLH = 0;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    gsl_vector *cluster      = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+        gsl_vector_set(cluster, i, survData[(4* *n) + i]);
+    }
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((5+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((5+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((5+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    int K1              = *K_1;
+    int K2              = *K_2;
+    int K3              = *K_3;
+    double theta        = *thet;
+    
+    gsl_vector *xbeta1 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta2 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta3 = gsl_vector_calloc(*n);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov1, beta1, 0, xbeta1);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov2, beta2, 0, xbeta2);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov3, beta3, 0, xbeta3);
+    
+    gsl_vector *V1 = gsl_vector_calloc(*J);
+    gsl_vector *V2 = gsl_vector_calloc(*J);
+    gsl_vector *V3 = gsl_vector_calloc(*J);
+    
+    for(j = 0; j < *J; j++)
+    {
+        gsl_vector_set(V1, j, V_1[j]);
+        gsl_vector_set(V2, j, V_2[j]);
+        gsl_vector_set(V3, j, V_3[j]);
+    }
+    
+    gsl_vector *lambda1  = gsl_vector_calloc(K1+1);
+    gsl_vector *lambda2  = gsl_vector_calloc(K2+1);
+    gsl_vector *lambda3  = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(lambda1, j, lam1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(lambda2, j, lam2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(lambda3, j, lam3[j]);
+    
+    gsl_vector *s1       = gsl_vector_calloc(K1+1);
+    gsl_vector *s2       = gsl_vector_calloc(K2+1);
+    gsl_vector *s3       = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(s1, j, s_1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(s2, j, s_2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(s3, j, s_3[j]);
+    
+    for(i = 0; i < *n; i++)
+    {
+        jj = (int) gsl_vector_get(cluster, i) - 1;
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            for(j = 0; j < K1+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta1, i);
+            logLH += gsl_vector_get(V1, jj);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            for(j = 0; j < K2+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta2, i);
+            logLH += gsl_vector_get(V2, jj);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            for(j = 0; j < K3+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, 0))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, j))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta3, i);
+            logLH += gsl_vector_get(V3, jj);
+        }
+        gfunc = BpeMvnCorScr_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, jj, V1, V2, V3, s1, s2, s3, K1, K2, K3, survTime1, survTime2);
+        
+        logLH +=  (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+}
+
+
+
+
+
+void BpeMvnCorScrSM_logMLH_DIC(double survData[],
+                               int *n,
+                               int *p1,
+                               int *p2,
+                               int *p3,
+                               int *J,
+                               double be1[],
+                               double be2[],
+                               double be3[],
+                               double *thet,
+                               double lam1[],
+                               double lam2[],
+                               double lam3[],
+                               double s_1[],
+                               double s_2[],
+                               double s_3[],
+                               double V_1[],
+                               double V_2[],
+                               double V_3[],
+                               int *K_1,
+                               int *K_2,
+                               int *K_3,
+                               double *val)
+{
+    int i, j, jj;
+    
+    double gfunc;
+    double logLH = 0;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    gsl_vector *cluster      = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+        gsl_vector_set(cluster, i, survData[(4* *n) + i]);
+    }
+    
+    gsl_vector *yStar = gsl_vector_calloc(*n);
+    gsl_vector_memcpy(yStar, survTime2);
+    gsl_vector_sub(yStar, survTime1);
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((5+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((5+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((5+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    int K1              = *K_1;
+    int K2              = *K_2;
+    int K3              = *K_3;
+    double theta        = *thet;
+    
+    gsl_vector *xbeta1 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta2 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta3 = gsl_vector_calloc(*n);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov1, beta1, 0, xbeta1);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov2, beta2, 0, xbeta2);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov3, beta3, 0, xbeta3);
+    
+    
+    gsl_vector *V1 = gsl_vector_calloc(*J);
+    gsl_vector *V2 = gsl_vector_calloc(*J);
+    gsl_vector *V3 = gsl_vector_calloc(*J);
+    
+    for(j = 0; j < *J; j++)
+    {
+        gsl_vector_set(V1, j, V_1[j]);
+        gsl_vector_set(V2, j, V_2[j]);
+        gsl_vector_set(V3, j, V_3[j]);
+    }
+    
+    gsl_vector *lambda1  = gsl_vector_calloc(K1+1);
+    gsl_vector *lambda2  = gsl_vector_calloc(K2+1);
+    gsl_vector *lambda3  = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(lambda1, j, lam1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(lambda2, j, lam2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(lambda3, j, lam3[j]);
+    
+    gsl_vector *s1       = gsl_vector_calloc(K1+1);
+    gsl_vector *s2       = gsl_vector_calloc(K2+1);
+    gsl_vector *s3       = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(s1, j, s_1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(s2, j, s_2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(s3, j, s_3[j]);
+    
+    
+    for(i = 0; i < *n; i++)
+    {
+        jj = (int) gsl_vector_get(cluster, i) - 1;
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            for(j = 0; j < K1+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta1, i);
+            logLH += gsl_vector_get(V1, jj);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            for(j = 0; j < K2+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta2, i);
+            logLH += gsl_vector_get(V2, jj);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            for(j = 0; j < K3+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, 0))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+                if(j != 0 && gsl_vector_get(yStar, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, j))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta3, i);
+            logLH += gsl_vector_get(V3, jj);
+        }
+        gfunc = BpeMvnCorScrSM_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, jj, V1, V2, V3, s1, s2, s3, K1, K2, K3, survTime1, yStar);
+        
+        logLH +=  (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+
+
+
+void BpeDpCorScr_logMLH_DIC(double survData[],
+                            int *n,
+                            int *p1,
+                            int *p2,
+                            int *p3,
+                            int *J,
+                            double be1[],
+                            double be2[],
+                            double be3[],
+                            double *thet,
+                            double lam1[],
+                            double lam2[],
+                            double lam3[],
+                            double s_1[],
+                            double s_2[],
+                            double s_3[],
+                            double V_1[],
+                            double V_2[],
+                            double V_3[],
+                            int *K_1,
+                            int *K_2,
+                            int *K_3,
+                            double *val)
+{
+    int i, j, jj;
+    
+    double gfunc;
+    double logLH = 0;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    gsl_vector *cluster      = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+        gsl_vector_set(cluster, i, survData[(4* *n) + i]);
+    }
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((5+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((5+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((5+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    int K1              = *K_1;
+    int K2              = *K_2;
+    int K3              = *K_3;
+    double theta        = *thet;
+    
+    gsl_vector *xbeta1 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta2 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta3 = gsl_vector_calloc(*n);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov1, beta1, 0, xbeta1);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov2, beta2, 0, xbeta2);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov3, beta3, 0, xbeta3);
+    
+    gsl_vector *V1 = gsl_vector_calloc(*J);
+    gsl_vector *V2 = gsl_vector_calloc(*J);
+    gsl_vector *V3 = gsl_vector_calloc(*J);
+    
+    for(j = 0; j < *J; j++)
+    {
+        gsl_vector_set(V1, j, V_1[j]);
+        gsl_vector_set(V2, j, V_2[j]);
+        gsl_vector_set(V3, j, V_3[j]);
+    }
+    
+    gsl_vector *lambda1  = gsl_vector_calloc(K1+1);
+    gsl_vector *lambda2  = gsl_vector_calloc(K2+1);
+    gsl_vector *lambda3  = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(lambda1, j, lam1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(lambda2, j, lam2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(lambda3, j, lam3[j]);
+    
+    gsl_vector *s1       = gsl_vector_calloc(K1+1);
+    gsl_vector *s2       = gsl_vector_calloc(K2+1);
+    gsl_vector *s3       = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(s1, j, s_1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(s2, j, s_2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(s3, j, s_3[j]);
+    
+    for(i = 0; i < *n; i++)
+    {
+        jj = (int) gsl_vector_get(cluster, i) - 1;
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            for(j = 0; j < K1+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta1, i);
+            logLH += gsl_vector_get(V1, jj);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            for(j = 0; j < K2+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta2, i);
+            logLH += gsl_vector_get(V2, jj);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            for(j = 0; j < K3+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, 0))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, j))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta3, i);
+            logLH += gsl_vector_get(V3, jj);
+        }
+        gfunc = BpeMvnCorScr_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, jj, V1, V2, V3, s1, s2, s3, K1, K2, K3, survTime1, survTime2);
+        
+        logLH +=  (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+
+
+void BpeDpCorScrSM_logMLH_DIC(double survData[],
+                              int *n,
+                              int *p1,
+                              int *p2,
+                              int *p3,
+                              int *J,
+                              double be1[],
+                              double be2[],
+                              double be3[],
+                              double *thet,
+                              double lam1[],
+                              double lam2[],
+                              double lam3[],
+                              double s_1[],
+                              double s_2[],
+                              double s_3[],
+                              double V_1[],
+                              double V_2[],
+                              double V_3[],
+                              int *K_1,
+                              int *K_2,
+                              int *K_3,
+                              double *val)
+{
+    int i, j, jj;
+    
+    double gfunc;
+    double logLH = 0;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    gsl_vector *cluster      = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+        gsl_vector_set(cluster, i, survData[(4* *n) + i]);
+    }
+    
+    gsl_vector *yStar = gsl_vector_calloc(*n);
+    gsl_vector_memcpy(yStar, survTime2);
+    gsl_vector_sub(yStar, survTime1);
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((5+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((5+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((5+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    int K1              = *K_1;
+    int K2              = *K_2;
+    int K3              = *K_3;
+    double theta        = *thet;
+    
+    gsl_vector *xbeta1 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta2 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta3 = gsl_vector_calloc(*n);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov1, beta1, 0, xbeta1);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov2, beta2, 0, xbeta2);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov3, beta3, 0, xbeta3);
+    
+    
+    gsl_vector *V1 = gsl_vector_calloc(*J);
+    gsl_vector *V2 = gsl_vector_calloc(*J);
+    gsl_vector *V3 = gsl_vector_calloc(*J);
+    
+    for(j = 0; j < *J; j++)
+    {
+        gsl_vector_set(V1, j, V_1[j]);
+        gsl_vector_set(V2, j, V_2[j]);
+        gsl_vector_set(V3, j, V_3[j]);
+    }
+    
+    gsl_vector *lambda1  = gsl_vector_calloc(K1+1);
+    gsl_vector *lambda2  = gsl_vector_calloc(K2+1);
+    gsl_vector *lambda3  = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(lambda1, j, lam1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(lambda2, j, lam2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(lambda3, j, lam3[j]);
+    
+    gsl_vector *s1       = gsl_vector_calloc(K1+1);
+    gsl_vector *s2       = gsl_vector_calloc(K2+1);
+    gsl_vector *s3       = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(s1, j, s_1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(s2, j, s_2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(s3, j, s_3[j]);
+    
+    
+    for(i = 0; i < *n; i++)
+    {
+        jj = (int) gsl_vector_get(cluster, i) - 1;
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            for(j = 0; j < K1+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta1, i);
+            logLH += gsl_vector_get(V1, jj);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            for(j = 0; j < K2+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta2, i);
+            logLH += gsl_vector_get(V2, jj);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            for(j = 0; j < K3+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, 0))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+                if(j != 0 && gsl_vector_get(yStar, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, j))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta3, i);
+            logLH += gsl_vector_get(V3, jj);
+        }
+        gfunc = BpeMvnCorScrSM_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, jj, V1, V2, V3, s1, s2, s3, K1, K2, K3, survTime1, yStar);
+        
+        logLH +=  (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+
+
+
+
+void BweibScr_logMLH(gsl_vector *beta1,
+                     gsl_vector *beta2,
+                     gsl_vector *beta3,
+                     double alpha1,
+                     double alpha2,
+                     double alpha3,
+                     double kappa1,
+                     double kappa2,
+                     double kappa3,
+                     double theta,
+                     gsl_vector *survTime1,
+                     gsl_vector *survTime2,
+                     gsl_vector *survEvent1,
+                     gsl_vector *survEvent2,
+                     gsl_vector *case01,
+                     gsl_vector *case11,
+                     gsl_matrix *survCov1,
+                     gsl_matrix *survCov2,
+                     gsl_matrix *survCov3,
+                     double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    int n = survTime1 -> size;
+    
+    int i;
+    
+    for(i = 0; i < n; i++)
+    {
+        gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+        gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+        gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+        gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+        gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+        gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+            logLH += LP1;
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP2;
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP3;
+        }
+        gfunc = BweibScr_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, survTime1, survTime2, survCov1, survCov2, survCov3);
+        
+        logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    return;
+}
+
+double BweibScr_wFunc_old(int subjInx,
+                          gsl_vector *beta1,
+                          gsl_vector *beta2,
+                          gsl_vector *beta3,
+                          double alpha1,
+                          double alpha2,
+                          double alpha3,
+                          double kappa1,
+                          double kappa2,
+                          double kappa3,
+                          gsl_vector *survTime1,
+                          gsl_vector *survTime2,
+                          gsl_matrix *survCov1,
+                          gsl_matrix *survCov2,
+                          gsl_matrix *survCov3)
+{
+    int i = subjInx;
+    double LP1, LP2, LP3, cumHaz1, cumHaz2, cumHaz3diff;
+    double wVal;
+    
+    gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+    gsl_blas_ddot(&Xi1.vector, beta1 ,&LP1);
+    
+    gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+    gsl_blas_ddot(&Xi2.vector, beta2 ,&LP2);
+    
+    gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+    gsl_blas_ddot(&Xi3.vector, beta3 ,&LP3);
+    
+    cumHaz1     = kappa1 * pow(gsl_vector_get(survTime1, i), alpha1) * exp(LP1);
+    cumHaz2     = kappa2 * pow(gsl_vector_get(survTime1, i), alpha2) * exp(LP2);
+    cumHaz3diff = kappa3 * (pow(gsl_vector_get(survTime2, i), alpha3)-pow(gsl_vector_get(survTime1, i), alpha3)) * exp(LP3);
+    
+    wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
+    
+    return wVal;
+}
+
+
+void BweibScr_logMLH_i(int i,
+                       gsl_vector *beta1,
+                       gsl_vector *beta2,
+                       gsl_vector *beta3,
+                       double alpha1,
+                       double alpha2,
+                       double alpha3,
+                       double kappa1,
+                       double kappa2,
+                       double kappa3,
+                       double theta,
+                       gsl_vector *survTime1,
+                       gsl_vector *survTime2,
+                       gsl_vector *survEvent1,
+                       gsl_vector *survEvent2,
+                       gsl_vector *case01,
+                       gsl_vector *case11,
+                       gsl_matrix *survCov1,
+                       gsl_matrix *survCov2,
+                       gsl_matrix *survCov3,
+                       double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+    gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+    gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+    gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+    gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+    gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+    
+    if(gsl_vector_get(survEvent1, i) == 1)
+    {
+        logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+        logLH += LP1;
+    }
+    
+    if(gsl_vector_get(case01, i) ==  1)
+    {
+        logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+        logLH += LP2;
+    }
+    
+    if(gsl_vector_get(case11, i) == 1)
+    {
+        logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(survTime2, i));
+        logLH += LP3;
+    }
+    
+    gfunc = BweibScr_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, survTime1, survTime2, survCov1, survCov2, survCov3);
+    
+    logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+
+
+
+void BweibScr_logMLH_DIC(double survData[],
+                         int *n,
+                         int *p1,
+                         int *p2,
+                         int *p3,
+                         double be1[],
+                         double be2[],
+                         double be3[],
+                         double *alp1,
+                         double *alp2,
+                         double *alp3,
+                         double *kap1,
+                         double *kap2,
+                         double *kap3,
+                         double *thet,
+                         double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    int i, j;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+    }
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((4+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((4+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((4+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    double alpha1 = *alp1;
+    double alpha2 = *alp2;
+    double alpha3 = *alp3;
+    double kappa1 = *kap1;
+    double kappa2 = *kap2;
+    double kappa3 = *kap3;
+    double theta  = *thet;
+    
+    
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+        gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+        gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+        gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+        gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+        gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+        
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+            logLH += LP1;
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP2;
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP3;
+        }
+        gfunc = BweibScr_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, survTime1, survTime2, survCov1, survCov2, survCov3);
+        
+        logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    return;
+}
 
 
 
@@ -6416,5 +8567,1296 @@ double fmixTN(double y,
 
 
 
+void BweibScrSM_logMLH_DIC(double survData[],
+                           int *n,
+                           int *p1,
+                           int *p2,
+                           int *p3,
+                           double be1[],
+                           double be2[],
+                           double be3[],
+                           double *alp1,
+                           double *alp2,
+                           double *alp3,
+                           double *kap1,
+                           double *kap2,
+                           double *kap3,
+                           double *thet,
+                           double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    int i, j;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+    }
+    
+    gsl_vector *yStar = gsl_vector_calloc(*n);
+    gsl_vector_memcpy(yStar, survTime2);
+    gsl_vector_sub(yStar, survTime1);
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((4+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((4+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((4+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    double alpha1 = *alp1;
+    double alpha2 = *alp2;
+    double alpha3 = *alp3;
+    double kappa1 = *kap1;
+    double kappa2 = *kap2;
+    double kappa3 = *kap3;
+    double theta  = *thet;
+    
+    
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+        gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+        gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+        gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+        gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+        gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+        
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+            logLH += LP1;
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP2;
+        }
+        
+        if(gsl_vector_get(case11, i) == 1 && gsl_vector_get(yStar, i) != 0)
+        {
+            logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(yStar, i));
+            logLH += LP3;
+        }
+        gfunc = BweibScrSM_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, survTime1, yStar, survCov1, survCov2, survCov3);
+        
+        logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    return;
+}
 
 
+
+
+
+
+double BweibScrSM_wFunc_old(int subjInx,
+                            gsl_vector *beta1,
+                            gsl_vector *beta2,
+                            gsl_vector *beta3,
+                            double alpha1,
+                            double alpha2,
+                            double alpha3,
+                            double kappa1,
+                            double kappa2,
+                            double kappa3,
+                            gsl_vector *survTime1,
+                            gsl_vector *yStar,
+                            gsl_matrix *survCov1,
+                            gsl_matrix *survCov2,
+                            gsl_matrix *survCov3)
+{
+    int i = subjInx;
+    double LP1, LP2, LP3, cumHaz1, cumHaz2, cumHaz3diff;
+    double wVal;
+    
+    gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+    gsl_blas_ddot(&Xi1.vector, beta1 ,&LP1);
+    
+    gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+    gsl_blas_ddot(&Xi2.vector, beta2 ,&LP2);
+    
+    gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+    gsl_blas_ddot(&Xi3.vector, beta3 ,&LP3);
+    
+    cumHaz1     = kappa1 * pow(gsl_vector_get(survTime1, i), alpha1) * exp(LP1);
+    cumHaz2     = kappa2 * pow(gsl_vector_get(survTime1, i), alpha2) * exp(LP2);
+    cumHaz3diff = kappa3 * (pow(gsl_vector_get(yStar, i), alpha3)-pow(gsl_vector_get(survTime1, i), alpha3)) * exp(LP3);
+    
+    wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
+    
+    return wVal;
+}
+
+
+
+
+
+
+void BweibScrSM_logMLH_i(int i,
+                         gsl_vector *beta1,
+                         gsl_vector *beta2,
+                         gsl_vector *beta3,
+                         double alpha1,
+                         double alpha2,
+                         double alpha3,
+                         double kappa1,
+                         double kappa2,
+                         double kappa3,
+                         double theta,
+                         gsl_vector *survTime1,
+                         gsl_vector *survTime2,
+                         gsl_vector *yStar,
+                         gsl_vector *survEvent1,
+                         gsl_vector *survEvent2,
+                         gsl_vector *case01,
+                         gsl_vector *case11,
+                         gsl_matrix *survCov1,
+                         gsl_matrix *survCov2,
+                         gsl_matrix *survCov3,
+                         double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+    gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+    gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+    gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+    gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+    gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+    
+    if(gsl_vector_get(survEvent1, i) == 1)
+    {
+        logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+        logLH += LP1;
+    }
+    
+    if(gsl_vector_get(case01, i) ==  1)
+    {
+        logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+        logLH += LP2;
+    }
+    
+    if(gsl_vector_get(case11, i) == 1 && gsl_vector_get(yStar, i) != 0)
+    {
+        logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(survTime2, i));
+        logLH += LP3;
+    }
+    
+    gfunc = BweibScrSM_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, survTime1, yStar, survCov1, survCov2, survCov3);
+    
+    logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+void BweibScrSM_logMLH(gsl_vector *beta1,
+                       gsl_vector *beta2,
+                       gsl_vector *beta3,
+                       double alpha1,
+                       double alpha2,
+                       double alpha3,
+                       double kappa1,
+                       double kappa2,
+                       double kappa3,
+                       double theta,
+                       gsl_vector *survTime1,
+                       gsl_vector *survTime2,
+                       gsl_vector *yStar,
+                       gsl_vector *survEvent1,
+                       gsl_vector *survEvent2,
+                       gsl_vector *case01,
+                       gsl_vector *case11,
+                       gsl_matrix *survCov1,
+                       gsl_matrix *survCov2,
+                       gsl_matrix *survCov3,
+                       double *val)
+{
+    double gfunc, LP1, LP2, LP3;
+    double logLH = 0;
+    
+    int n = survTime1 -> size;
+    
+    int i;
+    
+    for(i = 0; i < n; i++)
+    {
+        gsl_vector_view Xi1 = gsl_matrix_row(survCov1, i);
+        gsl_blas_ddot(&Xi1.vector, beta1, &LP1);
+        gsl_vector_view Xi2 = gsl_matrix_row(survCov2, i);
+        gsl_blas_ddot(&Xi2.vector, beta2, &LP2);
+        gsl_vector_view Xi3 = gsl_matrix_row(survCov3, i);
+        gsl_blas_ddot(&Xi3.vector, beta3, &LP3);
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            logLH += log(alpha1) + log(kappa1) + (alpha1-1)*log(gsl_vector_get(survTime1, i));
+            logLH += LP1;
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            logLH += log(alpha2) + log(kappa2) + (alpha2-1)*log(gsl_vector_get(survTime2, i));
+            logLH += LP2;
+        }
+        
+        if(gsl_vector_get(case11, i) == 1 && gsl_vector_get(yStar, i) != 0)
+        {
+            logLH += log(alpha3) + log(kappa3) + (alpha3-1)*log(gsl_vector_get(yStar, i));
+            logLH += LP3;
+        }
+        gfunc = BweibScrSM_wFunc_old(i, beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, survTime1, yStar, survCov1, survCov2, survCov3);
+        
+        logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    return;
+}
+
+
+
+
+
+
+
+
+void BpeScr_logMLH_i(int i,
+                     gsl_vector *beta1,
+                     gsl_vector *beta2,
+                     gsl_vector *beta3,
+                     gsl_vector *xbeta1,
+                     gsl_vector *xbeta2,
+                     gsl_vector *xbeta3,
+                     double theta,
+                     gsl_vector *lambda1,
+                     gsl_vector *lambda2,
+                     gsl_vector *lambda3,
+                     gsl_vector *s1,
+                     gsl_vector *s2,
+                     gsl_vector *s3,
+                     gsl_vector *survTime1,
+                     gsl_vector *survTime2,
+                     gsl_vector *survEvent1,
+                     gsl_vector *survEvent2,
+                     gsl_vector *case01,
+                     gsl_vector *case11,
+                     gsl_matrix *survCov1,
+                     gsl_matrix *survCov2,
+                     gsl_matrix *survCov3,
+                     int K1,
+                     int K2,
+                     int K3,
+                     double *val)
+{
+    double gfunc;
+    double logLH = 0;
+    
+    int j;
+    
+    if(gsl_vector_get(survEvent1, i) == 1)
+    {
+        for(j = 0; j < K1+1; j++)
+        {
+            if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+            {
+                logLH += gsl_vector_get(lambda1, j);
+            }
+            if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+            {
+                logLH += gsl_vector_get(lambda1, j);
+            }
+        }
+        
+        logLH += gsl_vector_get(xbeta1, i);
+    }
+    
+    if(gsl_vector_get(case01, i) ==  1)
+    {
+        for(j = 0; j < K2+1; j++)
+        {
+            if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+            {
+                logLH += gsl_vector_get(lambda2, j);
+            }
+            if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+            {
+                logLH += gsl_vector_get(lambda2, j);
+            }
+        }
+        
+        logLH += gsl_vector_get(xbeta2, i);
+    }
+    
+    if(gsl_vector_get(case11, i) == 1)
+    {
+        for(j = 0; j < K3+1; j++)
+        {
+            if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, 0))
+            {
+                logLH += gsl_vector_get(lambda3, j);
+            }
+            if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, j))
+            {
+                logLH += gsl_vector_get(lambda3, j);
+            }
+        }
+        
+        logLH += gsl_vector_get(xbeta3, i);
+    }
+    
+    gfunc = BpeScr_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, s1, s2, s3, K1, K2, K3, survTime1, survTime2);
+    
+    
+    logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+
+double BpeScr_wFunc(int subjInx,
+                    gsl_vector *xbeta1,
+                    gsl_vector *xbeta2,
+                    gsl_vector *xbeta3,
+                    gsl_vector *lambda1,
+                    gsl_vector *lambda2,
+                    gsl_vector *lambda3,
+                    gsl_vector *s1,
+                    gsl_vector *s2,
+                    gsl_vector *s3,
+                    int J1,
+                    int J2,
+                    int J3,
+                    gsl_vector *survTime1,
+                    gsl_vector *survTime2)
+{
+    int i = subjInx;
+    double cumHaz1, cumHaz2, cumHaz3diff;
+    double Del, wVal;
+    int j;
+    
+    cumHaz1 = 0; cumHaz2 = 0; cumHaz3diff = 0;
+    
+    for(j = 0; j < J1+1; j++)
+    {
+        if(j > 0)
+        {
+            Del = c_max(0, (c_min(gsl_vector_get(s1, j), gsl_vector_get(survTime1, i)) - gsl_vector_get(s1, j-1)));
+        }
+        if(j == 0)
+        {
+            Del = c_max(0, c_min(gsl_vector_get(s1, j), gsl_vector_get(survTime1, i)) - 0);
+        }
+        cumHaz1 += Del* exp(gsl_vector_get(lambda1, j)) * exp(gsl_vector_get(xbeta1, i));
+    }
+    
+    for(j = 0; j < J2+1; j++)
+    {
+        if(j > 0)
+        {
+            Del = c_max(0, (c_min(gsl_vector_get(s2, j), gsl_vector_get(survTime1, i)) - gsl_vector_get(s2, j-1)));
+        }
+        if(j == 0)
+        {
+            Del = c_max(0, c_min(gsl_vector_get(s2, j), gsl_vector_get(survTime1, i)) - 0);
+        }
+        cumHaz2 += Del* exp(gsl_vector_get(lambda2, j)) * exp(gsl_vector_get(xbeta2, i));
+    }
+    
+    for(j = 0; j < J3+1; j++)
+    {
+        if(j > 0)
+        {
+            Del = c_max(0, (c_min(gsl_vector_get(s3, j), gsl_vector_get(survTime2, i)) - c_max(gsl_vector_get(s3, j-1), gsl_vector_get(survTime1, i))));
+        }
+        if(j == 0)
+        {
+            Del = c_max(0, (c_min(gsl_vector_get(s3, j), gsl_vector_get(survTime2, i)) - c_max(0, gsl_vector_get(survTime1, i))));
+        }
+        cumHaz3diff += Del* exp(gsl_vector_get(lambda3, j)) * exp(gsl_vector_get(xbeta3, i));
+    }
+    
+    wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
+    
+    return wVal;
+}
+
+
+
+
+
+void BpeScr_logMLH_DIC(double survData[],
+                       int *n,
+                       int *p1,
+                       int *p2,
+                       int *p3,
+                       double be1[],
+                       double be2[],
+                       double be3[],
+                       double *thet,
+                       double lam1[],
+                       double lam2[],
+                       double lam3[],
+                       double s_1[],
+                       double s_2[],
+                       double s_3[],
+                       int *K_1,
+                       int *K_2,
+                       int *K_3,
+                       double *val)
+{
+    int i, j;
+    
+    double gfunc;
+    double logLH = 0;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+    }
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((4+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((4+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((4+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    int K1              = *K_1;
+    int K2              = *K_2;
+    int K3              = *K_3;
+    double theta        = *thet;
+    
+    gsl_vector *xbeta1 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta2 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta3 = gsl_vector_calloc(*n);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov1, beta1, 0, xbeta1);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov2, beta2, 0, xbeta2);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov3, beta3, 0, xbeta3);
+    
+    gsl_vector *lambda1  = gsl_vector_calloc(K1+1);
+    gsl_vector *lambda2  = gsl_vector_calloc(K2+1);
+    gsl_vector *lambda3  = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(lambda1, j, lam1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(lambda2, j, lam2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(lambda3, j, lam3[j]);
+    
+    gsl_vector *s1       = gsl_vector_calloc(K1+1);
+    gsl_vector *s2       = gsl_vector_calloc(K2+1);
+    gsl_vector *s3       = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(s1, j, s_1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(s2, j, s_2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(s3, j, s_3[j]);
+    
+    for(i = 0; i < *n; i++)
+    {
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            for(j = 0; j < K1+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta1, i);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            for(j = 0; j < K2+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta2, i);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            for(j = 0; j < K3+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, 0))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, j))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta3, i);
+        }
+        gfunc = BpeScr_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, s1, s2, s3, K1, K2, K3, survTime1, survTime2);
+        
+        logLH +=  (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+}
+
+
+
+
+void BpeScr_logMLH(gsl_vector *beta1,
+                   gsl_vector *beta2,
+                   gsl_vector *beta3,
+                   gsl_vector *xbeta1,
+                   gsl_vector *xbeta2,
+                   gsl_vector *xbeta3,
+                   double theta,
+                   gsl_vector *lambda1,
+                   gsl_vector *lambda2,
+                   gsl_vector *lambda3,
+                   gsl_vector *s1,
+                   gsl_vector *s2,
+                   gsl_vector *s3,
+                   gsl_vector *survTime1,
+                   gsl_vector *survTime2,
+                   gsl_vector *survEvent1,
+                   gsl_vector *survEvent2,
+                   gsl_vector *case01,
+                   gsl_vector *case11,
+                   gsl_matrix *survCov1,
+                   gsl_matrix *survCov2,
+                   gsl_matrix *survCov3,
+                   int K1,
+                   int K2,
+                   int K3,
+                   double *val)
+{
+    double gfunc;
+    double logLH = 0;
+    
+    int n = survTime1 -> size;
+    
+    int i, j;
+    
+    for(i = 0; i < n; i++)
+    {
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            for(j = 0; j < K1+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta1, i);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            for(j = 0; j < K2+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta2, i);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            for(j = 0; j < K3+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, 0))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s3, j))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta3, i);
+        }
+        gfunc = BpeScr_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, s1, s2, s3, K1, K2, K3, survTime1, survTime2);
+        
+        logLH +=  (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+void BpeScrSM_logMLH(gsl_vector *beta1,
+                     gsl_vector *beta2,
+                     gsl_vector *beta3,
+                     gsl_vector *xbeta1,
+                     gsl_vector *xbeta2,
+                     gsl_vector *xbeta3,
+                     double theta,
+                     gsl_vector *lambda1,
+                     gsl_vector *lambda2,
+                     gsl_vector *lambda3,
+                     gsl_vector *s1,
+                     gsl_vector *s2,
+                     gsl_vector *s3,
+                     gsl_vector *survTime1,
+                     gsl_vector *survTime2,
+                     gsl_vector *yStar,
+                     gsl_vector *survEvent1,
+                     gsl_vector *survEvent2,
+                     gsl_vector *case01,
+                     gsl_vector *case11,
+                     gsl_matrix *survCov1,
+                     gsl_matrix *survCov2,
+                     gsl_matrix *survCov3,
+                     int K1,
+                     int K2,
+                     int K3,
+                     double *val)
+{
+    double gfunc;
+    double logLH = 0;
+    
+    int n = survTime1 -> size;
+    
+    int i, j;
+    
+    for(i = 0; i < n; i++)
+    {
+        
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            for(j = 0; j < K1+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta1, i);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            for(j = 0; j < K2+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta2, i);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            for(j = 0; j < K3+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, 0))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+                if(j != 0 && gsl_vector_get(yStar, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, j))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta3, i);
+        }
+        gfunc = BpeScrSM_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, s1, s2, s3, K1, K2, K3, survTime1, yStar);
+        
+        logLH +=  (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+double BpeScrSM_wFunc(int subjInx,
+                      gsl_vector *xbeta1,
+                      gsl_vector *xbeta2,
+                      gsl_vector *xbeta3,
+                      gsl_vector *lambda1,
+                      gsl_vector *lambda2,
+                      gsl_vector *lambda3,
+                      gsl_vector *s1,
+                      gsl_vector *s2,
+                      gsl_vector *s3,
+                      int J1,
+                      int J2,
+                      int J3,
+                      gsl_vector *survTime1,
+                      gsl_vector *yStar)
+{
+    int i = subjInx;
+    double cumHaz1, cumHaz2, cumHaz3diff;
+    double Del, wVal;
+    int j;
+    
+    cumHaz1 = 0; cumHaz2 = 0; cumHaz3diff = 0;
+    
+    for(j = 0; j < J1+1; j++)
+    {
+        if(j > 0)
+        {
+            Del = c_max(0, (c_min(gsl_vector_get(s1, j), gsl_vector_get(survTime1, i)) - gsl_vector_get(s1, j-1)));
+        }
+        if(j == 0)
+        {
+            Del = c_max(0, c_min(gsl_vector_get(s1, j), gsl_vector_get(survTime1, i)) - 0);
+        }
+        cumHaz1 += Del* exp(gsl_vector_get(lambda1, j)) * exp(gsl_vector_get(xbeta1, i));
+    }
+    
+    for(j = 0; j < J2+1; j++)
+    {
+        if(j > 0)
+        {
+            Del = c_max(0, (c_min(gsl_vector_get(s2, j), gsl_vector_get(survTime1, i)) - gsl_vector_get(s2, j-1)));
+        }
+        if(j == 0)
+        {
+            Del = c_max(0, c_min(gsl_vector_get(s2, j), gsl_vector_get(survTime1, i)) - 0);
+        }
+        cumHaz2 += Del* exp(gsl_vector_get(lambda2, j)) * exp(gsl_vector_get(xbeta2, i));
+    }
+    
+    for(j = 0; j < J3+1; j++)
+    {
+        if(j > 0)
+        {
+            Del = c_max(0, (c_min(gsl_vector_get(s3, j), gsl_vector_get(yStar, i)) - gsl_vector_get(s3, j-1)));
+        }
+        if(j == 0)
+        {
+            Del = c_max(0, c_min(gsl_vector_get(s3, j), gsl_vector_get(yStar, i)) - 0);
+        }
+        cumHaz3diff += Del* exp(gsl_vector_get(lambda3, j)) * exp(gsl_vector_get(xbeta3, i));
+    }
+    wVal = cumHaz1 + cumHaz2 + cumHaz3diff;
+    
+    return wVal;
+}
+
+
+
+
+void BpeScrSM_logMLH_i(int i,
+                       gsl_vector *beta1,
+                       gsl_vector *beta2,
+                       gsl_vector *beta3,
+                       gsl_vector *xbeta1,
+                       gsl_vector *xbeta2,
+                       gsl_vector *xbeta3,
+                       double theta,
+                       gsl_vector *lambda1,
+                       gsl_vector *lambda2,
+                       gsl_vector *lambda3,
+                       gsl_vector *s1,
+                       gsl_vector *s2,
+                       gsl_vector *s3,
+                       gsl_vector *survTime1,
+                       gsl_vector *survTime2,
+                       gsl_vector *yStar,
+                       gsl_vector *survEvent1,
+                       gsl_vector *survEvent2,
+                       gsl_vector *case01,
+                       gsl_vector *case11,
+                       gsl_matrix *survCov1,
+                       gsl_matrix *survCov2,
+                       gsl_matrix *survCov3,
+                       int K1,
+                       int K2,
+                       int K3,
+                       double *val)
+{
+    double gfunc;
+    double logLH = 0;
+    
+    int j;
+    
+    if(gsl_vector_get(survEvent1, i) == 1)
+    {
+        for(j = 0; j < K1+1; j++)
+        {
+            if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+            {
+                logLH += gsl_vector_get(lambda1, j);
+            }
+            if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+            {
+                logLH += gsl_vector_get(lambda1, j);
+            }
+        }
+        
+        logLH += gsl_vector_get(xbeta1, i);
+    }
+    
+    if(gsl_vector_get(case01, i) ==  1)
+    {
+        for(j = 0; j < K2+1; j++)
+        {
+            if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+            {
+                logLH += gsl_vector_get(lambda2, j);
+            }
+            if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+            {
+                logLH += gsl_vector_get(lambda2, j);
+            }
+        }
+        
+        logLH += gsl_vector_get(xbeta2, i);
+    }
+    
+    if(gsl_vector_get(case11, i) == 1)
+    {
+        for(j = 0; j < K3+1; j++)
+        {
+            if(j == 0 && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, 0))
+            {
+                logLH += gsl_vector_get(lambda3, j);
+            }
+            if(j != 0 && gsl_vector_get(yStar, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, j))
+            {
+                logLH += gsl_vector_get(lambda3, j);
+            }
+        }
+        
+        logLH += gsl_vector_get(xbeta3, i);
+    }
+    
+    gfunc = BpeScrSM_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, s1, s2, s3, K1, K2, K3, survTime1, yStar);
+    
+    
+    logLH += (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    
+    *val = logLH;
+    
+    return;
+    
+}
+
+
+
+
+
+
+
+
+void BpeScrSM_logMLH_DIC(double survData[],
+                               int *n,
+                               int *p1,
+                               int *p2,
+                               int *p3,
+                               double be1[],
+                               double be2[],
+                               double be3[],
+                               double *thet,
+                               double lam1[],
+                               double lam2[],
+                               double lam3[],
+                               double s_1[],
+                               double s_2[],
+                               double s_3[],
+                               int *K_1,
+                               int *K_2,
+                               int *K_3,
+                               double *val)
+{
+    int i, j;
+    
+    double gfunc;
+    double logLH = 0;
+    
+    /* Survival Data */
+    
+    gsl_vector *survTime1    = gsl_vector_alloc(*n);
+    gsl_vector *survTime2    = gsl_vector_alloc(*n);
+    gsl_vector *survEvent1   = gsl_vector_alloc(*n);
+    gsl_vector *survEvent2   = gsl_vector_alloc(*n);
+    for(i = 0; i < *n; i++)
+    {
+        gsl_vector_set(survTime1, i, survData[(0 * *n) + i]);
+        gsl_vector_set(survEvent1, i, survData[(1* *n) + i]);
+        gsl_vector_set(survTime2, i, survData[(2 * *n) + i]);
+        gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
+    }
+    
+    gsl_vector *yStar = gsl_vector_calloc(*n);
+    gsl_vector_memcpy(yStar, survTime2);
+    gsl_vector_sub(yStar, survTime1);
+    
+    int nP1, nP2, nP3;
+    
+    if(*p1 > 0) nP1 = *p1;
+    if(*p1 == 0) nP1 = 1;
+    if(*p2 > 0) nP2 = *p2;
+    if(*p2 == 0) nP2 = 1;
+    if(*p3 > 0) nP3 = *p3;
+    if(*p3 == 0) nP3 = 1;
+    
+    gsl_matrix *survCov1     = gsl_matrix_calloc(*n, nP1);
+    gsl_matrix *survCov2     = gsl_matrix_calloc(*n, nP2);
+    gsl_matrix *survCov3     = gsl_matrix_calloc(*n, nP3);
+    
+    if(*p1 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p1); j++)
+            {
+                gsl_matrix_set(survCov1, i, j, survData[((4+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p2 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p2); j++)
+            {
+                gsl_matrix_set(survCov2, i, j, survData[((4+(*p1)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    if(*p3 >0)
+    {
+        for(i = 0; i < *n; i++)
+        {
+            for(j = 0; j < *(p3); j++)
+            {
+                gsl_matrix_set(survCov3, i, j, survData[((4+(*p1)+(*p2)+j)* *n) + i]);
+            }
+        }
+    }
+    
+    gsl_vector *case01   = gsl_vector_alloc(*n);
+    gsl_vector *case11   = gsl_vector_alloc(*n);
+    
+    gsl_vector_memcpy(case01, survEvent1);
+    gsl_vector_scale(case01, -1);
+    gsl_vector_add_constant(case01, 1);
+    gsl_vector_mul(case01, survEvent2);
+    
+    gsl_vector_memcpy(case11, survEvent1);
+    gsl_vector_mul(case11, survEvent2);
+    
+    gsl_vector *beta1 = gsl_vector_calloc(nP1);
+    gsl_vector *beta2 = gsl_vector_calloc(nP2);
+    gsl_vector *beta3 = gsl_vector_calloc(nP3);
+    
+    if(*p1 > 0)
+    {
+        for(j = 0; j < *p1; j++) gsl_vector_set(beta1, j, be1[j]);
+    }
+    if(*p2 > 0)
+    {
+        for(j = 0; j < *p2; j++) gsl_vector_set(beta2, j, be2[j]);
+    }
+    if(*p3 > 0)
+    {
+        for(j = 0; j < *p3; j++) gsl_vector_set(beta3, j, be3[j]);
+    }
+    
+    int K1              = *K_1;
+    int K2              = *K_2;
+    int K3              = *K_3;
+    double theta        = *thet;
+    
+    gsl_vector *xbeta1 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta2 = gsl_vector_calloc(*n);
+    gsl_vector *xbeta3 = gsl_vector_calloc(*n);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov1, beta1, 0, xbeta1);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov2, beta2, 0, xbeta2);
+    gsl_blas_dgemv(CblasNoTrans, 1, survCov3, beta3, 0, xbeta3);
+    
+    gsl_vector *lambda1  = gsl_vector_calloc(K1+1);
+    gsl_vector *lambda2  = gsl_vector_calloc(K2+1);
+    gsl_vector *lambda3  = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(lambda1, j, lam1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(lambda2, j, lam2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(lambda3, j, lam3[j]);
+    
+    gsl_vector *s1       = gsl_vector_calloc(K1+1);
+    gsl_vector *s2       = gsl_vector_calloc(K2+1);
+    gsl_vector *s3       = gsl_vector_calloc(K3+1);
+    for(j = 0; j < (K1+1); j++) gsl_vector_set(s1, j, s_1[j]);
+    for(j = 0; j < (K2+1); j++) gsl_vector_set(s2, j, s_2[j]);
+    for(j = 0; j < (K3+1); j++) gsl_vector_set(s3, j, s_3[j]);
+    
+    
+    for(i = 0; i < *n; i++)
+    {
+        if(gsl_vector_get(survEvent1, i) == 1)
+        {
+            for(j = 0; j < K1+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, 0))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime1, i) > gsl_vector_get(s1, j-1) && gsl_vector_get(survTime1, i) <= gsl_vector_get(s1, j))
+                {
+                    logLH += gsl_vector_get(lambda1, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta1, i);
+        }
+        
+        if(gsl_vector_get(case01, i) ==  1)
+        {
+            for(j = 0; j < K2+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, 0))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+                if(j != 0 && gsl_vector_get(survTime2, i) > gsl_vector_get(s2, j-1) && gsl_vector_get(survTime2, i) <= gsl_vector_get(s2, j))
+                {
+                    logLH += gsl_vector_get(lambda2, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta2, i);
+        }
+        
+        if(gsl_vector_get(case11, i) == 1)
+        {
+            for(j = 0; j < K3+1; j++)
+            {
+                if(j == 0 && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, 0))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+                if(j != 0 && gsl_vector_get(yStar, i) > gsl_vector_get(s3, j-1) && gsl_vector_get(yStar, i) <= gsl_vector_get(s3, j))
+                {
+                    logLH += gsl_vector_get(lambda3, j);
+                }
+            }
+            
+            logLH += gsl_vector_get(xbeta3, i);
+        }
+        gfunc = BpeScrSM_wFunc(i, xbeta1, xbeta2, xbeta3, lambda1, lambda2, lambda3, s1, s2, s3, K1, K2, K3, survTime1, yStar);
+        
+        logLH +=  (- 1/theta - gsl_vector_get(survEvent1, i) - gsl_vector_get(survEvent2, i)) * log(1 + theta * gfunc);
+    }
+    
+    *val = logLH;
+    
+    return;
+    
+}

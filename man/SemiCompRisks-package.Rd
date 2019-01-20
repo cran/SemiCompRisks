@@ -29,15 +29,15 @@ The package includes following functions:
 \tabular{ll}{
 Package: \tab SemiCompRisks\cr
 Type: \tab Package\cr
-Version: \tab 3.1\cr
-Date: \tab 2018-5-6\cr
+Version: \tab 3.2\cr
+Date: \tab 2019-1-5\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }
 }
 \author{
 Kyu Ha Lee, Catherine Lee, Danilo Alvares, and Sebastien Haneuse \cr
-Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
+Maintainer: Kyu Ha Lee <klee15239@gmail.com>
 }
 \references{
 Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015), 

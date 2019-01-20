@@ -353,10 +353,6 @@ path=NULL)
                 accept.gamma	 <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3+3+1):(p1+p2+p3+3+3+n)])
                 
                 logLH <- matrix(as.vector(mcmcRet$samples_logLH), nrow = nStore, byrow = T)
-                dev <- -2 * mean(logLH)
-                
-                DIC = 2 * dev + 2*sum(log(mcmcRet$LH_i_mean))
-                LPML = -sum(log(mcmcRet$invLH_i_mean))
                 
                 if(p1 > 0){
                     covNames1 = colnames(Xmat1)
@@ -377,7 +373,7 @@ path=NULL)
                     covNames3 = NULL
                 }
                 
-                ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, mu1.p=mu1.p, mu2.p=mu2.p, mu3.p=mu3.p, sigSq1.p = sigSq1.p, sigSq2.p = sigSq2.p, sigSq3.p = sigSq3.p, gamma.p=gamma.p, theta.p=theta.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.mu1 = accept.mu1, accept.mu2 = accept.mu2, accept.mu3 = accept.mu3, accept.sigSq1 = accept.sigSq1, accept.sigSq2 = accept.sigSq2, accept.sigSq3 = accept.sigSq3, accept.gamma=accept.gamma, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3)
+                ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, mu1.p=mu1.p, mu2.p=mu2.p, mu3.p=mu3.p, sigSq1.p = sigSq1.p, sigSq2.p = sigSq2.p, sigSq3.p = sigSq3.p, gamma.p=gamma.p, theta.p=theta.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.mu1 = accept.mu1, accept.mu2 = accept.mu2, accept.mu3 = accept.mu3, accept.sigSq1 = accept.sigSq1, accept.sigSq2 = accept.sigSq2, accept.sigSq3 = accept.sigSq3, accept.gamma=accept.gamma, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, logLH_mean=mean(logLH), LH_i_mean=mcmcRet$LH_i_mean, invLH_i_mean=mcmcRet$invLH_i_mean)
                 
             }# if(hz.type == "LN")
             
@@ -545,10 +541,6 @@ path=NULL)
                 
                 
                 logLH <- matrix(as.vector(mcmcRet$samples_logLH), nrow = nStore, byrow = T)
-                dev <- -2 * mean(logLH)
-                
-                DIC = 2 * dev + 2*sum(log(mcmcRet$LH_i_mean))
-                LPML = -sum(log(mcmcRet$invLH_i_mean))
                 
                 if(p1 > 0){
                     covNames1 = colnames(Xmat1)
@@ -569,7 +561,7 @@ path=NULL)
                     covNames3 = NULL
                 }
                 
-                ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, mu1.p=mu1.p, mu2.p=mu2.p, mu3.p=mu3.p, sigSq1.p=sigSq1.p, sigSq2.p=sigSq2.p, sigSq3.p=sigSq3.p, r1.p = r1.p, r2.p = r2.p, r3.p = r3.p, tau1.p = tau1.p, tau2.p = tau2.p, tau3.p = tau3.p, theta.p=theta.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.gamma=accept.gamma, accept.mu1=accept.mu1, accept.mu2=accept.mu2, accept.mu3=accept.mu3, accept.sigSq1=accept.sigSq1, accept.sigSq2=accept.sigSq2, accept.sigSq3=accept.sigSq3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3)
+                ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, mu1.p=mu1.p, mu2.p=mu2.p, mu3.p=mu3.p, sigSq1.p=sigSq1.p, sigSq2.p=sigSq2.p, sigSq3.p=sigSq3.p, r1.p = r1.p, r2.p = r2.p, r3.p = r3.p, tau1.p = tau1.p, tau2.p = tau2.p, tau3.p = tau3.p, theta.p=theta.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.gamma=accept.gamma, accept.mu1=accept.mu1, accept.mu2=accept.mu2, accept.mu3=accept.mu3, accept.sigSq1=accept.sigSq1, accept.sigSq2=accept.sigSq2, accept.sigSq3=accept.sigSq3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, logLH_mean=mean(logLH), LH_i_mean=mcmcRet$LH_i_mean, invLH_i_mean=mcmcRet$invLH_i_mean)
                 
             } # if(hz.type == "DPM")
             

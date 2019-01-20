@@ -1087,8 +1087,6 @@ void BpeDpCorScrSMmcmc(double survData[],
             }
             
             lpml[StoreInx - 1] = lpml_temp;
-            
-            
         }
         
         

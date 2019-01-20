@@ -14,7 +14,7 @@ BayesSurv_AFT(Formula, data, model = "LN", hyperParams, startValues,
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{Formula}{
-    a \code{Formula} object of the form \eqn{L} | \eqn{y_{L}}+\eqn{y_{U}} ~ \eqn{x}. See Details and Examples below.
+  a \code{Formula} object, with the outcomes on the left of a \eqn{\sim}, and covariates on the right. It is of the form, left truncation time | interval- (or right-) censored time to event \eqn{\sim} covariates : i.e., \eqn{L} | \eqn{y_{L}}+\eqn{y_{U}} ~ \eqn{x}. 
 }
   \item{data}{
     a data.frame in which to interpret the variables named in \code{Formula}.
@@ -72,7 +72,7 @@ SemiCompRisks: an R package for independent and cluster-correlated analyses of s
 }
 \author{
 Kyu Ha Lee and Sebastien Haneuse\cr
-Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
+Maintainer: Kyu Ha Lee <klee15239@gmail.com>
 }
 %\note{
 %TBU

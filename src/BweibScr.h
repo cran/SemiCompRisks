@@ -6,6 +6,67 @@
 //
 //
 
+extern double BweibScr_wFunc_old(int subjInx,
+                                 gsl_vector *beta1,
+                                 gsl_vector *beta2,
+                                 gsl_vector *beta3,
+                                 double alpha1,
+                                 double alpha2,
+                                 double alpha3,
+                                 double kappa1,
+                                 double kappa2,
+                                 double kappa3,
+                                 gsl_vector *survTime1,
+                                 gsl_vector *survTime2,
+                                 gsl_matrix *survCov1,
+                                 gsl_matrix *survCov2,
+                                 gsl_matrix *survCov3);
+
+extern void BweibScr_logMLH_i(int i,
+                              gsl_vector *beta1,
+                              gsl_vector *beta2,
+                              gsl_vector *beta3,
+                              double alpha1,
+                              double alpha2,
+                              double alpha3,
+                              double kappa1,
+                              double kappa2,
+                              double kappa3,
+                              double theta,
+                              gsl_vector *survTime1,
+                              gsl_vector *survTime2,
+                              gsl_vector *survEvent1,
+                              gsl_vector *survEvent2,
+                              gsl_vector *case01,
+                              gsl_vector *case11,
+                              gsl_matrix *survCov1,
+                              gsl_matrix *survCov2,
+                              gsl_matrix *survCov3,
+                              double *val);
+
+extern void BweibScr_logMLH(gsl_vector *beta1,
+                            gsl_vector *beta2,
+                            gsl_vector *beta3,
+                            double alpha1,
+                            double alpha2,
+                            double alpha3,
+                            double kappa1,
+                            double kappa2,
+                            double kappa3,
+                            double theta,
+                            gsl_vector *survTime1,
+                            gsl_vector *survTime2,
+                            gsl_vector *survEvent1,
+                            gsl_vector *survEvent2,
+                            gsl_vector *case01,
+                            gsl_vector *case11,
+                            gsl_matrix *survCov1,
+                            gsl_matrix *survCov2,
+                            gsl_matrix *survCov3,
+                            double *val);
+
+
+
 
 extern void matrixInv(gsl_matrix *X, gsl_matrix *Xinv);
 

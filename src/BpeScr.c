@@ -23,46 +23,47 @@
 
 /* */
 void BpeScrmcmc(double survData[],
-                    int *n,
-                    int *p1,
-                    int *p2,
-                    int *p3,
-                    double hyperParams[],
-                    double startValues[],
-                    double mcmcParams[],
-                    int *numReps,
-                    int *thin,
-                    double *burninPerc,
-                    int *nGam_save,          
-                    double samples_beta1[],
-                    double samples_beta2[],
-                    double samples_beta3[],
-                    double samples_mu_lam1[],
-                    double samples_mu_lam2[],
-                    double samples_mu_lam3[],
-                    double samples_sigSq_lam1[],
-                    double samples_sigSq_lam2[],
-                    double samples_sigSq_lam3[],
-                    double samples_J1[],
-                    double samples_J2[],
-                    double samples_J3[],
-                    double samples_s1[],
-                    double samples_s2[],
-                    double samples_s3[],
-                    double samples_theta[],
-                    double samples_gamma[],
-                    double samples_misc[],
-                    double lambda1_fin[],
-                    double lambda2_fin[],
+                int *n,
+                int *p1,
+                int *p2,
+                int *p3,
+                double hyperParams[],
+                double startValues[],
+                double mcmcParams[],
+                int *numReps,
+                int *thin,
+                double *burninPerc,
+                int *nGam_save,
+                double samples_beta1[],
+                double samples_beta2[],
+                double samples_beta3[],
+                double samples_mu_lam1[],
+                double samples_mu_lam2[],
+                double samples_mu_lam3[],
+                double samples_sigSq_lam1[],
+                double samples_sigSq_lam2[],
+                double samples_sigSq_lam3[],
+                double samples_J1[],
+                double samples_J2[],
+                double samples_J3[],
+                double samples_s1[],
+                double samples_s2[],
+                double samples_s3[],
+                double samples_theta[],
+                double samples_gamma[],
+                double samples_misc[],
+                double lambda1_fin[],
+                double lambda2_fin[],
                 double lambda3_fin[],
+                double dev[],
+                double invLH[],
                 double moveVec[])
 {
     GetRNGstate();
     
-    time_t now;    
+    time_t now;
     
     int i, j, M;
-
     
     /* Survival Data */
     
@@ -135,9 +136,6 @@ void BpeScrmcmc(double survData[],
     gsl_vector_memcpy(case11, survEvent1);
     gsl_vector_mul(case11, survEvent2);
     
-    
-
-    
     /* Hyperparameters */
     
     double a1        = hyperParams[0];
@@ -154,8 +152,6 @@ void BpeScrmcmc(double survData[],
     double c_lam3    = hyperParams[11];
     double psi       = hyperParams[12];
     double omega     = hyperParams[13];
-    
-    
     
     /* varialbes for birth and death moves */
     
@@ -181,10 +177,10 @@ void BpeScrmcmc(double survData[],
     for(j = 0; j < num_s_propBI1; j++) gsl_vector_set(s_propBI1, j, mcmcParams[18+j]);
     for(j = 0; j < num_s_propBI2; j++) gsl_vector_set(s_propBI2, j, mcmcParams[18+num_s_propBI1+j]);
     for(j = 0; j < num_s_propBI3; j++) gsl_vector_set(s_propBI3, j, mcmcParams[18+num_s_propBI1+num_s_propBI2+j]);
-   
+    
     
     /* time points where lambda values are stored  */
-
+    
     int nTime_lambda1 = mcmcParams[15];
     int nTime_lambda2 = mcmcParams[16];
     int nTime_lambda3 = mcmcParams[17];
@@ -207,7 +203,7 @@ void BpeScrmcmc(double survData[],
     }
     
     double mhProp_theta_var  = mcmcParams[18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3];
-  
+    
     
     
     
@@ -254,7 +250,7 @@ void BpeScrmcmc(double survData[],
     for(j = 0; j < (J1+1); j++) gsl_vector_set(lambda1, j, startValues[*p1 + *p2 + *p3 + 10 + *n + j]);
     for(j = 0; j < (J2+1); j++) gsl_vector_set(lambda2, j, startValues[*p1 + *p2 + *p3 + 10 + *n + (J1+1) + j]);
     for(j = 0; j < (J3+1); j++) gsl_vector_set(lambda3, j, startValues[*p1 + *p2 + *p3 + 10 + *n + (J1+1) + (J2+1) + j]);
-        
+    
     gsl_vector *s1       = gsl_vector_calloc(J1_max+1);
     gsl_vector *s2       = gsl_vector_calloc(J2_max+1);
     gsl_vector *s3       = gsl_vector_calloc(J3_max+1);
@@ -268,12 +264,10 @@ void BpeScrmcmc(double survData[],
     gsl_blas_dgemv(CblasNoTrans, 1, survCov1, beta1, 0, xbeta1);
     gsl_blas_dgemv(CblasNoTrans, 1, survCov2, beta2, 0, xbeta2);
     gsl_blas_dgemv(CblasNoTrans, 1, survCov3, beta3, 0, xbeta3);
-
-
-
+    
     
     /* Calculating Sigma_lam (from W and Q) */
-
+    
     
     gsl_matrix *Sigma_lam1       = gsl_matrix_calloc(J1_max+1, J1_max+1);
     gsl_matrix *Sigma_lam2       = gsl_matrix_calloc(J2_max+1, J2_max+1);
@@ -287,11 +281,11 @@ void BpeScrmcmc(double survData[],
     gsl_matrix *Q2               = gsl_matrix_calloc(J2_max+1, J2_max+1);
     gsl_matrix *W3               = gsl_matrix_calloc(J3_max+1, J3_max+1);
     gsl_matrix *Q3               = gsl_matrix_calloc(J3_max+1, J3_max+1);
-
+    
     cal_Sigma(Sigma_lam1, invSigma_lam1, W1, Q1, s1, c_lam1, J1);
     cal_Sigma(Sigma_lam2, invSigma_lam2, W2, Q2, s2, c_lam2, J2);
     cal_Sigma(Sigma_lam3, invSigma_lam3, W3, Q3, s3, c_lam3, J3);
-
+    
     
     /* Variables required for storage of samples */
     
@@ -308,6 +302,14 @@ void BpeScrmcmc(double survData[],
     int accept_BI3      = 0;
     int accept_DI3      = 0;
     int accept_theta    = 0;
+    
+    double logLH;
+    
+    gsl_vector *invLH_vec = gsl_vector_calloc(*n);
+    gsl_vector *invLH_mean = gsl_vector_calloc(*n);
+    gsl_vector *cpo_vec = gsl_vector_calloc(*n);
+    
+    double invLHval;
     
     /* Compute probabilities for various types of moves */
     
@@ -343,7 +345,7 @@ void BpeScrmcmc(double survData[],
     
     for(j = 0; j < J1_max; j++) gsl_vector_set(rho_lam1_vec, j, C1/(gsl_vector_get(pB1, j) + gsl_vector_get(pD1, j)));
     for(j = 0; j < J2_max; j++) gsl_vector_set(rho_lam2_vec, j, C2/(gsl_vector_get(pB2, j) + gsl_vector_get(pD2, j)));
-    for(j = 0; j < J3_max; j++) gsl_vector_set(rho_lam3_vec, j, C3/(gsl_vector_get(pB3, j) + gsl_vector_get(pD3, j)));    
+    for(j = 0; j < J3_max; j++) gsl_vector_set(rho_lam3_vec, j, C3/(gsl_vector_get(pB3, j) + gsl_vector_get(pD3, j)));
     
     rho_lam1 = gsl_vector_min(rho_lam1_vec);
     rho_lam2 = gsl_vector_min(rho_lam2_vec);
@@ -354,7 +356,7 @@ void BpeScrmcmc(double survData[],
     if(*p1 > 0) numUpdate += 1;
     if(*p2 > 0) numUpdate += 1;
     if(*p3 > 0) numUpdate += 1;
-
+    
     
     for(M = 0; M < *numReps; M++)
     {
@@ -405,10 +407,10 @@ void BpeScrmcmc(double survData[],
         pSP2 = probSub;
         pSP3 = probSub;
         pFP  = probSub;
-    
+        
         /* selecting a move */
         /* move: 1=RP1, 2=RP2, 3=RP3, 4=BH1, 5=BH2, 6=BH3, 7=SP1, 8=SP2, 9=SP3, 10=FP,
-                    11=DP, 12=BI1, 13=BI2, 14=BI3, 15=DI1, 16=DI2, 17=DI3 */
+         11=DP, 12=BI1, 13=BI2, 14=BI3, 15=DI1, 16=DI2, 17=DI3 */
         
         choice  = runif(0, 1);
         move    = 1;
@@ -430,11 +432,11 @@ void BpeScrmcmc(double survData[],
         if(choice > pRP1+pRP2+pRP3+pBH1+pBH2+pBH3+pSP1+pSP2+pSP3+pFP+pDP+pBI1+pBI2+pBI3+pDI1+pDI2) move = 17;
         
         
-        moveVec[M] = (double) move;        
+        moveVec[M] = (double) move;
         
         /* updating regression parameter: beta1 */
         
-
+        
         
         if(move == 1)
         {
@@ -444,7 +446,7 @@ void BpeScrmcmc(double survData[],
         
         /* updating regression parameter: beta2 */
         
-
+        
         
         if(move == 2)
         {
@@ -457,7 +459,7 @@ void BpeScrmcmc(double survData[],
         
         /* updating regression parameter: beta2 */
         
-
+        
         
         if(move == 3)
         {
@@ -465,11 +467,11 @@ void BpeScrmcmc(double survData[],
         }
         
         
-
+        
         /* updating log-baseline hazard function parameter: lambda1 */
         
-
-      
+        
+        
         
         if(move == 4)
         {
@@ -478,13 +480,13 @@ void BpeScrmcmc(double survData[],
         
         
         
-
+        
         
         
         /* updating log-baseline hazard function parameter: lambda2 */
         
-       
-
+        
+        
         
         if(move == 5)
         {
@@ -496,8 +498,8 @@ void BpeScrmcmc(double survData[],
         
         /* updating log-baseline hazard function parameter: lambda3 */
         
-      
-   
+        
+        
         
         if(move == 6)
         {
@@ -505,13 +507,13 @@ void BpeScrmcmc(double survData[],
         }
         
         
-
+        
         
         
         
         /* updating second stage survival components: mu_lam1 and sigSq_lam1 */
         
-
+        
         
         if(move == 7)
         {
@@ -522,8 +524,8 @@ void BpeScrmcmc(double survData[],
         
         /* updating second stage survival components: mu_lam2 and sigSq_lam2 */
         
-
-   
+        
+        
         
         if(move == 8)
         {
@@ -533,7 +535,7 @@ void BpeScrmcmc(double survData[],
         
         /* updating second stage survival components: mu_lam3 and sigSq_lam3 */
         
-  
+        
         
         if(move == 9)
         {
@@ -543,9 +545,9 @@ void BpeScrmcmc(double survData[],
         
         
         /* updating frailty parameter: gamma */
-
-
-
+        
+        
+        
         
         if(move == 10)
         {
@@ -554,8 +556,8 @@ void BpeScrmcmc(double survData[],
         
         
         /* updating variance parameter: theta */
-       
-
+        
+        
         
         
         
@@ -570,7 +572,7 @@ void BpeScrmcmc(double survData[],
         
         /* Updating the number of splits and their positions: J1 and s1 (Birth move) */
         
-
+        
         
         if(move == 12)
         {
@@ -602,13 +604,13 @@ void BpeScrmcmc(double survData[],
         
         /* Updating the number of splits and their positions: J1 and s1 (Death move) */
         
-
+        
         
         if(move == 15)
         {
             Bscr_updateDI1(s1, &J1, &accept_DI1, survTime1, survEvent1, gamma, xbeta1, Sigma_lam1, invSigma_lam1, W1, Q1, lambda1, s_propBI1, num_s_propBI1, delPert1, alpha1, c_lam1, mu_lam1, sigSq_lam1, s1_max, J1_max);
         }
-
+        
         /* Updating the number of splits and their positions: J2 and s2 (Death move) */
         
         
@@ -632,19 +634,9 @@ void BpeScrmcmc(double survData[],
         
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         /* Storing posterior samples */
         
-
+        
         if( ( (M+1) % *thin ) == 0 && (M+1) > (*numReps * *burninPerc))
         {
             StoreInx = (M+1)/(*thin)- (*numReps * *burninPerc)/(*thin);
@@ -661,9 +653,9 @@ void BpeScrmcmc(double survData[],
             {
                 for(j = 0; j < *p3; j++) samples_beta3[(StoreInx - 1) * (*p3) + j] = gsl_vector_get(beta3, j);
             }
-
             
-            samples_theta[StoreInx - 1] = theta;            
+            
+            samples_theta[StoreInx - 1] = theta;
             
             for(i = 0; i < nTime_lambda1; i++)
             {
@@ -675,7 +667,7 @@ void BpeScrmcmc(double survData[],
                 lambda1_fin[(StoreInx - 1) * (nTime_lambda1) + i] = gsl_vector_get(lambda1, j);
             }
             
-
+            
             for(i = 0; i < nTime_lambda2; i++)
             {
                 j = 0;
@@ -685,7 +677,7 @@ void BpeScrmcmc(double survData[],
                 }
                 lambda2_fin[(StoreInx - 1) * (nTime_lambda2) + i] = gsl_vector_get(lambda2, j);
             }
-
+            
             
             
             for(i = 0; i < nTime_lambda3; i++)
@@ -697,16 +689,16 @@ void BpeScrmcmc(double survData[],
                 }
                 lambda3_fin[(StoreInx - 1) * (nTime_lambda3) + i] = gsl_vector_get(lambda3, j);
             }
-             
-                                    /* */
-
+            
+            /* */
+            
             
             samples_mu_lam1[StoreInx - 1] = mu_lam1;
             samples_mu_lam2[StoreInx - 1] = mu_lam2;
             samples_mu_lam3[StoreInx - 1] = mu_lam3;
             samples_sigSq_lam1[StoreInx - 1] = sigSq_lam1;
             samples_sigSq_lam2[StoreInx - 1] = sigSq_lam2;
-            samples_sigSq_lam3[StoreInx - 1] = sigSq_lam3;   
+            samples_sigSq_lam3[StoreInx - 1] = sigSq_lam3;
             samples_J1[StoreInx - 1] = J1;
             samples_J2[StoreInx - 1] = J2;
             samples_J3[StoreInx - 1] = J3;
@@ -739,9 +731,34 @@ void BpeScrmcmc(double survData[],
                 }
             }
             
-  
+            /* deviance */
+            
+            BpeScr_logMLH(beta1, beta2, beta3, xbeta1, xbeta2, xbeta3, theta, lambda1, lambda2, lambda3, s1, s2, s3, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, J1, J2, J3, &logLH);
+            
+            dev[StoreInx - 1] = -2*logLH;
+            
+            /* CPO_i */
+            
+            for(i = 0; i < *n; i++)
+            {
+                BpeScr_logMLH_i(i, beta1, beta2, beta3, xbeta1, xbeta2, xbeta3, theta, lambda1, lambda2, lambda3, s1, s2, s3, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, J1, J2, J3, &invLHval);
+                
+                invLHval = 1/exp(invLHval);
+                gsl_vector_set(invLH_vec, i, invLHval);
+                
+            }
+            
+            gsl_vector_scale(invLH_mean, (double) StoreInx - 1);
+            gsl_vector_add(invLH_mean, invLH_vec);
+            gsl_vector_scale(invLH_mean, (double)1/StoreInx);
+            
+            for(i = 0; i < *n; i++)
+            {
+                gsl_vector_set(cpo_vec, i, 1/gsl_vector_get(invLH_mean, i));
+            }
+            
         }
-
+        
         
         if(M == (*numReps - 1))
         {
@@ -757,7 +774,7 @@ void BpeScrmcmc(double survData[],
             {
                 for(j = 0; j < *p3; j++) samples_misc[*p1 + *p2 + j] = (int) gsl_vector_get(accept_beta3, j);
             }
-
+            
             samples_misc[*p1 + *p2 + *p3] = accept_BI1;
             samples_misc[*p1 + *p2 + *p3 + 1] = accept_DI1;
             samples_misc[*p1 + *p2 + *p3 + 2] = accept_BI2;
@@ -765,6 +782,12 @@ void BpeScrmcmc(double survData[],
             samples_misc[*p1 + *p2 + *p3 + 4] = accept_BI3;
             samples_misc[*p1 + *p2 + *p3 + 5] = accept_DI3;
             samples_misc[*p1 + *p2 + *p3 + 6] = accept_theta;
+            
+            for(i = 0; i < *n; i++)
+            {
+                invLH[i] = gsl_vector_get(invLH_mean, i);
+            }
+            
         }
         
         if( ( (M+1) % 10000 ) == 0)
@@ -779,17 +802,18 @@ void BpeScrmcmc(double survData[],
             
             
         }
- 
-   
-    }    
-   
+        
+        
+    }
     
-  
+    
+    
     PutRNGstate();
     return;
     
     
 }
+
 
 
 

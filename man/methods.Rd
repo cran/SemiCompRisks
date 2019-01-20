@@ -28,26 +28,26 @@ The \code{Bayes_AFT} class represents results from Bayesian analysis of semi-com
 The \code{Freq_HReg} class represents results from Frequentist analysis of semi-competing risks or univariate time-to-event data in the context of hazard regression models.\cr
 }
 \usage{
-\method{print}{Bayes_HReg}(x, digits=3, ...)
-\method{print}{Bayes_AFT}(x, digits=3, ...)
+\method{print}{Bayes_HReg}(x, digits=3, alpha=0.05, ...)
+\method{print}{Bayes_AFT}(x, digits=3, alpha=0.05, ...)
 \method{print}{summ.Bayes_HReg}(x, digits=3, ...)
 \method{print}{summ.Bayes_AFT}(x, digits=3, ...)
-\method{print}{Freq_HReg}(x, digits=3, ...)
+\method{print}{Freq_HReg}(x, digits=3, alpha=0.05, ...)
 \method{print}{summ.Freq_HReg}(x, digits=3, ...)
-\method{summary}{Bayes_HReg}(object, digits=3, ...)
-\method{summary}{Bayes_AFT}(object, digits=3, ...)
-\method{summary}{Freq_HReg}(object, digits=3, ...)
-\method{coef}{Bayes_HReg}(object, ...)
-\method{coef}{Bayes_AFT}(object, ...)
-\method{coef}{Freq_HReg}(object, ...)
+\method{summary}{Bayes_HReg}(object, digits=3, alpha=0.05, ...)
+\method{summary}{Bayes_AFT}(object, digits=3, alpha=0.05, ...)
+\method{summary}{Freq_HReg}(object, digits=3, alpha=0.05, ...)
+\method{coef}{Bayes_HReg}(object, alpha=0.05, ...)
+\method{coef}{Bayes_AFT}(object, alpha=0.05, ...)
+\method{coef}{Freq_HReg}(object, alpha=0.05, ...)
 \method{predict}{Bayes_HReg}(object, xnew=NULL, x1new=NULL, x2new=NULL,
-x3new=NULL, tseq=c(0, 5, 10), ...)
+x3new=NULL, tseq=c(0, 5, 10), alpha=0.05, ...)
 \method{plot}{pred.Bayes_HReg}(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
 \method{predict}{Bayes_AFT}(object, xnew=NULL, x1new=NULL, x2new=NULL,
-x3new=NULL, time, tseq=c(0, 5, 10), ...)
+x3new=NULL, time, tseq=c(0, 5, 10), alpha=0.05, ...)
 \method{plot}{pred.Bayes_AFT}(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
 \method{predict}{Freq_HReg}(object, xnew=NULL, x1new=NULL, x2new=NULL,
-x3new=NULL, tseq=c(0, 5, 10), ...)
+x3new=NULL, tseq=c(0, 5, 10), alpha=0.05, ...)
 \method{plot}{pred.Freq_HReg}(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
 \method{vcov}{Freq_HReg}(object, ...)
 }
@@ -91,6 +91,9 @@ x3new=NULL, tseq=c(0, 5, 10), ...)
 }
     \item{x3new}{
     a vector of covariate values with which to predict for which to predict for \eqn{h_3}.
+}
+	\item{alpha}{
+	confidence/credibility level of the interval.
 }
 	\item{...}{
 	additional arguments.

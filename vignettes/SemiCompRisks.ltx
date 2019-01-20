@@ -55,7 +55,7 @@
 \vspace{.5cm}
 
 \noindent{\large \textbf{Definition of the survival model}}\\
-\noindent Let $t_i$ denote the time-to-event of interest for individuals $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_i,\delta_i,x_i)$ denote independent observations, where $y_i=\min\left(t_i,c_i \right)$, $\delta_i=\mathbbm{1}(y_i\le c_i)$, and $x_i$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
+\noindent Let $t_i$ denote the time-to-event of interest for individuals $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_i,\delta_i,x_i)$ denote independent observations, where $y_i=\min\left(t_i,c_i \right)$, $\delta_i=\mathbbm{1}(t_i\le c_i)$, and $x_i$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
 \begin{equation*}
 h(t_i|x_i) = h_0(t_i)\exp\left(x_i^\top \beta \right),~t_i>0,
 \end{equation*}
@@ -137,7 +137,7 @@ plot(pred_WB, plot.est="Surv")
 \vspace{.5cm}
 
 \noindent{\large \textbf{Definition of the survival model}}\\
-\noindent Let $t_i$ denote the time-to-event of interest for individuals $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_i,\delta_i,x_i)$ denote independent observations, where $y_i=\min\left(t_i,c_i \right)$, $\delta_i=\mathbbm{1}(y_i\le c_i)$, and $x_i$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
+\noindent Let $t_i$ denote the time-to-event of interest for individuals $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_i,\delta_i,x_i)$ denote independent observations, where $y_i=\min\left(t_i,c_i \right)$, $\delta_i=\mathbbm{1}(t_i\le c_i)$, and $x_i$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
 \begin{equation*}
 h(t_i|x_i) = h_0(t_i)\exp\left(x_i^\top \beta \right),~t_i>0.
 \end{equation*}
@@ -415,7 +415,7 @@ plot(pred_DPM, plot.est="Surv")
 
 \vspace{.5cm}
 \noindent{\large \textbf{Definition of the survival model}}\\
-\noindent Let $t_{ji}$ denote the time-to-event of interest for individuals $i=1,\dots,n_j$ in cluster $j=1,\dots J$, subject to right censoring at time $c_{ji}$. Let $(y_{ji},\delta_{ji},x_{ji})$ denote independent observations, where $y_{ji}=\min\left(t_{ji},c_{ji} \right)$, $\delta_{ji}=\mathbbm{1}(y_{ji}\le c_{ji})$, and $x_{ji}$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
+\noindent Let $t_{ji}$ denote the time-to-event of interest for individuals $i=1,\dots,n_j$ in cluster $j=1,\dots J$, subject to right censoring at time $c_{ji}$. Let $(y_{ji},\delta_{ji},x_{ji})$ denote independent observations, where $y_{ji}=\min\left(t_{ji},c_{ji} \right)$, $\delta_{ji}=\mathbbm{1}(t_{ji}\le c_{ji})$, and $x_{ji}$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
 \begin{equation*}
 h(t_{ji}|x_{ji}) = h_0(t_{ji})\exp\left(x_{ji}^\top \beta + V_j \right),~t_{ji}>0,
 \end{equation*}
@@ -514,7 +514,7 @@ startValues.WB.Normal <- initiate.startValues_HReg(form, survData, id, model=myM
 ##
 fit_WB_N <- BayesSurv_HReg(form, survData, id, model=myModel.WB.Normal, hyperParams.WB.Normal,
  		startValues.WB.Normal, mcmc.WB, path=myPath.WB.Normal)
-summary(fit_WB_Normal)
+summary(fit_WB_N)
 pred_WB_N <- predict(fit_WB_N, tseq=seq(from=0, to=30, by=5))
 plot(pred_WB_N, plot.est="Haz")
 plot(pred_WB_N, plot.est="Surv")
@@ -541,7 +541,7 @@ plot(pred_WB_DPM, plot.est="Surv")
 \vspace{.25cm}
 
 \noindent{\large \textbf{Definition of the survival model}}\\
-\noindent Let $t_{ji}$ denote the time-to-event of interest for individuals $i=1,\dots,n_j$ in cluster $j=1,\dots J$, subject to right censoring at time $c_{ji}$. Let $(y_{ji},\delta_{ji},x_{ji})$ denote independent observations, where $y_{ji}=\min\left(t_{ji},c_{ji} \right)$, $\delta_{ji}=\mathbbm{1}(y_{ji}\le c_{ji})$, and $x_{ji}$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
+\noindent Let $t_{ji}$ denote the time-to-event of interest for individuals $i=1,\dots,n_j$ in cluster $j=1,\dots J$, subject to right censoring at time $c_{ji}$. Let $(y_{ji},\delta_{ji},x_{ji})$ denote independent observations, where $y_{ji}=\min\left(t_{ji},c_{ji} \right)$, $\delta_{ji}=\mathbbm{1}(t_{ji}\le c_{ji})$, and $x_{ji}$ is a vector of covariates for individual $i$. The following Cox proportional hazards model is assumed
 \begin{equation*}
 h(t_{ji}|x_{ji}) = h_0(t_{ji})\exp\left(x_{ji}^\top \beta + V_j \right),~t_{ji}>0,
 \end{equation*}
@@ -658,7 +658,7 @@ startValues.PEM.Normal <- initiate.startValues_HReg(form, survData, id, model=my
 ##
 fit_PEM_N <- BayesSurv_HReg(form, survData, id, model=myModel.PEM.Normal, hyperParams.PEM.Normal,
  		startValues.PEM.Normal, mcmc.PEM, path=myPath.PEM.Normal)
-summary(fit_PEM_Normal)
+summary(fit_PEM_N)
 pred_PEM_N <- predict(fit_PEM_N)
 plot(pred_PEM_N, plot.est="Haz")
 plot(pred_PEM_N, plot.est="Surv")
@@ -685,15 +685,15 @@ plot(pred_PEM_DPM, plot.est="Surv")
 \noindent{\large \textbf{Definition of the survival model}}\\
 \noindent Let $t_{i1}$ and $t_{i2}$ denote the time to nonterminal event and terminal event from subject $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_{i1},y_{i2},\delta_{i1},\delta_{i2},x_{i})$ denote independent observations, where $y_{i1}=\min\left(t_{i1},t_{i2},c_i \right)$, $\delta_{i1}=\mathbbm{1}\left\{t_{i1}\le \min\left(t_{i2},c_i \right) \right\}$, $y_{i2}=\min\left(t_{i2},c_i \right)$, $\delta_{i2}=\mathbbm{1}\left\{t_{i2}\le c_i \right\}$, and $x_i$ is a vector of covariates for individual $i$. The independent semi-competing risks data are assumed to arise from an illness-death model system with transitions that are modeled through the following three hazard functions:
 \begin{eqnarray}
-h_1(t_{i1}|\gamma_{ji}, x_{i1}) & = \gamma_{ji} h_{01}(t_{i1})\exp\left(x_{i1}^\top\beta_1 \right),~t_{i1}>0,\label{1}\\
-h_2(t_{i2}|\gamma_{ji}, x_{i2}) & = \gamma_{ji} h_{02}(t_{i2})\exp\left(x_{i2}^\top\beta_2 \right),~t_{i2}>0,\label{2}\\
-h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2})\exp\left(x_{i3}^\top\beta_3 \right),~t_{i2}>0,\label{Markov}
+h_1(t_{i1}|\gamma_{ji}, x_{i1}) & = \gamma_{ji} h_{01}(t_{i1})\exp\left(x_{i1}^\top\beta_1 \right),~t_{i1}>0,\label{BayesID_HReg1}\\
+h_2(t_{i2}|\gamma_{ji}, x_{i2}) & = \gamma_{ji} h_{02}(t_{i2})\exp\left(x_{i2}^\top\beta_2 \right),~t_{i2}>0,\label{BayesID_HReg2}\\
+h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2})\exp\left(x_{i3}^\top\beta_3 \right),~t_{i2}>0,\label{BayesID_HRegMarkov}
 \end{eqnarray}
-where $\gamma_{ji}$ is a subject-specific frailty with vectors of covariates $x_{i1}$,  $x_{i2}$ and  $x_{i3}$ which are subsets of $x_i$. The baseline hazard functions are defined parametrically by Weibull hazards of the form $h_{0g}(t)=\alpha_g \kappa_g t^{\alpha_g-1}$, for $g\in\{1,2,3 \}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{i1}$; we will refer to the set of conditional hazard functions in  (\ref{1})-(\ref{Markov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
+where $\gamma_{ji}$ is a subject-specific frailty with vectors of covariates $x_{i1}$,  $x_{i2}$ and  $x_{i3}$ which are subsets of $x_i$. The baseline hazard functions are defined parametrically by Weibull hazards of the form $h_{0g}(t)=\alpha_g \kappa_g t^{\alpha_g-1}$, for $g\in\{1,2,3 \}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{i1}$; we will refer to the set of conditional hazard functions in  (\ref{BayesID_HReg1})-(\ref{BayesID_HRegMarkov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
 \begin{eqnarray}
-h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2}-t_{i1})\exp\left(x_{i3}^\top\beta_3 \right),~0<t_{i1}<t_{i2}.\label{semiMarkov}
+h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2}-t_{i1})\exp\left(x_{i3}^\top\beta_3 \right),~0<t_{i1}<t_{i2}.\label{BayesID_HRegsemiMarkov}
 \end{eqnarray} 
-We will refer to the set of conditional hazard functions in (\ref{1}), (\ref{2}) and (\ref{semiMarkov}) as the semi-Markov model.
+We will refer to the set of conditional hazard functions in (\ref{BayesID_HReg1}), (\ref{BayesID_HReg2}) and (\ref{BayesID_HRegsemiMarkov}) as the semi-Markov model.
 
 In the Bayesian framework, priors must be specified for the regression parameter, $\beta_g$, the shape and scale parameters of baseline hazard function, $\alpha_g$ and $\kappa_g$, and the frailty parameter, $\gamma_{ji}$, respectively, for $g\in\{1,2,3 \}$. The following specifications are made
 \begin{align*}
@@ -720,7 +720,7 @@ $\omega$ & : & the rate of Gamma prior for $\theta^{-1}$\\[0.5cm]
 \multicolumn{3}{l}{\textbf{Model-related}}\\
 & \texttt{Formula} & a \texttt{Formula} object that corresponds to $h_g$, for $g\in\{1,2,3\}$: $y_1+\delta_1 | y_2+\delta_2 \sim x_1 | x_2 | x_3$.\\
 &\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{Formula} below.\\
-& \texttt{model}& \verb|c("Markov","Weibull")| for Markov definition of $h_3$ in (\ref{Markov}); \verb|c("semi-Markov","Weibull")| for semi-Markov definition of $h_3$ in (\ref{semiMarkov}). \\[.12cm]
+& \texttt{model}& \verb|c("Markov","Weibull")| for Markov definition of $h_3$ in (\ref{BayesID_HRegMarkov}); \verb|c("semi-Markov","Weibull")| for semi-Markov definition of $h_3$ in (\ref{BayesID_HRegsemiMarkov}). \\[.12cm]
 \multicolumn{3}{l}{\textbf{Hyperparameters}}\\
 &\texttt{WB.ab1} & a 2-vector of positive hyperparameters $a_1$ and $b_1$ of the prior distribution for the shape parameter $\alpha_1$ of the Weibull baseline hazard. Example: \texttt{WB.ab1 <- c(0.5, 0.01)}.  \\
 &\texttt{WB.ab2} & a 2-vector of positive hyperparameters $a_2$ and $b_2$ of the prior for $\alpha_2$.\\
@@ -797,17 +797,17 @@ plot(pred_WB, plot.est="Surv")
 \noindent{\large \textbf{Definition of the survival model}}\\
 \noindent Let $t_{i1}$ and $t_{i2}$ denote the time to nonterminal event and terminal event from subject $i=1,\dots,n$, subject to right censoring at time $c_i$. Let $(y_{i1},y_{i2},\delta_{i1},\delta_{i2},x_{i})$ denote independent observations, where $y_{i1}=\min\left(t_{i1},t_{i2},c_i \right)$, $\delta_{i1}=\mathbbm{1}\left\{t_{i1}\le \min\left(t_{i2},c_i \right) \right\}$, $y_{i2}=\min\left(t_{i2},c_i \right)$, $\delta_{i2}=\mathbbm{1}\left\{t_{i2}\le c_i \right\}$, and $x_i$ is a vector of covariates for individual $i$. The independent semi-competing risks data are assumed to arise from an illness-death model system with transitions that are modeled through the following three hazard functions:
 \begin{eqnarray}
-h_1(t_{i1}|\gamma_{ji}, x_{i1}) & = \gamma_{ji} h_{01}(t_{i1})\exp\left(x_{i1}^\top\beta_1 \right),~t_{i1}>0,\label{1}\\
-h_2(t_{i2}|\gamma_{ji}, x_{i2}) & = \gamma_{ji} h_{02}(t_{i2})\exp\left(x_{i2}^\top\beta_2 \right),~t_{i2}>0,\label{2}\\
-h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2})\exp\left(x_{i3}^\top\beta_3 \right),~t_{i2}>0,\label{Markov}
+h_1(t_{i1}|\gamma_{ji}, x_{i1}) & = \gamma_{ji} h_{01}(t_{i1})\exp\left(x_{i1}^\top\beta_1 \right),~t_{i1}>0,\label{BayesID_HRegP1}\\
+h_2(t_{i2}|\gamma_{ji}, x_{i2}) & = \gamma_{ji} h_{02}(t_{i2})\exp\left(x_{i2}^\top\beta_2 \right),~t_{i2}>0,\label{BayesID_HRegP2}\\
+h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2})\exp\left(x_{i3}^\top\beta_3 \right),~t_{i2}>0,\label{BayesID_HRegPMarkov}
 \end{eqnarray}
 where $\gamma_{ji}$ is a subject-specific frailty with vectors of covariates $x_{i1}$,  $x_{i2}$ and  $x_{i3}$ which are subsets of $x_i$. The baseline hazard $h_0$ is defined non-parametrically by a mixture of piecewise exponential functions as follows
 $$\lambda_0(t) = \log{h_0(t)} = \displaystyle\sum_{k=1}^{K+1} \lambda_k \mathbbm{1}\left\{t\in (s_{k-1},s_k]\right\},$$
-where $\lambda_k$ is constant and the time interval between 0 and the largest observed failure time, denoted $s_k$, is partitioned into $K+1$ disjoint intervals: $0<s_1<\dots < s_{K+1}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{i1}$; we will refer to the set of conditional hazard functions in  (\ref{1})-(\ref{Markov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
+where $\lambda_k$ is constant and the time interval between 0 and the largest observed failure time, denoted $s_k$, is partitioned into $K+1$ disjoint intervals: $0<s_1<\dots < s_{K+1}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{i1}$; we will refer to the set of conditional hazard functions in  (\ref{BayesID_HRegP1})-(\ref{BayesID_HRegPMarkov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
 \begin{eqnarray}
-h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2}-t_{i1})\exp\left(x_{i3}^\top\beta_3 \right),~0<t_{i1}<t_{i2}.\label{semiMarkov}
+h_3(t_{i2}|t_{i1}, \gamma_{ji}, x_{i3}) & = \gamma_{ji} h_{03}(t_{i2}-t_{i1})\exp\left(x_{i3}^\top\beta_3 \right),~0<t_{i1}<t_{i2}.\label{BayesID_HRegPsemiMarkov}
 \end{eqnarray} 
-We will refer to the set of conditional hazard functions in (\ref{1}), (\ref{2}) and (\ref{semiMarkov}) as the semi-Markov model.
+We will refer to the set of conditional hazard functions in (\ref{BayesID_HRegP1}), (\ref{BayesID_HRegP2}) and (\ref{BayesID_HRegPsemiMarkov}) as the semi-Markov model.
 
 In the Bayesian framework, priors must be specified for the regression parameter, $\beta$, the number of intervals, $K$, the partition points $(s_1,\dots,s_{K+1})$, and the frailty, $\gamma_{ji}$,  respectively.
 The following specifications are made
@@ -839,7 +839,7 @@ $\omega$ & : & the rate of Gamma prior for $\theta^{-1}$\\[0.5cm]
 \multicolumn{3}{l}{\textbf{Model-related}}\\
 & \texttt{Formula} & a \texttt{Formula} object that corresponds to $h_g$, for $g\in\{1,2,3\}$: $y_1+\delta_1 | y_2+\delta_2 \sim x_1 | x_2 | x_3$.\\
 &\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{Formula} below.\\
-& \texttt{model}& \verb|c("Markov","PEM")| for Markov definition of $h_3$ in (\ref{Markov}); \verb|c("semi-Markov","PEM")| for semi-Markov definition of $h_3$ in (\ref{semiMarkov}).\\[.12cm]
+& \texttt{model}& \verb|c("Markov","PEM")| for Markov definition of $h_3$ in (\ref{BayesID_HRegPMarkov}); \verb|c("semi-Markov","PEM")| for semi-Markov definition of $h_3$ in (\ref{BayesID_HRegPsemiMarkov}).\\[.12cm]
 \multicolumn{3}{l}{\textbf{Hyperparameters}}\\
 &\texttt{PEM.ab1} & a 2-vector of positive hyperparameters $a_1$ and $b_1$ which represent the shape and rate of the Gamma prior for $\sigma_{\lambda,1}^{-2}$. Example: \texttt{PEM.ab1 <- c(0.7,0.7)}.   \\
 &\texttt{PEM.ab2} & a 2-vector of positive hyperparameters $a$ and $b$ of the prior distribution for $\sigma_{\lambda,2}^{-2}$.   \\
@@ -1185,15 +1185,15 @@ plot(pred_DPM, plot.est="Surv")
 \noindent{\large \textbf{Definition of the survival model}}\\
 \noindent Let $t_{ji1}$ and $t_{ji2}$ denote the time to nonterminal event and terminal event from subject $i=1,\dots,n_j$ in cluster $j=1,\dots, J$, subject to right censoring at time $c_{ji}$. Let $(y_{ji1},y_{ji2},\delta_{ji1},\delta_{ji2},x_{ji})$ denote independent observations, where $y_{ji1}=\min\left(t_{ji1},t_{ji2},c_{ji} \right)$, $\delta_{ji1}=\mathbbm{1}\left\{t_{ji1}\le \min\left(t_{ji2},c_{ji} \right) \right\}$, $y_{ji2}=\min\left(t_{ji2},c_{ji} \right)$, $\delta_{ji2}=\mathbbm{1}\left\{t_{ji2}\le c_{ji} \right\}$, and $x_{ji}$ is a vector of covariates for individual $i$. The independent semi-competing risks data are assumed to arise from an illness-death model system with transitions that are modeled through the following three hazard functions:
 \begin{eqnarray}
-h_1(t_{ji1}|\gamma_{ji}, x_{ji1}, V_{j1}) & = \gamma_{ji} h_{01}(t_{ji1})\exp\left(x_{ji1}^\top\beta_1 +  V_{j1}\right),~t_{ji1}>0,\label{1}\\
-h_2(t_{ji2}|\gamma_{ji}, x_{ji2}, V_{j2}) & = \gamma_{ji} h_{02}(t_{ji2})\exp\left(x_{ji2}^\top\beta_2 +  V_{j2} \right),~t_{ji2}>0,\label{2}\\
-h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2})\exp\left(x_{ji3}^\top\beta_3 +  V_{j3}\right),~t_{ji2}>0,\label{Markov}
+h_1(t_{ji1}|\gamma_{ji}, x_{ji1}, V_{j1}) & = \gamma_{ji} h_{01}(t_{ji1})\exp\left(x_{ji1}^\top\beta_1 +  V_{j1}\right),~t_{ji1}>0,\label{BayesID_HRegCW1}\\
+h_2(t_{ji2}|\gamma_{ji}, x_{ji2}, V_{j2}) & = \gamma_{ji} h_{02}(t_{ji2})\exp\left(x_{ji2}^\top\beta_2 +  V_{j2} \right),~t_{ji2}>0,\label{BayesID_HRegCW2}\\
+h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2})\exp\left(x_{ji3}^\top\beta_3 +  V_{j3}\right),~t_{ji2}>0,\label{BayesID_HRegCWMarkov}
 \end{eqnarray}
-where $\gamma_{ji}$ is a subject-specific frailty, $V_j=(V_{j1}, V_{j2}, V_{j3})$ is a vector of cluster-specific random effects, and$x_{ji1}$,  $x_{ji2}$ and  $x_{ji3}$ which are subsets of $x_i$ are vectors of covariates. The baseline hazard functions are defined parametrically by Weibull hazards of the form $h_{0g}(t)=\alpha_g \kappa_g t^{\alpha_g-1}$, for $g\in\{1,2,3 \}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{ji1}$; we will refer to the set of conditional hazard functions in  (\ref{1})-(\ref{Markov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
+where $\gamma_{ji}$ is a subject-specific frailty, $V_j=(V_{j1}, V_{j2}, V_{j3})$ is a vector of cluster-specific random effects, and$x_{ji1}$,  $x_{ji2}$ and  $x_{ji3}$ which are subsets of $x_i$ are vectors of covariates. The baseline hazard functions are defined parametrically by Weibull hazards of the form $h_{0g}(t)=\alpha_g \kappa_g t^{\alpha_g-1}$, for $g\in\{1,2,3 \}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{ji1}$; we will refer to the set of conditional hazard functions in  (\ref{BayesID_HRegCW1})-(\ref{BayesID_HRegCWMarkov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
 \begin{eqnarray}
-h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2}-t_{ji1})\exp\left(x_{ji3}^\top\beta_3 +  V_{j3}\right),~0<t_{ji1}<t_{ji2}.\label{semiMarkov}
+h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2}-t_{ji1})\exp\left(x_{ji3}^\top\beta_3 +  V_{j3}\right),~0<t_{ji1}<t_{ji2}.\label{BayesID_HRegCWsemiMarkov}
 \end{eqnarray} 
-We will refer to the set of conditional hazard functions in (\ref{1}), (\ref{2}) and (\ref{semiMarkov}) as the semi-Markov model.
+We will refer to the set of conditional hazard functions in (\ref{BayesID_HRegCW1}), (\ref{BayesID_HRegCW2}) and (\ref{BayesID_HRegCWsemiMarkov}) as the semi-Markov model.
 
 In the Bayesian framework, priors must be specified for the regression parameter, $\beta_g$, the shape and scale parameters of baseline hazard function, $\alpha_g$ and $\kappa_g$, and the frailty parameter, $\gamma_{ji}$, respectively, for $g\in\{1,2,3 \}$. The following specifications are made
 \begin{align*}
@@ -1235,7 +1235,7 @@ $a_\tau$,  $b_\tau$ & : & shape and rate of Gamma hyperprior for $\tau$ (DPM pri
 \multicolumn{3}{l}{\textbf{Model-related}}\\
 & \texttt{Formula} & a \texttt{Formula} object that corresponds to $h_g$, for $g\in\{1,2,3\}$: $y_1+\delta_1 | y_2+\delta_2 \sim x_1 | x_2 | x_3$.\\
 &\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{Formula}.\\
-& \texttt{model}& \verb|c("Markov","Weibull")| for Markov definition of $h_3$ in (\ref{Markov}); \verb|c("semi-Markov","Weibull")| for semi-Markov definition of $h_3$ in (\ref{semiMarkov}). \\
+& \texttt{model}& \verb|c("Markov","Weibull")| for Markov definition of $h_3$ in (\ref{BayesID_HRegCWMarkov}); \verb|c("semi-Markov","Weibull")| for semi-Markov definition of $h_3$ in (\ref{BayesID_HRegCWsemiMarkov}). \\
 &\texttt{id}& an $n$-vector of cluster information where cluster membership corresponds to one of the positive integers $1,\dots, J$.\\[.12cm]
 \multicolumn{3}{l}{\textbf{Hyperparameters}}\\
 &\texttt{WB.ab1} & a 2-vector of positive hyperparameters $a_1$ and $b_1$ of the prior distribution for the shape parameter $\alpha_1$ of the Weibull baseline hazard. Example: \texttt{WB.ab1 <- c(0.5, 0.01)}.  \\
@@ -1362,11 +1362,11 @@ h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2
 \end{eqnarray}
 where $\gamma_{ji}$ is a subject-specific frailty, $V_j=(V_{j1}, V_{j2}, V_{j3})$ is a vector of cluster-specific random effects, and$x_{ji1}$,  $x_{ji2}$ and  $x_{ji3}$ which are subsets of $x_i$ are vectors of covariates. The baseline hazard $h_0$ is defined non-parametrically by a mixture of piecewise exponential functions as follows
 $$\lambda_0(t) = \log{h_0(t)} = \displaystyle\sum_{k=1}^{K+1} \lambda_k \mathbbm{1}\left\{t\in (s_{k-1},s_k]\right\},$$
-where $\lambda_k$ is constant and the time interval between 0 and the largest observed failure time, denoted $s_k$, is partitioned into $K+1$ disjoint intervals: $0<s_1<\dots < s_{K+1}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{i1}$; we will refer to the set of conditional hazard functions in  (\ref{1})-(\ref{Markov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
+where $\lambda_k$ is constant and the time interval between 0 and the largest observed failure time, denoted $s_k$, is partitioned into $K+1$ disjoint intervals: $0<s_1<\dots < s_{K+1}$. The baseline hazard function $h_{03}$ is assumed to be Markov with respect to $t_{i1}$; we will refer to the set of conditional hazard functions in  (\ref{BayesID_HRegCW1})-(\ref{BayesID_HRegCWMarkov}) as the Markov model. Alternatively, we consider modeling $h_3$ as follows:
 \begin{eqnarray}
 h_3(t_{ji2}|t_{ji1}, \gamma_{ji}, x_{ji3}, V_{j3}) & = \gamma_{ji} h_{03}(t_{ji2}-t_{ji1})\exp\left(x_{ji3}^\top\beta_3 +  V_{j3}\right),~0<t_{ji1}<t_{ji2}.\label{semiMarkov}
 \end{eqnarray} 
-We will refer to the set of conditional hazard functions in (\ref{1}), (\ref{2}) and (\ref{semiMarkov}) as the semi-Markov model.
+We will refer to the set of conditional hazard functions in (\ref{BayesID_HRegCW1}), (\ref{BayesID_HRegCW2}) and (\ref{BayesID_HRegCWsemiMarkov}) as the semi-Markov model.
 
 In the Bayesian framework, priors must be specified for the regression parameter, $\beta$, the number of intervals, $K$, the partition points $(s_1,\dots,s_{K+1})$, and the frailty, $\gamma_{ji}$,  respectively.
 The following specifications are made
@@ -1413,7 +1413,7 @@ $a_\tau$,  $b_\tau$ & : & shape and rate of Gamma hyperprior for $\tau$ (DPM pri
 \multicolumn{3}{l}{\textbf{Model-related}}\\
 & \texttt{Formula} & a \texttt{Formula} object that corresponds to $h_g$, for $g\in\{1,2,3\}$: $y_1+\delta_1 | y_2+\delta_2 \sim x_1 | x_2 | x_3$.\\
 &\texttt{data} & an $(n\times q)$-dimensional data.frame; the $q$-columns correspond to $q$ covariate vectors named in the formula in \texttt{Formula}.\\
-& \texttt{model}& \verb|c("Markov","PEM")| for Markov definition of $h_3$ in (\ref{Markov}); \verb|c("semi-Markov","PEM")| for semi-Markov definition of $h_3$ in (\ref{semiMarkov}). \\
+& \texttt{model}& \verb|c("Markov","PEM")| for Markov definition of $h_3$ in (\ref{BayesID_HRegCWMarkov}); \verb|c("semi-Markov","PEM")| for semi-Markov definition of $h_3$ in (\ref{BayesID_HRegCWsemiMarkov}). \\
 &\texttt{id}& an $n$-vector of cluster information where cluster membership corresponds to one of the positive integers $1,\dots, J$.\\ \\[.12cm]
 \multicolumn{3}{l}{\textbf{Hyperparameters}}\\
 &\texttt{PEM.ab1} & a 2-vector of positive hyperparameters $a_1$ and $b_1$ which represent the shape and rate of the Gamma prior for $\sigma_{\lambda,1}^{-2}$. Example: \texttt{PEM.ab1 <- c(0.7,0.7)}.   \\

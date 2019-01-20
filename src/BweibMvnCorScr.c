@@ -27,37 +27,37 @@
 
 /* */
 void BweibMvnCorScrmcmc(double survData[],
-                  int *n,
-                  int *p1,
-                  int *p2,
-                  int *p3,
-                  int *J,
-                  double nj[],
-                  double hyperParams[],
-                  double mcmcParams[],
-                  double startValues[],
-                  int *numReps,
-                  int *thin,
-                  double *burninPerc,
-                  int *nGam_save,
-                  double samples_beta1[],
-                  double samples_beta2[],
-                  double samples_beta3[],
-                  double samples_alpha1[],
-                  double samples_alpha2[],
-                  double samples_alpha3[],
-                  double samples_kappa1[],
-                  double samples_kappa2[],
-                  double samples_kappa3[],
-                  double samples_nu2[],
-                  double samples_nu3[],
-                  double samples_theta[],
-                  double samples_V1[],
-                  double samples_V2[],
-                  double samples_V3[],
-                  double samples_Sigma_V[],
-                      double samples_gamma[],                        
-                  double samples_misc[],
+                        int *n,
+                        int *p1,
+                        int *p2,
+                        int *p3,
+                        int *J,
+                        double nj[],
+                        double hyperParams[],
+                        double mcmcParams[],
+                        double startValues[],
+                        int *numReps,
+                        int *thin,
+                        double *burninPerc,
+                        int *nGam_save,
+                        double samples_beta1[],
+                        double samples_beta2[],
+                        double samples_beta3[],
+                        double samples_alpha1[],
+                        double samples_alpha2[],
+                        double samples_alpha3[],
+                        double samples_kappa1[],
+                        double samples_kappa2[],
+                        double samples_kappa3[],
+                        double samples_nu2[],
+                        double samples_nu3[],
+                        double samples_theta[],
+                        double samples_V1[],
+                        double samples_V2[],
+                        double samples_V3[],
+                        double samples_Sigma_V[],
+                        double samples_gamma[],
+                        double samples_misc[],
                         double gammaP[],
                         double dev[],
                         double invLH[],
@@ -67,13 +67,12 @@ void BweibMvnCorScrmcmc(double survData[],
                         double moveVec[])
 {
     GetRNGstate();
-    
-    
+
     time_t now;
     
     int i, j, MM;
     int lastChgProp = 0;
-
+    
     
     /* Survival Data */
     
@@ -90,7 +89,7 @@ void BweibMvnCorScrmcmc(double survData[],
         gsl_vector_set(survEvent2, i, survData[(3* *n) + i]);
         gsl_vector_set(cluster, i, survData[(4* *n) + i]);
     }
-
+    
     int nP1, nP2, nP3;
     
     if(*p1 > 0) nP1 = *p1;
@@ -156,7 +155,7 @@ void BweibMvnCorScrmcmc(double survData[],
     {
         gsl_vector_set(n_j, j, nj[j]);
     }
-
+    
     
     
     /* Hyperparameters */
@@ -176,9 +175,9 @@ void BweibMvnCorScrmcmc(double survData[],
     double psi      = hyperParams[12];
     double omega    = hyperParams[13];
     double rho_v    = hyperParams[14];
-
     
-
+    
+    
     gsl_matrix *Psi_v = gsl_matrix_calloc(3,3);
     for(i = 0; i < 3; i++)
     {
@@ -188,23 +187,23 @@ void BweibMvnCorScrmcmc(double survData[],
         }
     }
     
-
     
-
+    
+    
     /* varialbes for M-H step */
     
     double mhProp_alpha1_var = mcmcParams[0];
     double mhProp_alpha2_var = mcmcParams[1];
     double mhProp_alpha3_var = mcmcParams[2];
     double mhProp_theta_var  = mcmcParams[3];
-
+    
     double mhProp_V1_var  = mcmcParams[5];
     double mhProp_V2_var  = mcmcParams[6];
     double mhProp_V3_var  = mcmcParams[7];
-
+    
     
     gsl_vector *mhGam_chk = gsl_vector_calloc(*n); /* 0=RW, 1=IP */
-
+    
     
     
     /* Starting values */
@@ -263,9 +262,9 @@ void BweibMvnCorScrmcmc(double survData[],
             gsl_matrix_set(Sigma_V, j, i, startValues[*p1 + *p2 + *p3 + *n + 9 + *J*3 + i*3 + j]);
         }
     }
-   
     
-
+    
+    
     /* Variables required for storage of samples */
     
     int StoreInx;
@@ -277,7 +276,7 @@ void BweibMvnCorScrmcmc(double survData[],
     gsl_vector *accept_gamma    = gsl_vector_calloc(*n);
     gsl_vector *accept_V1       = gsl_vector_calloc(*J);
     gsl_vector *accept_V2       = gsl_vector_calloc(*J);
-    gsl_vector *accept_V3       = gsl_vector_calloc(*J);    
+    gsl_vector *accept_V3       = gsl_vector_calloc(*J);
     
     int accept_alpha1 = 0;
     int accept_alpha2 = 0;
@@ -293,10 +292,6 @@ void BweibMvnCorScrmcmc(double survData[],
     gsl_vector *beta2_mean = gsl_vector_calloc(nP2);
     gsl_vector *beta3_mean = gsl_vector_calloc(nP3);
     
-
-
-
-    
     gsl_vector *gamma_mean = gsl_vector_calloc(*n);
     
     gsl_vector *V1_mean = gsl_vector_calloc(*J);
@@ -309,10 +304,6 @@ void BweibMvnCorScrmcmc(double survData[],
     gsl_vector *invLH_mean = gsl_vector_calloc(*n);
     gsl_vector *cpo_vec = gsl_vector_calloc(*n);
     
-
-
-
-    
     double invLHval, lpml_temp;
     
     double alpha1_mean = 0;
@@ -322,11 +313,7 @@ void BweibMvnCorScrmcmc(double survData[],
     double kappa2_mean = 0;
     double kappa3_mean = 0;
     double theta_mean = 0;
-
     
-    
-
-
     
     /* Compute probabilities for various types of moves */
     
@@ -364,7 +351,7 @@ void BweibMvnCorScrmcmc(double survData[],
     pVP  = 1-(pRP1 + pRP2 + pRP3 + pSH1 + pSH2 + pSH3 + pSC1 + pSC2 + pSC3 + pDP + pFP + pMP + pCP1 + pCP2 + pCP3);
     
     
-            
+    
     
     for(MM = 0; MM < *numReps; MM++)
     {
@@ -395,9 +382,9 @@ void BweibMvnCorScrmcmc(double survData[],
         
         moveVec[MM] = (double) move;
         
-        /* updating regression parameter: beta1 
-        
-        move = 100;*/  
+        /* updating regression parameter: beta1
+         
+         move = 100;*/
         
         if(move == 1)
         {
@@ -406,160 +393,160 @@ void BweibMvnCorScrmcmc(double survData[],
         
         
         
-        /* updating regression parameter: beta2  
-        
-        move = 200; */  
+        /* updating regression parameter: beta2
+         
+         move = 200; */
         
         if(move == 2)
         {
             BweibMvnCorScr_updateRP2(beta2, &alpha2, &kappa2, &nu2, gamma, V2, survTime1, case01, cluster, survCov2, accept_beta2);
         }
-
+        
+        
+        
+        /* updating regression parameter: beta3
          
-        
-        /* updating regression parameter: beta3 
-        
-        move = 30;  */  
+         move = 30;  */
         
         if(move == 3)
         {
             BweibMvnCorScr_updateRP3(beta3, &alpha3, &kappa3, &nu3, gamma, V3, survTime1, survTime2, case11, cluster, survCov3, accept_beta3);
         }
-
+        
         
         /* updating shape parameter: alpha1
-        
-        move = 40;       */  
+         
+         move = 40;       */
         
         if(move == 4)
         {
             BweibMvnCorScr_updateSC1_rw2(beta1, &alpha1, &kappa1, gamma, V1, survTime1, survEvent1, cluster, survCov1, mhProp_alpha1_var, a1, b1, &accept_alpha1);
         }
-
-         
-         
+        
+        
+        
         
         /* updating shape parameter: alpha2
-        
-        move = 50;       */  
+         
+         move = 50;       */
         
         if(move == 5)
         {
             BweibMvnCorScr_updateSC2_rw2(beta2, &alpha2, &kappa2, &nu2, gamma, V2, survTime1, survTime2, case01, cluster, survCov2, mhProp_alpha2_var, a2, b2, &accept_alpha2);
         }
-       
-  
-
-
-        /* updating shape parameter: alpha3  
         
-        move = 60;        */       
+        
+        
+        
+        /* updating shape parameter: alpha3
+         
+         move = 60;        */
         
         if(move == 6)
         {
             BweibMvnCorScr_updateSC3_rw2(beta3, &alpha3, &kappa3, &nu3, gamma, V3, survTime1, survTime2, case11, cluster, survCov3, mhProp_alpha3_var, a3, b3, &accept_alpha3);
         }
-  
-
+        
+        
+        
+        
+        /* updating shape parameter: kappa1
          
-
-        /* updating shape parameter: kappa1 
-  
-        move = 70;     */
+         move = 70;     */
         
         if(move == 7)
         {
             BweibMvnCorScr_updateSH1(beta1, &alpha1, &kappa1, gamma, V1, survTime1, survEvent1, cluster, survCov1, c1, d1);
         }
-
-  
         
+        
+        
+        
+        /* updating shape parameter: kappa2
          
-        /* updating shape parameter: kappa2 
-        
-        move = 80;         */        
+         move = 80;         */
         
         if(move == 8)
         {
             BweibMvnCorScr_updateSH2(beta2, &alpha2, &kappa2, &nu2, gamma, V2, survTime1, case01, cluster, survCov2, c2, d2);
         }
+        
+        
+        
+        
+        /* updating shape parameter: kappa3
          
-
-
-        
-        /* updating shape parameter: kappa3 
-        
-        move = 90;        */ 
+         move = 90;        */
         
         if(move == 9)
         {
             BweibMvnCorScr_updateSH3(beta3, &alpha3, &kappa3, &nu3, gamma, V3, survTime1, survTime2, case11, cluster, survCov3, c3, d3);
         }
-
-
-    
+        
+        
+        
         
         
         
         
         /* updating variance parameter: theta
-        
-        move = 100;        */  
+         
+         move = 100;        */
         
         if(move == 10)
         {
             BweibMvnCorScr_updateDP(gamma, &theta, mhProp_theta_var, psi, omega, &accept_theta);
         }
+        
+        
+        
+        
+        
+        /* updating frailty parameter: gamma
          
-
-
+         move = 110;*/
         
-        
-        /* updating frailty parameter: gamma      
-        
-        move = 110;*/           
-         
         if(move == 11)
         {
-
-             BweibMvnCorScr_updateFP_Gibbs(beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, theta, gamma, V1, V2, V3, survTime1, survTime2, survEvent1, survEvent2, cluster, survCov1, survCov2, survCov3);
+            
+            BweibMvnCorScr_updateFP_Gibbs(beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, theta, gamma, V1, V2, V3, survTime1, survTime2, survEvent1, survEvent2, cluster, survCov1, survCov2, survCov3);
             
         }
-
         
         
-
-
-
         
         
-        /* updating nu2 and nu3 
         
-        move = 120;   */  
+        
+        
+        
+        /* updating nu2 and nu3
+         
+         move = 120;   */
         
         if(move == 12000)
         {
             BweibMvnCorScr_updateMP(beta2, beta3, &alpha2, &alpha3, &kappa2, &kappa3, &nu2, &nu3, gamma, V2, V3, survTime1, survTime2, case01, case11, cluster, survCov2, survCov3, &accept_nu2, &accept_nu3);
         }
         
-
         
         
         
-        /* updating cluster-specific random effect: V1   
+        
+        /* updating cluster-specific random effect: V1
          
          move = 130;*/
-    
+        
         if(move == 13)
         {
             BweibMvnCorScr_updateCP1_amcmc(beta1, alpha1, kappa1, gamma, V1, V2, V3, Sigma_V, survTime1, survEvent1, cluster, survCov1, n_j, accept_V1, mhProp_V1_var);
- 
+            
         }
         
         
         
-        /* updating cluster-specific random effect: V2 
-        
+        /* updating cluster-specific random effect: V2
+         
          move = 140; */
         
         if(move == 14)
@@ -567,27 +554,27 @@ void BweibMvnCorScrmcmc(double survData[],
             BweibMvnCorScr_updateCP2_amcmc(beta2, alpha2, kappa2, nu2, gamma, V1, V2, V3, Sigma_V, survTime1, case01, cluster, survCov2, n_j, accept_V2, mhProp_V2_var);
         }
         
-
-        /* updating cluster-specific random effect: V3 
         
-        
-        move = 150;*/
+        /* updating cluster-specific random effect: V3
+         
+         
+         move = 150;*/
         
         if(move == 15)
         {
             BweibMvnCorScr_updateCP3_amcmc(beta3, alpha3, kappa3, nu3, gamma, V1, V2, V3, Sigma_V, survTime1, survTime2, case11, cluster, survCov3, n_j, accept_V3, mhProp_V3_var);
         }
-
+        
         
         
         /* updating variance covariance matrix of cluster-specific random effect: Sigma_V x
-        
-        
-        move = 160;*/
+         
+         
+         move = 160;*/
         
         if(move == 16)
         {
-             BweibMvnCorScr_updateVP(V1, V2, V3, Sigma_V, rho_v, Psi_v);   
+            BweibMvnCorScr_updateVP(V1, V2, V3, Sigma_V, rho_v, Psi_v);
         }
         
         
@@ -595,9 +582,9 @@ void BweibMvnCorScrmcmc(double survData[],
         
         
         /*        */
-       
-
-
+        
+        
+        
         
         
         /* Storing posterior samples */
@@ -606,7 +593,7 @@ void BweibMvnCorScrmcmc(double survData[],
         if( ( (MM+1) % *thin ) == 0 && (MM+1) > (*numReps * *burninPerc))
         {
             StoreInx = (MM+1)/(*thin)- (*numReps * *burninPerc)/(*thin);
- 
+            
             samples_alpha1[StoreInx - 1] = alpha1;
             samples_alpha2[StoreInx - 1] = alpha2;
             samples_alpha3[StoreInx - 1] = alpha3;
@@ -619,7 +606,7 @@ void BweibMvnCorScrmcmc(double survData[],
             samples_nu3[StoreInx - 1] = nu3;
             
             samples_theta[StoreInx - 1] = theta;
- 
+            
             if(*p1 >0)
             {
                 for(j = 0; j < *p1; j++) samples_beta1[(StoreInx - 1) * (*p1) + j] = gsl_vector_get(beta1, j);
@@ -645,15 +632,15 @@ void BweibMvnCorScrmcmc(double survData[],
                 }
             }
             
-
-                for(i = 0; i < *nGam_save; i++)
-                {
-                    samples_gamma[(StoreInx - 1) * (*nGam_save) + i] = gsl_vector_get(gamma, i);
-                }
-
+            
+            for(i = 0; i < *nGam_save; i++)
+            {
+                samples_gamma[(StoreInx - 1) * (*nGam_save) + i] = gsl_vector_get(gamma, i);
+            }
             
             
-            /* deviance */            
+            
+            /* deviance */
             
             
             BweibMvnCorScr_logMLH(beta1, beta2, beta3, alpha1, alpha2, alpha3, kappa1, kappa2, kappa3, theta, V1, V2, V3, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, cluster, &logLH);
@@ -719,12 +706,12 @@ void BweibMvnCorScrmcmc(double survData[],
             kappa3_mean = ((double) StoreInx - 1) * kappa3_mean;
             kappa3_mean = kappa3_mean + kappa3;
             kappa3_mean = kappa3_mean/((double) StoreInx);
-
+            
             theta_mean = ((double) StoreInx - 1) * theta_mean;
             theta_mean = theta_mean + theta;
             theta_mean = theta_mean/((double) StoreInx);
             
-                        
+            
             /* CPO_i */
             
             for(i = 0; i < *n; i++)
@@ -734,21 +721,12 @@ void BweibMvnCorScrmcmc(double survData[],
                 invLHval = 1/exp(invLHval);
                 
                 gsl_vector_set(invLH_vec, i, invLHval);
-
+                
             }
             
-                        
-            
-            
             gsl_vector_scale(invLH_mean, (double) StoreInx - 1);
-            
-            
             gsl_vector_add(invLH_mean, invLH_vec);
-            
-            
             gsl_vector_scale(invLH_mean, (double)1/StoreInx);
-            
-            
             
             for(i = 0; i < *n; i++)
             {
@@ -764,63 +742,53 @@ void BweibMvnCorScrmcmc(double survData[],
             
             lpml[StoreInx - 1] = lpml_temp;
             
-            
-            
-            
-            
-            
-            
         }
         
-        
-        
-        
         if(MM == (*numReps - 1))
+        {
+            if(*p1 >0)
             {
-                if(*p1 >0)
-                {
-                    for(j = 0; j < *p1; j++) samples_misc[j] = (int) gsl_vector_get(accept_beta1, j);
-                }
-                if(*p2 >0)
-                {
-                    for(j = 0; j < *p2; j++) samples_misc[*p1 + j] = (int) gsl_vector_get(accept_beta2, j);
-                }
-                if(*p3 >0)
-                {
-                for(j = 0; j < *p3; j++) samples_misc[*p1 + *p2 + j] = (int) gsl_vector_get(accept_beta3, j);
-                }
-                samples_misc[*p1 + *p2 + *p3]       = accept_alpha1;
-                samples_misc[*p1 + *p2 + *p3 + 1]   = accept_alpha2;
-                samples_misc[*p1 + *p2 + *p3 + 2]   = accept_alpha3;
-                samples_misc[*p1 + *p2 + *p3 + 3]   = accept_theta;
-                samples_misc[*p1 + *p2 + *p3 + 4]   = accept_nu2;
-                samples_misc[*p1 + *p2 + *p3 + 5]   = accept_nu3;
-                
-                for(j = 0; j < *n; j++) samples_misc[*p1 + *p2 + *p3 + 6 + j] = (int) gsl_vector_get(accept_gamma, j);
-                
-                samples_misc[*p1 + *p2 + *p3 + 5 + *n + 1]   = lastChgProp;
-                
-                for(i = 0; i < *n; i++) samples_misc[*p1 + *p2 + *p3 + 7 + *n + i] = (int) gsl_vector_get(mhGam_chk, i);
-                
-                for(i = 0; i < *J; i++) samples_misc[*p1 + *p2 + *p3 + 7 + *n + *n + i] = (int) gsl_vector_get(accept_V1, i);
-                for(i = 0; i < *J; i++) samples_misc[*p1 + *p2 + *p3 + 7 + *n + *n + *J + i] = (int) gsl_vector_get(accept_V2, i);
-                for(i = 0; i < *J; i++) samples_misc[*p1 + *p2 + *p3 + 7 + *n + *n + *J + *J + i] = (int) gsl_vector_get(accept_V3, i);
-                
-                
-                for(i = 0; i < *n; i++)
-                {
-                    gammaP[i] = gsl_vector_get(gamma_mean, i);
-                }
-                
-                for(i = 0; i < *n; i++)
-                {
-                    invLH[i] = gsl_vector_get(invLH_mean, i);
-                }
-                
-                
-                BweibMvnCorScr_logMLH(beta1_mean, beta2_mean, beta3_mean, alpha1_mean, alpha2_mean, alpha3_mean, kappa1_mean, kappa2_mean, kappa3_mean, theta_mean, V1_mean, V2_mean, V3_mean, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, cluster, logLH_fin);
-                
+                for(j = 0; j < *p1; j++) samples_misc[j] = (int) gsl_vector_get(accept_beta1, j);
             }
+            if(*p2 >0)
+            {
+                for(j = 0; j < *p2; j++) samples_misc[*p1 + j] = (int) gsl_vector_get(accept_beta2, j);
+            }
+            if(*p3 >0)
+            {
+                for(j = 0; j < *p3; j++) samples_misc[*p1 + *p2 + j] = (int) gsl_vector_get(accept_beta3, j);
+            }
+            samples_misc[*p1 + *p2 + *p3]       = accept_alpha1;
+            samples_misc[*p1 + *p2 + *p3 + 1]   = accept_alpha2;
+            samples_misc[*p1 + *p2 + *p3 + 2]   = accept_alpha3;
+            samples_misc[*p1 + *p2 + *p3 + 3]   = accept_theta;
+            samples_misc[*p1 + *p2 + *p3 + 4]   = accept_nu2;
+            samples_misc[*p1 + *p2 + *p3 + 5]   = accept_nu3;
+            
+            for(j = 0; j < *n; j++) samples_misc[*p1 + *p2 + *p3 + 6 + j] = (int) gsl_vector_get(accept_gamma, j);
+            
+            samples_misc[*p1 + *p2 + *p3 + 5 + *n + 1]   = lastChgProp;
+            
+            for(i = 0; i < *n; i++) samples_misc[*p1 + *p2 + *p3 + 7 + *n + i] = (int) gsl_vector_get(mhGam_chk, i);
+            
+            for(i = 0; i < *J; i++) samples_misc[*p1 + *p2 + *p3 + 7 + *n + *n + i] = (int) gsl_vector_get(accept_V1, i);
+            for(i = 0; i < *J; i++) samples_misc[*p1 + *p2 + *p3 + 7 + *n + *n + *J + i] = (int) gsl_vector_get(accept_V2, i);
+            for(i = 0; i < *J; i++) samples_misc[*p1 + *p2 + *p3 + 7 + *n + *n + *J + *J + i] = (int) gsl_vector_get(accept_V3, i);
+            
+            
+            for(i = 0; i < *n; i++)
+            {
+                gammaP[i] = gsl_vector_get(gamma_mean, i);
+            }
+            
+            for(i = 0; i < *n; i++)
+            {
+                invLH[i] = gsl_vector_get(invLH_mean, i);
+            }
+            
+            
+            BweibMvnCorScr_logMLH(beta1_mean, beta2_mean, beta3_mean, alpha1_mean, alpha2_mean, alpha3_mean, kappa1_mean, kappa2_mean, kappa3_mean, theta_mean, V1_mean, V2_mean, V3_mean, survTime1, survTime2, survEvent1, survEvent2, case01, case11, survCov1, survCov2, survCov3, cluster, logLH_fin);
+        }
         
         if( ( (MM+1) % 10000 ) == 0)
         {
@@ -837,28 +805,15 @@ void BweibMvnCorScrmcmc(double survData[],
         }
         
         
-
+        
     }
-
+    
     
     PutRNGstate();
     return;
     
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

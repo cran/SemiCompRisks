@@ -35,15 +35,15 @@ path = NULL)
     {
         id <- data$id
     }
-
-
+    
+    
     for(i in 1:nChain)
     {
         nam <- paste("gam", i, sep = "")
         startValues[[i]]$common$gamma.ji <- data[[nam]]
     }
     
-	mcmc        <- mcmcParams
+    mcmc        <- mcmcParams
     hyperP      <- hyperParams
     mcmcList    <- mcmc
     
@@ -100,7 +100,7 @@ path = NULL)
                 survData <- cbind(Y, Xmat1, Xmat2, Xmat3)
             }
             
-            n	<- dim(survData)[1]
+            n    <- dim(survData)[1]
             
             #if(class(startValues) == "list" & length(startValues) == nChain){
             
@@ -177,83 +177,85 @@ path = NULL)
                         ###
                         
                         mcmcRet <- .C("BweibScrmcmc",
-                        survData 		= as.double(as.matrix(survData)),
-                        n				= as.integer(n),
-                        p1				= as.integer(p1),
-                        p2				= as.integer(p2),
-                        p3				= as.integer(p3),
-                        hyperParams 	= as.double(hyperParams),
-                        mcmcParams		= as.double(mcmcParams),
-                        startValues 	= as.double(startV),
-                        numReps			= as.integer(numReps),
-                        thin			= as.integer(thin),
+                        survData         = as.double(as.matrix(survData)),
+                        n                = as.integer(n),
+                        p1                = as.integer(p1),
+                        p2                = as.integer(p2),
+                        p3                = as.integer(p3),
+                        hyperParams     = as.double(hyperParams),
+                        mcmcParams        = as.double(mcmcParams),
+                        startValues     = as.double(startV),
+                        numReps            = as.integer(numReps),
+                        thin            = as.integer(thin),
                         burninPerc      = as.double(burninPerc),
-                        nGam_save		= as.integer(nGam_save),
-                        samples_beta1 	= as.double(rep(0, nStore*p1)),
-                        samples_beta2 	= as.double(rep(0, nStore*p2)),
-                        samples_beta3 	= as.double(rep(0, nStore*p3)),
-                        samples_alpha1 	= as.double(rep(0, nStore*1)),
-                        samples_alpha2 	= as.double(rep(0, nStore*1)),
-                        samples_alpha3 	= as.double(rep(0, nStore*1)),
-                        samples_kappa1 	= as.double(rep(0, nStore*1)),
-                        samples_kappa2 	= as.double(rep(0, nStore*1)),
-                        samples_kappa3 	= as.double(rep(0, nStore*1)),
-                        samples_theta 	= as.double(rep(0, nStore*1)),
-                        samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
-                        samples_misc	= as.double(rep(0, (p1+p2+p3+4))),
+                        nGam_save        = as.integer(nGam_save),
+                        samples_beta1     = as.double(rep(0, nStore*p1)),
+                        samples_beta2     = as.double(rep(0, nStore*p2)),
+                        samples_beta3     = as.double(rep(0, nStore*p3)),
+                        samples_alpha1     = as.double(rep(0, nStore*1)),
+                        samples_alpha2     = as.double(rep(0, nStore*1)),
+                        samples_alpha3     = as.double(rep(0, nStore*1)),
+                        samples_kappa1     = as.double(rep(0, nStore*1)),
+                        samples_kappa2     = as.double(rep(0, nStore*1)),
+                        samples_kappa3     = as.double(rep(0, nStore*1)),
+                        samples_theta     = as.double(rep(0, nStore*1)),
+                        samples_gamma     = as.double(rep(0, nStore*nGam_save)),
+                        samples_misc    = as.double(rep(0, (p1+p2+p3+4))),
+                        dev                 = as.double(rep(0, nStore*1)),
+                        invLH = as.double(rep(0, n)),
                         moveVec             = as.double(rep(0, numReps)))
                         
                         if(p1 > 0){
-                            beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                            beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                         }
                         if(p1 == 0){
-                            beta1.p 		<- NULL
+                            beta1.p         <- NULL
                         }
                         if(p2 > 0){
-                            beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                            beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                         }
                         if(p2 == 0){
-                            beta2.p 		<- NULL
+                            beta2.p         <- NULL
                         }
                         if(p3 > 0){
-                            beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                            beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                         }
                         if(p3 == 0){
-                            beta3.p 		<- NULL
+                            beta3.p         <- NULL
                         }
                         
-                        alpha1.p 		<- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
-                        alpha2.p 		<- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
-                        alpha3.p 		<- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
-                        kappa1.p 		<- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
-                        kappa2.p 		<- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
-                        kappa3.p 		<- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
-                        theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                        gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                        alpha1.p         <- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
+                        alpha2.p         <- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
+                        alpha3.p         <- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
+                        kappa1.p         <- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
+                        kappa2.p         <- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
+                        kappa3.p         <- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
+                        theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                        gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                         
                         if(p1 > 0){
-                            accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                            accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                         }
                         if(p1 == 0){
-                            accept.beta1 	<- NULL
+                            accept.beta1     <- NULL
                         }
                         if(p2 > 0){
-                            accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                            accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                         }
                         if(p2 == 0){
-                            accept.beta2 	<- NULL
+                            accept.beta2     <- NULL
                         }
                         if(p3 > 0){
-                            accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                            accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                         }
                         if(p3 == 0){
-                            accept.beta3 	<- NULL
+                            accept.beta3     <- NULL
                         }
                         
-                        accept.alpha1	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
-                        accept.alpha2	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
-                        accept.alpha3	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
-                        accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
+                        accept.alpha1    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
+                        accept.alpha2    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
+                        accept.alpha3    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
+                        accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
                         
                         if(nGam_save > 0 & !is.null(path)){
                             save(gamma.p, file = paste(path, "/gammaPch", chain, ".Rdata", sep = ""))
@@ -278,8 +280,17 @@ path = NULL)
                             covNames3 = NULL
                         }
                         
+                        ### posterior predictive checks ###
                         
-                        ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3)
+                        ## 1. log pseudo-marginal likelihood
+                        
+                        invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
+                        
+                        ## 2. deviance information criterion
+                    
+                        dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
+                        
+                        ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, dev.p=dev.p, invLH.p=invLH.p)
                     } # if(model_h3 == "Markov")
                     
                     # model_h3 = "semi-Markov"
@@ -289,83 +300,85 @@ path = NULL)
                         ###
                         
                         mcmcRet <- .C("BweibScrSMmcmc",
-                        survData 		= as.double(as.matrix(survData)),
-                        n				= as.integer(n),
-                        p1				= as.integer(p1),
-                        p2				= as.integer(p2),
-                        p3				= as.integer(p3),
-                        hyperParams 	= as.double(hyperParams),
-                        mcmcParams		= as.double(mcmcParams),
-                        startValues 	= as.double(startV),
-                        numReps			= as.integer(numReps),
-                        thin			= as.integer(thin),
+                        survData         = as.double(as.matrix(survData)),
+                        n                = as.integer(n),
+                        p1                = as.integer(p1),
+                        p2                = as.integer(p2),
+                        p3                = as.integer(p3),
+                        hyperParams     = as.double(hyperParams),
+                        mcmcParams        = as.double(mcmcParams),
+                        startValues     = as.double(startV),
+                        numReps            = as.integer(numReps),
+                        thin            = as.integer(thin),
                         burninPerc      = as.double(burninPerc),
-                        nGam_save		= as.integer(nGam_save),
-                        samples_beta1 	= as.double(rep(0, nStore*p1)),
-                        samples_beta2 	= as.double(rep(0, nStore*p2)),
-                        samples_beta3 	= as.double(rep(0, nStore*p3)),
-                        samples_alpha1 	= as.double(rep(0, nStore*1)),
-                        samples_alpha2 	= as.double(rep(0, nStore*1)),
-                        samples_alpha3 	= as.double(rep(0, nStore*1)),
-                        samples_kappa1 	= as.double(rep(0, nStore*1)),
-                        samples_kappa2 	= as.double(rep(0, nStore*1)),
-                        samples_kappa3 	= as.double(rep(0, nStore*1)),
-                        samples_theta 	= as.double(rep(0, nStore*1)),
-                        samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
-                        samples_misc	= as.double(rep(0, (p1+p2+p3+4))),
+                        nGam_save        = as.integer(nGam_save),
+                        samples_beta1     = as.double(rep(0, nStore*p1)),
+                        samples_beta2     = as.double(rep(0, nStore*p2)),
+                        samples_beta3     = as.double(rep(0, nStore*p3)),
+                        samples_alpha1     = as.double(rep(0, nStore*1)),
+                        samples_alpha2     = as.double(rep(0, nStore*1)),
+                        samples_alpha3     = as.double(rep(0, nStore*1)),
+                        samples_kappa1     = as.double(rep(0, nStore*1)),
+                        samples_kappa2     = as.double(rep(0, nStore*1)),
+                        samples_kappa3     = as.double(rep(0, nStore*1)),
+                        samples_theta     = as.double(rep(0, nStore*1)),
+                        samples_gamma     = as.double(rep(0, nStore*nGam_save)),
+                        samples_misc    = as.double(rep(0, (p1+p2+p3+4))),
+                        dev                 = as.double(rep(0, nStore*1)),
+                        invLH = as.double(rep(0, n)),
                         moveVec             = as.double(rep(0, numReps)))
                         
                         if(p1 > 0){
-                            beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                            beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                         }
                         if(p1 == 0){
-                            beta1.p 		<- NULL
+                            beta1.p         <- NULL
                         }
                         if(p2 > 0){
-                            beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                            beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                         }
                         if(p2 == 0){
-                            beta2.p 		<- NULL
+                            beta2.p         <- NULL
                         }
                         if(p3 > 0){
-                            beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                            beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                         }
                         if(p3 == 0){
-                            beta3.p 		<- NULL
+                            beta3.p         <- NULL
                         }
                         
-                        alpha1.p 		<- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
-                        alpha2.p 		<- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
-                        alpha3.p 		<- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
-                        kappa1.p 		<- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
-                        kappa2.p 		<- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
-                        kappa3.p 		<- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
-                        theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                        gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                        alpha1.p         <- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
+                        alpha2.p         <- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
+                        alpha3.p         <- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
+                        kappa1.p         <- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
+                        kappa2.p         <- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
+                        kappa3.p         <- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
+                        theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                        gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                         
                         if(p1 > 0){
-                            accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                            accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                         }
                         if(p1 == 0){
-                            accept.beta1 	<- NULL
+                            accept.beta1     <- NULL
                         }
                         if(p2 > 0){
-                            accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                            accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                         }
                         if(p2 == 0){
-                            accept.beta2 	<- NULL
+                            accept.beta2     <- NULL
                         }
                         if(p3 > 0){
-                            accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                            accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                         }
                         if(p3 == 0){
-                            accept.beta3 	<- NULL
+                            accept.beta3     <- NULL
                         }
                         
-                        accept.alpha1	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
-                        accept.alpha2	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
-                        accept.alpha3	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
-                        accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
+                        accept.alpha1    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
+                        accept.alpha2    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
+                        accept.alpha3    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
+                        accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
                         
                         if(nGam_save > 0 & !is.null(path)){
                             save(gamma.p, file = paste(path, "/gammaPch", chain, ".Rdata", sep = ""))
@@ -390,8 +403,93 @@ path = NULL)
                             covNames3 = NULL
                         }
                         
-                        ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3)
+                        ### posterior predictive checks ###
+                        
+                        ## 1. log pseudo-marginal likelihood
+                        
+                        invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
+                        
+                        ## 2. deviance information criterion
+                        
+                        dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
+                        
+                        ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, dev.p=dev.p, invLH.p=invLH.p)
                     } # if(model_h3 == "semi-Markov")
+                    
+                    ## DIC and LPML
+                    
+                    be1.p <- ret$chain1$beta1.p
+                    be2.p <- ret$chain1$beta2.p
+                    be3.p <- ret$chain1$beta3.p
+                    alp1.p <- ret$chain1$alpha1.p
+                    alp2.p <- ret$chain1$alpha2.p
+                    alp3.p <- ret$chain1$alpha3.p
+                    kap1.p <- ret$chain1$kappa1.p
+                    kap2.p <- ret$chain1$kappa2.p
+                    kap3.p <- ret$chain1$kappa3.p
+                    thet.p <- ret$chain1$theta.p
+                    Dev.p <- ret$chain1$dev.p
+                    InvLH.p <- ret$chain1$invLH.p
+                    
+                    if(nChain > 1){
+                        for(i in 2:nChain){
+                            nam <- paste("chain", i, sep="")
+                            be1.p <- rbind(be1.p, ret[[nam]]$beta1.p)
+                            be2.p <- rbind(be2.p, ret[[nam]]$beta2.p)
+                            be3.p <- rbind(be3.p, ret[[nam]]$beta3.p)
+                            alp1.p <- rbind(alp1.p, ret[[nam]]$alpha1.p)
+                            alp2.p <- rbind(alp2.p, ret[[nam]]$alpha2.p)
+                            alp3.p <- rbind(alp3.p, ret[[nam]]$alpha3.p)
+                            kap1.p <- rbind(kap1.p, ret[[nam]]$kappa1.p)
+                            kap2.p <- rbind(kap2.p, ret[[nam]]$kappa2.p)
+                            kap3.p <- rbind(kap3.p, ret[[nam]]$kappa3.p)
+                            thet.p <- rbind(thet.p, ret[[nam]]$theta.p)
+                            Dev.p <- rbind(Dev.p, ret[[nam]]$dev.p)
+                            InvLH.p <- cbind(InvLH.p, ret[[nam]]$invLH.p)
+                        }
+                    }
+                    if(model_h3 == "Markov")
+                    {
+                        logLH_fin <- .C("BweibScr_logMLH_DIC",
+                        survData         = as.double(as.matrix(survData)),
+                        n                = as.integer(n),
+                        p1                = as.integer(p1),
+                        p2                = as.integer(p2),
+                        p3                = as.integer(p3),
+                        be1 = as.double(apply(be1.p, 2, mean)),
+                        be2 = as.double(apply(be2.p, 2, mean)),
+                        be3 = as.double(apply(be3.p, 2, mean)),
+                        alp1 = as.double(apply(alp1.p, 2, mean)),
+                        alp2 = as.double(apply(alp2.p, 2, mean)),
+                        alp3 = as.double(apply(alp3.p, 2, mean)),
+                        kap1 = as.double(apply(kap1.p, 2, mean)),
+                        kap2 = as.double(apply(kap2.p, 2, mean)),
+                        kap3 = as.double(apply(kap3.p, 2, mean)),
+                        thet = as.double(apply(theta.p, 2, mean)),
+                        val = as.double(0))$val
+                    }else if(model_h3 == "semi-Markov")
+                    {
+                        logLH_fin <- .C("BweibScrSM_logMLH_DIC",
+                        survData         = as.double(as.matrix(survData)),
+                        n                = as.integer(n),
+                        p1                = as.integer(p1),
+                        p2                = as.integer(p2),
+                        p3                = as.integer(p3),
+                        be1 = as.double(apply(be1.p, 2, mean)),
+                        be2 = as.double(apply(be2.p, 2, mean)),
+                        be3 = as.double(apply(be3.p, 2, mean)),
+                        alp1 = as.double(apply(alp1.p, 2, mean)),
+                        alp2 = as.double(apply(alp2.p, 2, mean)),
+                        alp3 = as.double(apply(alp3.p, 2, mean)),
+                        kap1 = as.double(apply(kap1.p, 2, mean)),
+                        kap2 = as.double(apply(kap2.p, 2, mean)),
+                        kap3 = as.double(apply(kap3.p, 2, mean)),
+                        thet = as.double(apply(theta.p, 2, mean)),
+                        val = as.double(0))$val
+                    }
+                    
+                    DIC = 2*mean(Dev.p) + 2 * logLH_fin
+                    LPML = sum(log(1/apply(InvLH.p, 1, mean)))
                     
                     
                 } # if(hz.type == "Weibull")
@@ -456,9 +554,9 @@ path = NULL)
                     mcmcParams <- c(C1, C2, C3, delPert1, delPert2, delPert3, num_s_propBI1, num_s_propBI2, num_s_propBI3, K1_max, K2_max, K3_max, s1_max, s2_max, s3_max, nTime_lambda1, nTime_lambda2, nTime_lambda3, s_propBI1, s_propBI2, s_propBI3, time_lambda1, time_lambda2, time_lambda3, mhProp_theta_var)
                     
                     
-                    s1  		<- temp$PEM$PEM.s1
-                    s2			<- temp$PEM$PEM.s2
-                    s3			<- temp$PEM$PEM.s3
+                    s1          <- temp$PEM$PEM.s1
+                    s2            <- temp$PEM$PEM.s2
+                    s3            <- temp$PEM$PEM.s3
                     lambda1 <- temp$PEM$PEM.lambda1
                     lambda2 <- temp$PEM$PEM.lambda2
                     lambda3 <- temp$PEM$PEM.lambda3
@@ -479,7 +577,6 @@ path = NULL)
                     if(model_h3 == "Markov"){
                         
                         ###
-                        
                         J_1 <- K1
                         J_2 <- K2
                         J_3 <- K3
@@ -507,101 +604,103 @@ path = NULL)
                         mcmcRet <- .C("BpeScrmcmc",
                         survData            = as.double(as.matrix(survData)),
                         n                   = as.integer(n),
-                        p1					= as.integer(p1),
-                        p2					= as.integer(p2),
-                        p3					= as.integer(p3),
+                        p1                    = as.integer(p1),
+                        p2                    = as.integer(p2),
+                        p3                    = as.integer(p3),
                         hyperParams         = as.double(hyperParams),
                         startValues         = as.double(startV),
                         mcmcParams          = as.double(mcmcParams),
                         numReps             = as.integer(numReps),
                         thin                = as.integer(thin),
                         burninPerc          = as.double(burninPerc),
-                        nGam_save			= as.integer(nGam_save),
-                        samples_beta1 		= as.double(rep(0, nStore*p1)),
-                        samples_beta2 		= as.double(rep(0, nStore*p2)),
-                        samples_beta3 		= as.double(rep(0, nStore*p3)),
+                        nGam_save            = as.integer(nGam_save),
+                        samples_beta1         = as.double(rep(0, nStore*p1)),
+                        samples_beta2         = as.double(rep(0, nStore*p2)),
+                        samples_beta3         = as.double(rep(0, nStore*p3)),
                         samples_mu_lam1     = as.double(rep(0, nStore*1)),
                         samples_mu_lam2     = as.double(rep(0, nStore*1)),
                         samples_mu_lam3     = as.double(rep(0, nStore*1)),
-                        samples_sigSq_lam1	= as.double(rep(0, nStore*1)),
-                        samples_sigSq_lam2	= as.double(rep(0, nStore*1)),
-                        samples_sigSq_lam3	= as.double(rep(0, nStore*1)),
+                        samples_sigSq_lam1    = as.double(rep(0, nStore*1)),
+                        samples_sigSq_lam2    = as.double(rep(0, nStore*1)),
+                        samples_sigSq_lam3    = as.double(rep(0, nStore*1)),
                         samples_J1          = as.double(rep(0, nStore*1)),
                         samples_J2          = as.double(rep(0, nStore*1)),
                         samples_J3          = as.double(rep(0, nStore*1)),
                         samples_s1          = as.double(rep(0, nStore*(K1_max + 1))),
                         samples_s2          = as.double(rep(0, nStore*(K2_max + 1))),
                         samples_s3          = as.double(rep(0, nStore*(K3_max + 1))),
-                        samples_theta 		= as.double(rep(0, nStore*1)),
-                        samples_gamma 		= as.double(rep(0, nStore*nGam_save)),
+                        samples_theta         = as.double(rep(0, nStore*1)),
+                        samples_gamma         = as.double(rep(0, nStore*nGam_save)),
                         samples_misc        = as.double(rep(0, p1 + p2 + p3 + 7)),
-                        lambda1_fin			= as.double(rep(0, nStore*nTime_lambda1)),
-                        lambda2_fin			= as.double(rep(0, nStore*nTime_lambda2)),
-                        lambda3_fin			= as.double(rep(0, nStore*nTime_lambda3)),
+                        lambda1_fin            = as.double(rep(0, nStore*nTime_lambda1)),
+                        lambda2_fin            = as.double(rep(0, nStore*nTime_lambda2)),
+                        lambda3_fin            = as.double(rep(0, nStore*nTime_lambda3)),
+                        dev                 = as.double(rep(0, nStore*1)),
+                        invLH = as.double(rep(0, n)),
                         moveVec             = as.double(rep(0, numReps)))
                         
                         if(p1 > 0){
-                            beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                            beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                         }
                         if(p1 == 0){
-                            beta1.p 		<- NULL
+                            beta1.p         <- NULL
                         }
                         if(p2 > 0){
-                            beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                            beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                         }
                         if(p2 == 0){
-                            beta2.p 		<- NULL
+                            beta2.p         <- NULL
                         }
                         if(p3 > 0){
-                            beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                            beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                         }
                         if(p3 == 0){
-                            beta3.p 		<- NULL
+                            beta3.p         <- NULL
                         }
                         
-                        lambda1.fin 	<- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
-                        lambda2.fin 	<- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
-                        lambda3.fin 	<- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
-                        gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
-                        theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                        mu_lam1.p 		<- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
-                        mu_lam2.p 		<- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
-                        mu_lam3.p 		<- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
-                        sigSq_lam1.p 	<- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
-                        sigSq_lam2.p 	<- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
-                        sigSq_lam3.p 	<- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
-                        K1.p 			<- matrix(mcmcRet$samples_J1, nrow = nStore, byrow = TRUE)
-                        K2.p 			<- matrix(mcmcRet$samples_J2, nrow = nStore, byrow = TRUE)
-                        K3.p 			<- matrix(mcmcRet$samples_J3, nrow = nStore, byrow = TRUE)
-                        s1.p 			<- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
-                        s2.p 			<- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
-                        s3.p 			<- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
+                        lambda1.fin     <- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
+                        lambda2.fin     <- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
+                        lambda3.fin     <- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
+                        gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                        theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                        mu_lam1.p         <- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
+                        mu_lam2.p         <- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
+                        mu_lam3.p         <- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
+                        sigSq_lam1.p     <- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
+                        sigSq_lam2.p     <- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
+                        sigSq_lam3.p     <- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
+                        K1.p             <- matrix(mcmcRet$samples_J1, nrow = nStore, byrow = TRUE)
+                        K2.p             <- matrix(mcmcRet$samples_J2, nrow = nStore, byrow = TRUE)
+                        K3.p             <- matrix(mcmcRet$samples_J3, nrow = nStore, byrow = TRUE)
+                        s1.p             <- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
+                        s2.p             <- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
+                        s3.p             <- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
                         
                         if(p1 > 0){
-                            accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                            accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                         }
                         if(p1 == 0){
-                            accept.beta1 	<- NULL
+                            accept.beta1     <- NULL
                         }
                         if(p2 > 0){
-                            accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                            accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                         }
                         if(p2 == 0){
-                            accept.beta2 	<- NULL
+                            accept.beta2     <- NULL
                         }
                         if(p3 > 0){
-                            accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                            accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                         }
                         if(p3 == 0){
-                            accept.beta3 	<- NULL
+                            accept.beta3     <- NULL
                         }
-                        accept.BI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
-                        accept.DI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
-                        accept.BI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
-                        accept.DI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
-                        accept.BI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
-                        accept.DI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
-                        accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+7])/sum(as.vector(mcmcRet$moveVec)==11)
+                        accept.BI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
+                        accept.DI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
+                        accept.BI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
+                        accept.DI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
+                        accept.BI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
+                        accept.DI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
+                        accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+7])/sum(as.vector(mcmcRet$moveVec)==11)
                         
                         if(nGam_save > 0 & !is.null(path)){
                             save(gamma.p, file = paste(path, "/gammaPch", chain, ".Rdata", sep = ""))
@@ -627,10 +726,17 @@ path = NULL)
                             covNames3 = NULL
                         }
                         
+                        ### posterior predictive checks ###
                         
+                        ## 1. log pseudo-marginal likelihood
                         
+                        invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
                         
-                        ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, theta.p = theta.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3)
+                        ## 2. deviance information criterion
+                        
+                        dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
+                        
+                        ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, theta.p = theta.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, dev.p=dev.p, invLH.p=invLH.p)
                         
                     } #if(model_h3 == "Markov")
                     
@@ -667,101 +773,103 @@ path = NULL)
                         mcmcRet <- .C("BpeScrSMmcmc",
                         survData            = as.double(as.matrix(survData)),
                         n                   = as.integer(n),
-                        p1					= as.integer(p1),
-                        p2					= as.integer(p2),
-                        p3					= as.integer(p3),
+                        p1                    = as.integer(p1),
+                        p2                    = as.integer(p2),
+                        p3                    = as.integer(p3),
                         hyperParams         = as.double(hyperParams),
                         startValues         = as.double(startV),
                         mcmcParams          = as.double(mcmcParams),
                         numReps             = as.integer(numReps),
                         thin                = as.integer(thin),
                         burninPerc          = as.double(burninPerc),
-                        nGam_save			= as.integer(nGam_save),
-                        samples_beta1 		= as.double(rep(0, nStore*p1)),
-                        samples_beta2 		= as.double(rep(0, nStore*p2)),
-                        samples_beta3 		= as.double(rep(0, nStore*p3)),
+                        nGam_save            = as.integer(nGam_save),
+                        samples_beta1         = as.double(rep(0, nStore*p1)),
+                        samples_beta2         = as.double(rep(0, nStore*p2)),
+                        samples_beta3         = as.double(rep(0, nStore*p3)),
                         samples_mu_lam1     = as.double(rep(0, nStore*1)),
                         samples_mu_lam2     = as.double(rep(0, nStore*1)),
                         samples_mu_lam3     = as.double(rep(0, nStore*1)),
-                        samples_sigSq_lam1	= as.double(rep(0, nStore*1)),
-                        samples_sigSq_lam2	= as.double(rep(0, nStore*1)),
-                        samples_sigSq_lam3	= as.double(rep(0, nStore*1)),
+                        samples_sigSq_lam1    = as.double(rep(0, nStore*1)),
+                        samples_sigSq_lam2    = as.double(rep(0, nStore*1)),
+                        samples_sigSq_lam3    = as.double(rep(0, nStore*1)),
                         samples_J1          = as.double(rep(0, nStore*1)),
                         samples_J2          = as.double(rep(0, nStore*1)),
                         samples_J3          = as.double(rep(0, nStore*1)),
                         samples_s1          = as.double(rep(0, nStore*(K1_max + 1))),
                         samples_s2          = as.double(rep(0, nStore*(K2_max + 1))),
                         samples_s3          = as.double(rep(0, nStore*(K3_max + 1))),
-                        samples_theta 		= as.double(rep(0, nStore*1)),
-                        samples_gamma 		= as.double(rep(0, nStore*nGam_save)),
+                        samples_theta         = as.double(rep(0, nStore*1)),
+                        samples_gamma         = as.double(rep(0, nStore*nGam_save)),
                         samples_misc        = as.double(rep(0, p1 + p2 + p3 + 7)),
-                        lambda1_fin			= as.double(rep(0, nStore*nTime_lambda1)),
-                        lambda2_fin			= as.double(rep(0, nStore*nTime_lambda2)),
-                        lambda3_fin			= as.double(rep(0, nStore*nTime_lambda3)),
+                        lambda1_fin            = as.double(rep(0, nStore*nTime_lambda1)),
+                        lambda2_fin            = as.double(rep(0, nStore*nTime_lambda2)),
+                        lambda3_fin            = as.double(rep(0, nStore*nTime_lambda3)),
+                        dev                 = as.double(rep(0, nStore*1)),
+                        invLH = as.double(rep(0, n)),
                         moveVec             = as.double(rep(0, numReps)))
                         
                         if(p1 > 0){
-                            beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                            beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                         }
                         if(p1 == 0){
-                            beta1.p 		<- NULL
+                            beta1.p         <- NULL
                         }
                         if(p2 > 0){
-                            beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                            beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                         }
                         if(p2 == 0){
-                            beta2.p 		<- NULL
+                            beta2.p         <- NULL
                         }
                         if(p3 > 0){
-                            beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                            beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                         }
                         if(p3 == 0){
-                            beta3.p 		<- NULL
+                            beta3.p         <- NULL
                         }
                         
-                        lambda1.fin 	<- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
-                        lambda2.fin 	<- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
-                        lambda3.fin 	<- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
-                        gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
-                        theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                        mu_lam1.p 		<- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
-                        mu_lam2.p 		<- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
-                        mu_lam3.p 		<- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
-                        sigSq_lam1.p 	<- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
-                        sigSq_lam2.p 	<- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
-                        sigSq_lam3.p 	<- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
-                        K1.p 			<- matrix(mcmcRet$samples_J1, nrow = nStore, byrow = TRUE)
-                        K2.p 			<- matrix(mcmcRet$samples_J2, nrow = nStore, byrow = TRUE)
-                        K3.p 			<- matrix(mcmcRet$samples_J3, nrow = nStore, byrow = TRUE)
-                        s1.p 			<- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
-                        s2.p 			<- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
-                        s3.p 			<- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
+                        lambda1.fin     <- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
+                        lambda2.fin     <- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
+                        lambda3.fin     <- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
+                        gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                        theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                        mu_lam1.p         <- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
+                        mu_lam2.p         <- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
+                        mu_lam3.p         <- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
+                        sigSq_lam1.p     <- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
+                        sigSq_lam2.p     <- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
+                        sigSq_lam3.p     <- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
+                        K1.p             <- matrix(mcmcRet$samples_J1, nrow = nStore, byrow = TRUE)
+                        K2.p             <- matrix(mcmcRet$samples_J2, nrow = nStore, byrow = TRUE)
+                        K3.p             <- matrix(mcmcRet$samples_J3, nrow = nStore, byrow = TRUE)
+                        s1.p             <- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
+                        s2.p             <- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
+                        s3.p             <- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
                         
                         if(p1 > 0){
-                            accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                            accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                         }
                         if(p1 == 0){
-                            accept.beta1 	<- NULL
+                            accept.beta1     <- NULL
                         }
                         if(p2 > 0){
-                            accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                            accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                         }
                         if(p2 == 0){
-                            accept.beta2 	<- NULL
+                            accept.beta2     <- NULL
                         }
                         if(p3 > 0){
-                            accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                            accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                         }
                         if(p3 == 0){
-                            accept.beta3 	<- NULL
+                            accept.beta3     <- NULL
                         }
-                        accept.BI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
-                        accept.DI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
-                        accept.BI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
-                        accept.DI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
-                        accept.BI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
-                        accept.DI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
-                        accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+7])/sum(as.vector(mcmcRet$moveVec)==11)
+                        accept.BI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
+                        accept.DI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
+                        accept.BI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
+                        accept.DI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
+                        accept.BI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
+                        accept.DI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
+                        accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+7])/sum(as.vector(mcmcRet$moveVec)==11)
                         
                         
                         if(nGam_save > 0 & !is.null(path)){
@@ -788,21 +896,106 @@ path = NULL)
                             covNames3 = NULL
                         }
                         
+                        ### posterior predictive checks ###
                         
-                        ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, theta.p = theta.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3)
+                        ## 1. log pseudo-marginal likelihood
                         
-                    }	# if(model_h3 == "semi-Markov")
+                        invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
+                        
+                        ## 2. deviance information criterion
+                        
+                        dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
+                        
+                        
+                        ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, theta.p = theta.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, dev.p=dev.p, invLH.p=invLH.p)
+                        
+                    }    # if(model_h3 == "semi-Markov")
+                    
+                    ## DIC and LPML
+                    
+                    be1.p <- ret$chain1$beta1.p
+                    be2.p <- ret$chain1$beta2.p
+                    be3.p <- ret$chain1$beta3.p
+                    thet.p <- ret$chain1$theta.p
+                    lam1.p <- ret$chain1$lambda1.fin
+                    lam2.p <- ret$chain1$lambda2.fin
+                    lam3.p <- ret$chain1$lambda3.fin
+                    Dev.p <- ret$chain1$dev.p
+                    InvLH.p <- ret$chain1$invLH.p
+                    
+                    if(nChain > 1){
+                        for(i in 2:nChain){
+                            nam <- paste("chain", i, sep="")
+                            be1.p <- rbind(be1.p, ret[[nam]]$beta1.p)
+                            be2.p <- rbind(be2.p, ret[[nam]]$beta2.p)
+                            be3.p <- rbind(be3.p, ret[[nam]]$beta3.p)
+                            thet.p <- rbind(thet.p, ret[[nam]]$theta.p)
+                            lam1.p <- rbind(lam1.p, ret[[nam]]$lambda1.fin)
+                            lam2.p <- rbind(lam2.p, ret[[nam]]$lambda2.fin)
+                            lam3.p <- rbind(lam3.p, ret[[nam]]$lambda3.fin)
+                            Dev.p <- rbind(Dev.p, ret[[nam]]$dev.p)
+                            InvLH.p <- cbind(InvLH.p, ret[[nam]]$invLH.p)
+                        }
+                    }
+                    if(model_h3 == "Markov")
+                    {
+                        logLH_fin <- .C("BpeScr_logMLH_DIC",
+                        survData         = as.double(as.matrix(survData)),
+                        n                = as.integer(n),
+                        p1                = as.integer(p1),
+                        p2                = as.integer(p2),
+                        p3                = as.integer(p3),
+                        be1 = as.double(apply(be1.p, 2, mean)),
+                        be2 = as.double(apply(be2.p, 2, mean)),
+                        be3 = as.double(apply(be3.p, 2, mean)),
+                        thet = as.double(apply(theta.p, 2, mean)),
+                        lam1 = as.double(apply(lam1.p, 2, mean)),
+                        lam2 = as.double(apply(lam2.p, 2, mean)),
+                        lam3 = as.double(apply(lam3.p, 2, mean)),
+                        s_1 = as.double(time_lambda1),
+                        s_2 = as.double(time_lambda2),
+                        s_3 = as.double(time_lambda3),
+                        K_1                = as.integer(nTime_lambda1),
+                        K_2                = as.integer(nTime_lambda2),
+                        K_3                = as.integer(nTime_lambda3),
+                        val = as.double(0))$val
+                    }else if(model_h3 == "semi-Markov")
+                    {
+                        logLH_fin <- .C("BpeScrSM_logMLH_DIC",
+                        survData         = as.double(as.matrix(survData)),
+                        n                = as.integer(n),
+                        p1                = as.integer(p1),
+                        p2                = as.integer(p2),
+                        p3                = as.integer(p3),
+                        be1 = as.double(apply(be1.p, 2, mean)),
+                        be2 = as.double(apply(be2.p, 2, mean)),
+                        be3 = as.double(apply(be3.p, 2, mean)),
+                        thet = as.double(apply(theta.p, 2, mean)),
+                        lam1 = as.double(apply(lam1.p, 2, mean)),
+                        lam2 = as.double(apply(lam2.p, 2, mean)),
+                        lam3 = as.double(apply(lam3.p, 2, mean)),
+                        s_1 = as.double(time_lambda1),
+                        s_2 = as.double(time_lambda2),
+                        s_3 = as.double(time_lambda3),
+                        K_1                = as.integer(nTime_lambda1),
+                        K_2                = as.integer(nTime_lambda2),
+                        K_3                = as.integer(nTime_lambda3),
+                        val = as.double(0))$val
+                    }
+                    
+                    DIC = 2*mean(Dev.p) + 2 * logLH_fin
+                    LPML = sum(log(1/apply(InvLH.p, 1, mean)))
                     
                 } # if(hz.type == "PEM")
                 
-                
-                
                 chain = chain + 1
                 
-            }	# while(chain <= nChain)
+            }    # while(chain <= nChain)
             
-            ret[["setup"]]	<- list(Formula=Formula, nCov = nCov, hyperParams = hyperParams, startValues = startValues, mcmcParams = mcmcParams, nGam_save = nGam_save, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, model = model_h3, nChain = nChain)
+            ret[["setup"]]    <- list(Formula=Formula, nCov = nCov, hyperParams = hyperParams, startValues = startValues, mcmcParams = mcmcParams, nGam_save = nGam_save, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, model = model_h3, nChain = nChain)
             
+            ret[["DIC"]] <- DIC
+            ret[["LPML"]] <- LPML            
             
             if(hz.type == "Weibull")
             {
@@ -828,21 +1021,21 @@ path = NULL)
         {
             nChain <- length(startValues)
             
-            model_h3 	<- model[1]
-            hz.type 	<- model[2]
-            re.type 	<- model[3]
-                        
+            model_h3     <- model[1]
+            hz.type     <- model[2]
+            re.type     <- model[3]
+            
             ##
             survData <- cbind(Y, id, Xmat1, Xmat2, Xmat3)
             
-            n	<- dim(survData)[1]
+            n    <- dim(survData)[1]
             
-            J	<- length(unique(id))
+            J    <- length(unique(id))
             
-            nj	<- rep(NA, J)
+            nj    <- rep(NA, J)
             
             for(i in 1:J){
-                nj[i]	<- length(which(id == i))
+                nj[i]    <- length(which(id == i))
             }
             
             
@@ -884,8 +1077,6 @@ path = NULL)
                 mcmcList$tuning$sg_max <- c(1,1,1)
                 mcmc <- as.vector(c(C1=mcmcList$tuning$Cg[1], C2=mcmcList$tuning$Cg[2], C3=mcmcList$tuning$Cg[3], delPert1=mcmcList$tuning$delPertg[1], delPert2=mcmcList$tuning$delPertg[2], delPert3=mcmcList$tuning$delPertg[3], rj.scheme = mcmcList$tuning$rj.scheme, K1_max=mcmcList$tuning$Kg_max[1], K2_max=mcmcList$tuning$Kg_max[2], K3_max=mcmcList$tuning$Kg_max[3], s1_max=mcmcList$tuning$sg_max[1], s2_max=mcmcList$tuning$sg_max[2], s3_max=mcmcList$tuning$sg_max[3], mhProp_theta_var=mcmcList$tuning$mhProp_theta_var, mhProp_V1_var=mcmcList$tuning$mhProp_Vg_var[1], mhProp_V2_var=mcmcList$tuning$mhProp_Vg_var[2], mhProp_V3_var=mcmcList$tuning$mhProp_Vg_var[3], nGam_save=mcmcList$storage$nGam_save, numReps=mcmcList$run$numReps, thin=mcmcList$run$thin, burninPerc=mcmcList$run$burninPerc, storeV=mcmcList$storage$storeV))
             }
-            
-            
             
             chain = 1
             ret <- list()
@@ -952,105 +1143,103 @@ path = NULL)
                             
                             mcmcNew <- c(mcmc1, 1, mcmc2, n)
                             
-                            
-                            
                             mcmcRet <- .C("BweibMvnCorScrmcmc",
-                            survData 		= as.double(as.matrix(survData)),
-                            n				= as.integer(n),
-                            p1				= as.integer(p1),
-                            p2				= as.integer(p2),
-                            p3				= as.integer(p3),
-                            J				= as.integer(J),
-                            nj				= as.double(nj),
-                            hyperParams 	= as.double(hyperParams),
-                            mcmc		= as.double(mcmcNew),
-                            startValues 	= as.double(startV),
-                            numReps			= as.integer(numReps),
-                            thin			= as.integer(thin),
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            nj                = as.double(nj),
+                            hyperParams     = as.double(hyperParams),
+                            mcmc        = as.double(mcmcNew),
+                            startValues     = as.double(startV),
+                            numReps            = as.integer(numReps),
+                            thin            = as.integer(thin),
                             burninPerc      = as.double(burninPerc),
-                            nGam_save		= as.integer(nGam_save),
-                            samples_beta1 	= as.double(rep(0, nStore*p1)),
-                            samples_beta2 	= as.double(rep(0, nStore*p2)),
-                            samples_beta3 	= as.double(rep(0, nStore*p3)),
-                            samples_alpha1 	= as.double(rep(0, nStore*1)),
-                            samples_alpha2 	= as.double(rep(0, nStore*1)),
-                            samples_alpha3 	= as.double(rep(0, nStore*1)),
-                            samples_kappa1 	= as.double(rep(0, nStore*1)),
-                            samples_kappa2 	= as.double(rep(0, nStore*1)),
-                            samples_kappa3 	= as.double(rep(0, nStore*1)),
-                            samples_nu2 	= as.double(rep(0, nStore*1)),
-                            samples_nu3 	= as.double(rep(0, nStore*1)),
-                            samples_theta 	= as.double(rep(0, nStore*1)),
-                            samples_V1		= as.double(rep(0, nStore*J)),
-                            samples_V2		= as.double(rep(0, nStore*J)),
-                            samples_V3		= as.double(rep(0, nStore*J)),
-                            samples_Sigma_V	= as.double(rep(0, nStore*3*3)),
-                            samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
-                            samples_misc	= as.double(rep(0, (p1+p2+p3+6+n+1+n+J+J+J))),
-                            gammaP			= as.double(rep(0, n)),
-                            dev     			= as.double(rep(0, nStore*1)),
+                            nGam_save        = as.integer(nGam_save),
+                            samples_beta1     = as.double(rep(0, nStore*p1)),
+                            samples_beta2     = as.double(rep(0, nStore*p2)),
+                            samples_beta3     = as.double(rep(0, nStore*p3)),
+                            samples_alpha1     = as.double(rep(0, nStore*1)),
+                            samples_alpha2     = as.double(rep(0, nStore*1)),
+                            samples_alpha3     = as.double(rep(0, nStore*1)),
+                            samples_kappa1     = as.double(rep(0, nStore*1)),
+                            samples_kappa2     = as.double(rep(0, nStore*1)),
+                            samples_kappa3     = as.double(rep(0, nStore*1)),
+                            samples_nu2     = as.double(rep(0, nStore*1)),
+                            samples_nu3     = as.double(rep(0, nStore*1)),
+                            samples_theta     = as.double(rep(0, nStore*1)),
+                            samples_V1        = as.double(rep(0, nStore*J)),
+                            samples_V2        = as.double(rep(0, nStore*J)),
+                            samples_V3        = as.double(rep(0, nStore*J)),
+                            samples_Sigma_V    = as.double(rep(0, nStore*3*3)),
+                            samples_gamma     = as.double(rep(0, nStore*nGam_save)),
+                            samples_misc    = as.double(rep(0, (p1+p2+p3+6+n+1+n+J+J+J))),
+                            gammaP            = as.double(rep(0, n)),
+                            dev                 = as.double(rep(0, nStore*1)),
                             invLH = as.double(rep(0, n)),
                             logLH_fin = as.double(0),
-                            lpml     			= as.double(rep(0, nStore*1)),
-                            lpml2     			= as.double(rep(0, nStore*1)),
+                            lpml                 = as.double(rep(0, nStore*1)),
+                            lpml2                 = as.double(rep(0, nStore*1)),
                             moveVec             = as.double(rep(0, numReps)))
                             
                             if(p1 > 0){
-                                beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                                beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                             }
                             if(p1 == 0){
-                                beta1.p 		<- NULL
+                                beta1.p         <- NULL
                             }
                             if(p2 > 0){
-                                beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                                beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                             }
                             if(p2 == 0){
-                                beta2.p 		<- NULL
+                                beta2.p         <- NULL
                             }
                             if(p3 > 0){
-                                beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                                beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                             }
                             if(p3 == 0){
-                                beta3.p 		<- NULL
+                                beta3.p         <- NULL
                             }
                             
-                            alpha1.p 		<- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
-                            alpha2.p 		<- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
-                            alpha3.p 		<- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
-                            kappa1.p 		<- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
-                            kappa2.p 		<- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
-                            kappa3.p 		<- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
-                            theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                            gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                            alpha1.p         <- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
+                            alpha2.p         <- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
+                            alpha3.p         <- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
+                            kappa1.p         <- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
+                            kappa2.p         <- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
+                            kappa3.p         <- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
+                            theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                            gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                             
                             V1.p            <- matrix(mcmcRet$samples_V1, nrow = nStore, byrow = TRUE)
                             V2.p            <- matrix(mcmcRet$samples_V2, nrow = nStore, byrow = TRUE)
                             V3.p            <- matrix(mcmcRet$samples_V3, nrow = nStore, byrow = TRUE)
-                            Sigma_V.p		<- array(as.vector(mcmcRet$samples_Sigma_V), c(3, 3, nStore))
+                            Sigma_V.p        <- array(as.vector(mcmcRet$samples_Sigma_V), c(3, 3, nStore))
                             
                             if(p1 > 0){
-                                accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                                accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                             }
                             if(p1 == 0){
-                                accept.beta1 	<- NULL
+                                accept.beta1     <- NULL
                             }
                             if(p2 > 0){
-                                accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                                accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                             }
                             if(p2 == 0){
-                                accept.beta2 	<- NULL
+                                accept.beta2     <- NULL
                             }
                             if(p3 > 0){
-                                accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                                accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                             }
                             if(p3 == 0){
-                                accept.beta3 	<- NULL
+                                accept.beta3     <- NULL
                             }
                             
-                            accept.alpha1	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
-                            accept.alpha2	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
-                            accept.alpha3	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
-                            accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
+                            accept.alpha1    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
+                            accept.alpha2    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
+                            accept.alpha3    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
+                            accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
                             accept.V1       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7+n+n+1):(p1+p2+p3+7+n+n+J)])/sum(as.vector(mcmcRet$moveVec)==13)
                             accept.V2       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7+n+n+J+1):(p1+p2+p3+7+n+n+J+J)])/sum(as.vector(mcmcRet$moveVec)==14)
                             accept.V3       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7+n+n+J+J+1):(p1+p2+p3+7+n+n+J+J+J)])/sum(as.vector(mcmcRet$moveVec)==15)
@@ -1115,28 +1304,13 @@ path = NULL)
                             ## 1. log pseudo-marginal likelihood
                             
                             invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
-                            
-                            cpo     <- 1/invLH.p
-                            
-                            LPML <- sum(log(cpo))
-                            
-                            # or
-                            
-                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)
-                            
-                            lpml2.p <- matrix(mcmcRet$lpml2, nrow = nStore, byrow = TRUE)
-                            
+
                             ## 2. deviance information criterion
                             
                             gamma_mean <- matrix(mcmcRet$gammaP, nrow = n, byrow = TRUE)
-                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
-                            Dbar        <- mean(dev.p)
-                            pD          <- Dbar - (-2*mcmcRet$logLH_fin)
+                            dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
                             
-                            DIC <- pD + Dbar
-                            
-                            
-                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, DIC=DIC)
+                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, invLH.p=invLH.p)
                             
                         } ## end: if Weibull-MVN-M
                         
@@ -1162,103 +1336,103 @@ path = NULL)
                             
                             
                             mcmcRet <- .C("BweibMvnCorScrSMmcmc",
-                            survData 		= as.double(as.matrix(survData)),
-                            n				= as.integer(n),
-                            p1				= as.integer(p1),
-                            p2				= as.integer(p2),
-                            p3				= as.integer(p3),
-                            J				= as.integer(J),
-                            nj				= as.double(nj),
-                            hyperParams 	= as.double(hyperParams),
-                            mcmc		= as.double(mcmcNew),
-                            startValues 	= as.double(startV),
-                            numReps			= as.integer(numReps),
-                            thin			= as.integer(thin),
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            nj                = as.double(nj),
+                            hyperParams     = as.double(hyperParams),
+                            mcmc        = as.double(mcmcNew),
+                            startValues     = as.double(startV),
+                            numReps            = as.integer(numReps),
+                            thin            = as.integer(thin),
                             burninPerc      = as.double(burninPerc),
-                            nGam_save		= as.integer(nGam_save),
-                            samples_beta1 	= as.double(rep(0, nStore*p1)),
-                            samples_beta2 	= as.double(rep(0, nStore*p2)),
-                            samples_beta3 	= as.double(rep(0, nStore*p3)),
-                            samples_alpha1 	= as.double(rep(0, nStore*1)),
-                            samples_alpha2 	= as.double(rep(0, nStore*1)),
-                            samples_alpha3 	= as.double(rep(0, nStore*1)),
-                            samples_kappa1 	= as.double(rep(0, nStore*1)),
-                            samples_kappa2 	= as.double(rep(0, nStore*1)),
-                            samples_kappa3 	= as.double(rep(0, nStore*1)),
-                            samples_nu2 	= as.double(rep(0, nStore*1)),
-                            samples_nu3 	= as.double(rep(0, nStore*1)),
-                            samples_theta 	= as.double(rep(0, nStore*1)),
-                            samples_V1		= as.double(rep(0, nStore*J)),
-                            samples_V2		= as.double(rep(0, nStore*J)),
-                            samples_V3		= as.double(rep(0, nStore*J)),
-                            samples_Sigma_V	= as.double(rep(0, nStore*3*3)),
-                            samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
-                            samples_misc	= as.double(rep(0, (p1+p2+p3+6+n+1+n+J+J+J))),
-                            gammaP			= as.double(rep(0, n)),
-                            dev     			= as.double(rep(0, nStore*1)),
+                            nGam_save        = as.integer(nGam_save),
+                            samples_beta1     = as.double(rep(0, nStore*p1)),
+                            samples_beta2     = as.double(rep(0, nStore*p2)),
+                            samples_beta3     = as.double(rep(0, nStore*p3)),
+                            samples_alpha1     = as.double(rep(0, nStore*1)),
+                            samples_alpha2     = as.double(rep(0, nStore*1)),
+                            samples_alpha3     = as.double(rep(0, nStore*1)),
+                            samples_kappa1     = as.double(rep(0, nStore*1)),
+                            samples_kappa2     = as.double(rep(0, nStore*1)),
+                            samples_kappa3     = as.double(rep(0, nStore*1)),
+                            samples_nu2     = as.double(rep(0, nStore*1)),
+                            samples_nu3     = as.double(rep(0, nStore*1)),
+                            samples_theta     = as.double(rep(0, nStore*1)),
+                            samples_V1        = as.double(rep(0, nStore*J)),
+                            samples_V2        = as.double(rep(0, nStore*J)),
+                            samples_V3        = as.double(rep(0, nStore*J)),
+                            samples_Sigma_V    = as.double(rep(0, nStore*3*3)),
+                            samples_gamma     = as.double(rep(0, nStore*nGam_save)),
+                            samples_misc    = as.double(rep(0, (p1+p2+p3+6+n+1+n+J+J+J))),
+                            gammaP            = as.double(rep(0, n)),
+                            dev                 = as.double(rep(0, nStore*1)),
                             invLH = as.double(rep(0, n)),
                             logLH_fin = as.double(0),
-                            lpml     			= as.double(rep(0, nStore*1)),
-                            lpml2     			= as.double(rep(0, nStore*1)),
+                            lpml                 = as.double(rep(0, nStore*1)),
+                            lpml2                 = as.double(rep(0, nStore*1)),
                             moveVec             = as.double(rep(0, numReps)))
                             
                             
                             
                             if(p1 > 0){
-                                beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                                beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                             }
                             if(p1 == 0){
-                                beta1.p 		<- NULL
+                                beta1.p         <- NULL
                             }
                             if(p2 > 0){
-                                beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                                beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                             }
                             if(p2 == 0){
-                                beta2.p 		<- NULL
+                                beta2.p         <- NULL
                             }
                             if(p3 > 0){
-                                beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                                beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                             }
                             if(p3 == 0){
-                                beta3.p 		<- NULL
+                                beta3.p         <- NULL
                             }
                             
-                            alpha1.p 		<- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
-                            alpha2.p 		<- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
-                            alpha3.p 		<- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
-                            kappa1.p 		<- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
-                            kappa2.p 		<- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
-                            kappa3.p 		<- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
-                            theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                            gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                            alpha1.p         <- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
+                            alpha2.p         <- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
+                            alpha3.p         <- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
+                            kappa1.p         <- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
+                            kappa2.p         <- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
+                            kappa3.p         <- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
+                            theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                            gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                             V1.p            <- matrix(mcmcRet$samples_V1, nrow = nStore, byrow = TRUE)
                             V2.p            <- matrix(mcmcRet$samples_V2, nrow = nStore, byrow = TRUE)
                             V3.p            <- matrix(mcmcRet$samples_V3, nrow = nStore, byrow = TRUE)
-                            Sigma_V.p		<- array(as.vector(mcmcRet$samples_Sigma_V), c(3, 3, nStore))
+                            Sigma_V.p        <- array(as.vector(mcmcRet$samples_Sigma_V), c(3, 3, nStore))
                             
                             if(p1 > 0){
-                                accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                                accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                             }
                             if(p1 == 0){
-                                accept.beta1 	<- NULL
+                                accept.beta1     <- NULL
                             }
                             if(p2 > 0){
-                                accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                                accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                             }
                             if(p2 == 0){
-                                accept.beta2 	<- NULL
+                                accept.beta2     <- NULL
                             }
                             if(p3 > 0){
-                                accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                                accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                             }
                             if(p3 == 0){
-                                accept.beta3 	<- NULL
+                                accept.beta3     <- NULL
                             }
                             
-                            accept.alpha1	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
-                            accept.alpha2	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
-                            accept.alpha3	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
-                            accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
+                            accept.alpha1    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
+                            accept.alpha2    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
+                            accept.alpha3    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
+                            accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
                             accept.V1       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7+n+n+1):(p1+p2+p3+7+n+n+J)])/sum(as.vector(mcmcRet$moveVec)==13)
                             accept.V2       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7+n+n+J+1):(p1+p2+p3+7+n+n+J+J)])/sum(as.vector(mcmcRet$moveVec)==14)
                             accept.V3       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7+n+n+J+J+1):(p1+p2+p3+7+n+n+J+J+J)])/sum(as.vector(mcmcRet$moveVec)==15)
@@ -1325,30 +1499,106 @@ path = NULL)
                             ## 1. log pseudo-marginal likelihood
                             
                             invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
-                            
-                            cpo     <- 1/invLH.p
-                            
-                            LPML <- sum(log(cpo))
-                            
-                            # or
-                            
-                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)
-                            
-                            lpml2.p <- matrix(mcmcRet$lpml2, nrow = nStore, byrow = TRUE)
-                            
+
                             ## 2. deviance information criterion
                             
                             gamma_mean <- matrix(mcmcRet$gammaP, nrow = n, byrow = TRUE)
-                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
-                            Dbar        <- mean(dev.p)
-                            pD          <- Dbar - (-2*mcmcRet$logLH_fin)
-                            
-                            DIC <- pD + Dbar
-                            
-                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
+                            dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
+
+                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, invLH.p=invLH.p)
                             
                             
                         }  ## end: if Weibull-MVN-SM
+                        
+                        
+                        ## DIC and LPML
+                        
+                        be1.p <- ret$chain1$beta1.p
+                        be2.p <- ret$chain1$beta2.p
+                        be3.p <- ret$chain1$beta3.p
+                        alp1.p <- ret$chain1$alpha1.p
+                        alp2.p <- ret$chain1$alpha2.p
+                        alp3.p <- ret$chain1$alpha3.p
+                        kap1.p <- ret$chain1$kappa1.p
+                        kap2.p <- ret$chain1$kappa2.p
+                        kap3.p <- ret$chain1$kappa3.p
+                        thet.p <- ret$chain1$theta.p
+                        V1me <- ret$chain1$V1sum[4,]
+                        V2me <- ret$chain1$V2sum[4,]
+                        V3me <- ret$chain1$V3sum[4,]
+                        Dev.p <- ret$chain1$dev.p
+                        InvLH.p <- ret$chain1$invLH.p
+                        
+                        if(nChain > 1){
+                            for(i in 2:nChain){
+                                nam <- paste("chain", i, sep="")
+                                be1.p <- rbind(be1.p, ret[[nam]]$beta1.p)
+                                be2.p <- rbind(be2.p, ret[[nam]]$beta2.p)
+                                be3.p <- rbind(be3.p, ret[[nam]]$beta3.p)
+                                alp1.p <- rbind(alp1.p, ret[[nam]]$alpha1.p)
+                                alp2.p <- rbind(alp2.p, ret[[nam]]$alpha2.p)
+                                alp3.p <- rbind(alp3.p, ret[[nam]]$alpha3.p)
+                                kap1.p <- rbind(kap1.p, ret[[nam]]$kappa1.p)
+                                kap2.p <- rbind(kap2.p, ret[[nam]]$kappa2.p)
+                                kap3.p <- rbind(kap3.p, ret[[nam]]$kappa3.p)
+                                thet.p <- rbind(thet.p, ret[[nam]]$theta.p)
+                                V1me <- rbind(V1me, ret[[nam]]$V1sum[4,])
+                                V2me <- rbind(V2me, ret[[nam]]$V2sum[4,])
+                                V3me <- rbind(V3me, ret[[nam]]$V3sum[4,])
+                                Dev.p <- rbind(Dev.p, ret[[nam]]$dev.p)
+                                InvLH.p <- cbind(InvLH.p, ret[[nam]]$invLH.p)
+                            }
+                        }
+                        if(model_h3 == "Markov")
+                        {
+                            logLH_fin <- .C("BweibMvnCorScr_logMLH_DIC",
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            be1 = as.double(apply(be1.p, 2, mean)),
+                            be2 = as.double(apply(be2.p, 2, mean)),
+                            be3 = as.double(apply(be3.p, 2, mean)),
+                            alp1 = as.double(apply(alp1.p, 2, mean)),
+                            alp2 = as.double(apply(alp2.p, 2, mean)),
+                            alp3 = as.double(apply(alp3.p, 2, mean)),
+                            kap1 = as.double(apply(kap1.p, 2, mean)),
+                            kap2 = as.double(apply(kap2.p, 2, mean)),
+                            kap3 = as.double(apply(kap3.p, 2, mean)),
+                            thet = as.double(apply(theta.p, 2, mean)),
+                            V_1 = as.double(apply(V1me, 2, mean)),
+                            V_2 = as.double(apply(V2me, 2, mean)),
+                            V_3 = as.double(apply(V3me, 2, mean)),
+                            val = as.double(0))$val
+                        }else if(model_h3 == "semi-Markov")
+                        {
+                            logLH_fin <- .C("BweibMvnCorScrSM_logMLH_DIC",
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            be1 = as.double(apply(be1.p, 2, mean)),
+                            be2 = as.double(apply(be2.p, 2, mean)),
+                            be3 = as.double(apply(be3.p, 2, mean)),
+                            alp1 = as.double(apply(alp1.p, 2, mean)),
+                            alp2 = as.double(apply(alp2.p, 2, mean)),
+                            alp3 = as.double(apply(alp3.p, 2, mean)),
+                            kap1 = as.double(apply(kap1.p, 2, mean)),
+                            kap2 = as.double(apply(kap2.p, 2, mean)),
+                            kap3 = as.double(apply(kap3.p, 2, mean)),
+                            thet = as.double(apply(theta.p, 2, mean)),
+                            V_1 = as.double(apply(V1me, 2, mean)),
+                            V_2 = as.double(apply(V2me, 2, mean)),
+                            V_3 = as.double(apply(V3me, 2, mean)),
+                            val = as.double(0))$val
+                        }
+                        
+                        DIC = 2*mean(Dev.p) + 2 * logLH_fin
+                        LPML = sum(log(1/apply(InvLH.p, 1, mean)))
                         
                     } ## end: if Weibull-MVN
                     
@@ -1377,80 +1627,80 @@ path = NULL)
                             
                             
                             mcmcRet <- .C("BweibDpCorScrmcmc",
-                            survData 		= as.double(as.matrix(survData)),
-                            n				= as.integer(n),
-                            p1				= as.integer(p1),
-                            p2				= as.integer(p2),
-                            p3				= as.integer(p3),
-                            J				= as.integer(J),
-                            nj				= as.double(nj),
-                            hyperParams 	= as.double(hyperParams),
-                            mcmc		= as.double(mcmcNew),
-                            startValues 	= as.double(startV),
-                            numReps			= as.integer(numReps),
-                            thin			= as.integer(thin),
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            nj                = as.double(nj),
+                            hyperParams     = as.double(hyperParams),
+                            mcmc        = as.double(mcmcNew),
+                            startValues     = as.double(startV),
+                            numReps            = as.integer(numReps),
+                            thin            = as.integer(thin),
                             burninPerc      = as.double(burninPerc),
-                            nGam_save		= as.integer(nGam_save),
-                            samples_beta1 	= as.double(rep(0, nStore*p1)),
-                            samples_beta2 	= as.double(rep(0, nStore*p2)),
-                            samples_beta3 	= as.double(rep(0, nStore*p3)),
-                            samples_alpha1 	= as.double(rep(0, nStore*1)),
-                            samples_alpha2 	= as.double(rep(0, nStore*1)),
-                            samples_alpha3 	= as.double(rep(0, nStore*1)),
-                            samples_kappa1 	= as.double(rep(0, nStore*1)),
-                            samples_kappa2 	= as.double(rep(0, nStore*1)),
-                            samples_kappa3 	= as.double(rep(0, nStore*1)),
-                            samples_nu2 	= as.double(rep(0, nStore*1)),
-                            samples_nu3 	= as.double(rep(0, nStore*1)),
-                            samples_theta 	= as.double(rep(0, nStore*1)),
-                            samples_V1		= as.double(rep(0, nStore*J)),
-                            samples_V2		= as.double(rep(0, nStore*J)),
-                            samples_V3		= as.double(rep(0, nStore*J)),
-                            samples_c		= as.double(rep(0, nStore*J)),
-                            samples_mu		= as.double(rep(0, nStore*3*J)),
-                            samples_Sigma	= as.double(rep(0, nStore*3*3*J)),
+                            nGam_save        = as.integer(nGam_save),
+                            samples_beta1     = as.double(rep(0, nStore*p1)),
+                            samples_beta2     = as.double(rep(0, nStore*p2)),
+                            samples_beta3     = as.double(rep(0, nStore*p3)),
+                            samples_alpha1     = as.double(rep(0, nStore*1)),
+                            samples_alpha2     = as.double(rep(0, nStore*1)),
+                            samples_alpha3     = as.double(rep(0, nStore*1)),
+                            samples_kappa1     = as.double(rep(0, nStore*1)),
+                            samples_kappa2     = as.double(rep(0, nStore*1)),
+                            samples_kappa3     = as.double(rep(0, nStore*1)),
+                            samples_nu2     = as.double(rep(0, nStore*1)),
+                            samples_nu3     = as.double(rep(0, nStore*1)),
+                            samples_theta     = as.double(rep(0, nStore*1)),
+                            samples_V1        = as.double(rep(0, nStore*J)),
+                            samples_V2        = as.double(rep(0, nStore*J)),
+                            samples_V3        = as.double(rep(0, nStore*J)),
+                            samples_c        = as.double(rep(0, nStore*J)),
+                            samples_mu        = as.double(rep(0, nStore*3*J)),
+                            samples_Sigma    = as.double(rep(0, nStore*3*3*J)),
                             samples_tau     = as.double(rep(0, nStore*1)),
-                            samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
-                            samples_misc	= as.double(rep(0, (p1+p2+p3+6+n+1+n+J))),
-                            gammaP			= as.double(rep(0, n)),
-                            dev     			= as.double(rep(0, nStore*1)),
+                            samples_gamma     = as.double(rep(0, nStore*nGam_save)),
+                            samples_misc    = as.double(rep(0, (p1+p2+p3+6+n+1+n+J))),
+                            gammaP            = as.double(rep(0, n)),
+                            dev                 = as.double(rep(0, nStore*1)),
                             invLH = as.double(rep(0, n)),
                             logLH_fin = as.double(0),
-                            lpml     			= as.double(rep(0, nStore*1)),
-                            lpml2     			= as.double(rep(0, nStore*1)),
+                            lpml                 = as.double(rep(0, nStore*1)),
+                            lpml2                 = as.double(rep(0, nStore*1)),
                             moveVec             = as.double(rep(0, numReps)))
                             
                             
                             
                             if(p1 > 0){
-                                beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                                beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                             }
                             if(p1 == 0){
-                                beta1.p 		<- NULL
+                                beta1.p         <- NULL
                             }
                             if(p2 > 0){
-                                beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                                beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                             }
                             if(p2 == 0){
-                                beta2.p 		<- NULL
+                                beta2.p         <- NULL
                             }
                             if(p3 > 0){
-                                beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                                beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                             }
                             if(p3 == 0){
-                                beta3.p 		<- NULL
+                                beta3.p         <- NULL
                             }
                             
-                            alpha1.p 		<- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
-                            alpha2.p 		<- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
-                            alpha3.p 		<- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
-                            kappa1.p 		<- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
-                            kappa2.p 		<- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
-                            kappa3.p 		<- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
+                            alpha1.p         <- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
+                            alpha2.p         <- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
+                            alpha3.p         <- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
+                            kappa1.p         <- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
+                            kappa2.p         <- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
+                            kappa3.p         <- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
                             nu2.p           <- matrix(mcmcRet$samples_nu2, nrow = nStore, byrow = TRUE)
                             nu3.p           <- matrix(mcmcRet$samples_nu3, nrow = nStore, byrow = TRUE)
-                            theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                            gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                            theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                            gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                             
                             V1.p            <- matrix(mcmcRet$samples_V1, nrow = nStore, byrow = TRUE)
                             V2.p            <- matrix(mcmcRet$samples_V2, nrow = nStore, byrow = TRUE)
@@ -1461,28 +1711,28 @@ path = NULL)
                             tau.p           <- matrix(mcmcRet$samples_tau, nrow = nStore, byrow = TRUE)
                             
                             if(p1 > 0){
-                                accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                                accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                             }
                             if(p1 == 0){
-                                accept.beta1 	<- NULL
+                                accept.beta1     <- NULL
                             }
                             if(p2 > 0){
-                                accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                                accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                             }
                             if(p2 == 0){
-                                accept.beta2 	<- NULL
+                                accept.beta2     <- NULL
                             }
                             if(p3 > 0){
-                                accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                                accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                             }
                             if(p3 == 0){
-                                accept.beta3 	<- NULL
+                                accept.beta3     <- NULL
                             }
                             
-                            accept.alpha1	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
-                            accept.alpha2	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
-                            accept.alpha3	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
-                            accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
+                            accept.alpha1    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
+                            accept.alpha2    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
+                            accept.alpha3    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
+                            accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
                             accept.nu2      <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+5)])
                             accept.nu3      <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+6)])
                             accept.gamma    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+6+1):(p1+p2+p3+6+n)])
@@ -1554,29 +1804,13 @@ path = NULL)
                             ## 1. log pseudo-marginal likelihood
                             
                             invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
-                            
-                            cpo     <- 1/invLH.p
-                            
-                            LPML <- sum(log(cpo))
-                            
-                            # or
-                            
-                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)
-                            
-                            lpml2.p <- matrix(mcmcRet$lpml2, nrow = nStore, byrow = TRUE)
-                            
+
                             ## 2. deviance information criterion
                             
                             gamma_mean <- matrix(mcmcRet$gammaP, nrow = n, byrow = TRUE)
-                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
-                            Dbar        <- mean(dev.p)
-                            pD          <- Dbar - (-2*mcmcRet$logLH_fin)
+                            dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
                             
-                            DIC <- pD + Dbar
-                            
-                            
-                            
-                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, V1.p = V1.p, V2.p = V2.p, V3.p = V3.p, class.p = c.p, mu.p = mu.p, Sigma.p = Sigma.p, tau.p = tau.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V = accept.V, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
+                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, V1.p = V1.p, V2.p = V2.p, V3.p = V3.p, class.p = c.p, mu.p = mu.p, Sigma.p = Sigma.p, tau.p = tau.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V = accept.V, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, invLH.p=invLH.p)
                             
                             
                         }  ## end: if Weibull-DPM-M
@@ -1601,79 +1835,79 @@ path = NULL)
                             mcmcNew <- c(mcmc1, 1, mcmc2, n)
                             
                             mcmcRet <- .C("BweibDpCorScrSMmcmc",
-                            survData 		= as.double(as.matrix(survData)),
-                            n				= as.integer(n),
-                            p1				= as.integer(p1),
-                            p2				= as.integer(p2),
-                            p3				= as.integer(p3),
-                            J				= as.integer(J),
-                            nj				= as.double(nj),
-                            hyperParams 	= as.double(hyperParams),
-                            mcmc		= as.double(mcmcNew),
-                            startValues 	= as.double(startV),
-                            numReps			= as.integer(numReps),
-                            thin			= as.integer(thin),
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            nj                = as.double(nj),
+                            hyperParams     = as.double(hyperParams),
+                            mcmc        = as.double(mcmcNew),
+                            startValues     = as.double(startV),
+                            numReps            = as.integer(numReps),
+                            thin            = as.integer(thin),
                             burninPerc      = as.double(burninPerc),
-                            nGam_save		= as.integer(nGam_save),
-                            samples_beta1 	= as.double(rep(0, nStore*p1)),
-                            samples_beta2 	= as.double(rep(0, nStore*p2)),
-                            samples_beta3 	= as.double(rep(0, nStore*p3)),
-                            samples_alpha1 	= as.double(rep(0, nStore*1)),
-                            samples_alpha2 	= as.double(rep(0, nStore*1)),
-                            samples_alpha3 	= as.double(rep(0, nStore*1)),
-                            samples_kappa1 	= as.double(rep(0, nStore*1)),
-                            samples_kappa2 	= as.double(rep(0, nStore*1)),
-                            samples_kappa3 	= as.double(rep(0, nStore*1)),
-                            samples_nu2 	= as.double(rep(0, nStore*1)),
-                            samples_nu3 	= as.double(rep(0, nStore*1)),
-                            samples_theta 	= as.double(rep(0, nStore*1)),
-                            samples_V1		= as.double(rep(0, nStore*J)),
-                            samples_V2		= as.double(rep(0, nStore*J)),
-                            samples_V3		= as.double(rep(0, nStore*J)),
-                            samples_c		= as.double(rep(0, nStore*J)),
-                            samples_mu		= as.double(rep(0, nStore*3*J)),
-                            samples_Sigma	= as.double(rep(0, nStore*3*3*J)),
+                            nGam_save        = as.integer(nGam_save),
+                            samples_beta1     = as.double(rep(0, nStore*p1)),
+                            samples_beta2     = as.double(rep(0, nStore*p2)),
+                            samples_beta3     = as.double(rep(0, nStore*p3)),
+                            samples_alpha1     = as.double(rep(0, nStore*1)),
+                            samples_alpha2     = as.double(rep(0, nStore*1)),
+                            samples_alpha3     = as.double(rep(0, nStore*1)),
+                            samples_kappa1     = as.double(rep(0, nStore*1)),
+                            samples_kappa2     = as.double(rep(0, nStore*1)),
+                            samples_kappa3     = as.double(rep(0, nStore*1)),
+                            samples_nu2     = as.double(rep(0, nStore*1)),
+                            samples_nu3     = as.double(rep(0, nStore*1)),
+                            samples_theta     = as.double(rep(0, nStore*1)),
+                            samples_V1        = as.double(rep(0, nStore*J)),
+                            samples_V2        = as.double(rep(0, nStore*J)),
+                            samples_V3        = as.double(rep(0, nStore*J)),
+                            samples_c        = as.double(rep(0, nStore*J)),
+                            samples_mu        = as.double(rep(0, nStore*3*J)),
+                            samples_Sigma    = as.double(rep(0, nStore*3*3*J)),
                             samples_tau     = as.double(rep(0, nStore*1)),
-                            samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
-                            samples_misc	= as.double(rep(0, (p1+p2+p3+6+n+1+n+J))),
-                            gammaP			= as.double(rep(0, n)),
-                            dev     			= as.double(rep(0, nStore*1)),
+                            samples_gamma     = as.double(rep(0, nStore*nGam_save)),
+                            samples_misc    = as.double(rep(0, (p1+p2+p3+6+n+1+n+J))),
+                            gammaP            = as.double(rep(0, n)),
+                            dev                 = as.double(rep(0, nStore*1)),
                             invLH = as.double(rep(0, n)),
                             logLH_fin = as.double(0),
-                            lpml     			= as.double(rep(0, nStore*1)),
-                            lpml2     			= as.double(rep(0, nStore*1)),
+                            lpml                 = as.double(rep(0, nStore*1)),
+                            lpml2                 = as.double(rep(0, nStore*1)),
                             moveVec             = as.double(rep(0, numReps)))
                             
                             
                             if(p1 > 0){
-                                beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                                beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                             }
                             if(p1 == 0){
-                                beta1.p 		<- NULL
+                                beta1.p         <- NULL
                             }
                             if(p2 > 0){
-                                beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                                beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                             }
                             if(p2 == 0){
-                                beta2.p 		<- NULL
+                                beta2.p         <- NULL
                             }
                             if(p3 > 0){
-                                beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                                beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                             }
                             if(p3 == 0){
-                                beta3.p 		<- NULL
+                                beta3.p         <- NULL
                             }
                             
-                            alpha1.p 		<- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
-                            alpha2.p 		<- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
-                            alpha3.p 		<- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
-                            kappa1.p 		<- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
-                            kappa2.p 		<- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
-                            kappa3.p 		<- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
+                            alpha1.p         <- matrix(mcmcRet$samples_alpha1, nrow = nStore, byrow = TRUE)
+                            alpha2.p         <- matrix(mcmcRet$samples_alpha2, nrow = nStore, byrow = TRUE)
+                            alpha3.p         <- matrix(mcmcRet$samples_alpha3, nrow = nStore, byrow = TRUE)
+                            kappa1.p         <- matrix(mcmcRet$samples_kappa1, nrow = nStore, byrow = TRUE)
+                            kappa2.p         <- matrix(mcmcRet$samples_kappa2, nrow = nStore, byrow = TRUE)
+                            kappa3.p         <- matrix(mcmcRet$samples_kappa3, nrow = nStore, byrow = TRUE)
                             nu2.p           <- matrix(mcmcRet$samples_nu2, nrow = nStore, byrow = TRUE)
                             nu3.p           <- matrix(mcmcRet$samples_nu3, nrow = nStore, byrow = TRUE)
-                            theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                            gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                            theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                            gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                             
                             V1.p            <- matrix(mcmcRet$samples_V1, nrow = nStore, byrow = TRUE)
                             V2.p            <- matrix(mcmcRet$samples_V2, nrow = nStore, byrow = TRUE)
@@ -1684,28 +1918,28 @@ path = NULL)
                             tau.p           <- matrix(mcmcRet$samples_tau, nrow = nStore, byrow = TRUE)
                             
                             if(p1 > 0){
-                                accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                                accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                             }
                             if(p1 == 0){
-                                accept.beta1 	<- NULL
+                                accept.beta1     <- NULL
                             }
                             if(p2 > 0){
-                                accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                                accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                             }
                             if(p2 == 0){
-                                accept.beta2 	<- NULL
+                                accept.beta2     <- NULL
                             }
                             if(p3 > 0){
-                                accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                                accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                             }
                             if(p3 == 0){
-                                accept.beta3 	<- NULL
+                                accept.beta3     <- NULL
                             }
                             
-                            accept.alpha1	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
-                            accept.alpha2	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
-                            accept.alpha3	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
-                            accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
+                            accept.alpha1    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+1)])/sum(as.vector(mcmcRet$moveVec)==4)
+                            accept.alpha2    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+2)])/sum(as.vector(mcmcRet$moveVec)==5)
+                            accept.alpha3    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+3)])/sum(as.vector(mcmcRet$moveVec)==6)
+                            accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+4)])/sum(as.vector(mcmcRet$moveVec)==10)
                             accept.nu2      <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+5)])
                             accept.nu3      <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+6)])
                             accept.gamma    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+6+1):(p1+p2+p3+6+n)])
@@ -1775,45 +2009,114 @@ path = NULL)
                             
                             invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
                             
-                            cpo     <- 1/invLH.p
-                            
-                            LPML <- sum(log(cpo))
-                            
-                            # or
-                            
-                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)
-                            
-                            lpml2.p <- matrix(mcmcRet$lpml2, nrow = nStore, byrow = TRUE)
-                            
                             ## 2. deviance information criterion
                             
                             gamma_mean <- matrix(mcmcRet$gammaP, nrow = n, byrow = TRUE)
-                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
-                            Dbar        <- mean(dev.p)
-                            pD          <- Dbar - (-2*mcmcRet$logLH_fin)
+                            dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
                             
-                            DIC <- pD + Dbar
-                            
-                            
-                            
-                            
-                            
-                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, V1.p = V1.p, V2.p = V2.p, V3.p = V3.p, class.p = c.p, mu.p = mu.p, Sigma.p = Sigma.p, tau.p = tau.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V = accept.V, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
+                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, alpha1.p = alpha1.p, alpha2.p = alpha2.p, alpha3.p = alpha3.p, kappa1.p = kappa1.p, kappa2.p = kappa2.p, kappa3.p = kappa3.p, theta.p = theta.p, V1.p = V1.p, V2.p = V2.p, V3.p = V3.p, class.p = c.p, mu.p = mu.p, Sigma.p = Sigma.p, tau.p = tau.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.alpha1 = accept.alpha1, accept.alpha2 = accept.alpha2, accept.alpha3 = accept.alpha3, accept.theta = accept.theta, accept.V = accept.V, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, invLH.p=invLH.p)
                             
                             
                         }  ## end: if Weibull-DPM-SM
+                        
+                        ## DIC and LPML
+                        
+                        be1.p <- ret$chain1$beta1.p
+                        be2.p <- ret$chain1$beta2.p
+                        be3.p <- ret$chain1$beta3.p
+                        alp1.p <- ret$chain1$alpha1.p
+                        alp2.p <- ret$chain1$alpha2.p
+                        alp3.p <- ret$chain1$alpha3.p
+                        kap1.p <- ret$chain1$kappa1.p
+                        kap2.p <- ret$chain1$kappa2.p
+                        kap3.p <- ret$chain1$kappa3.p
+                        thet.p <- ret$chain1$theta.p
+                        V1me <- ret$chain1$V1sum[4,]
+                        V2me <- ret$chain1$V2sum[4,]
+                        V3me <- ret$chain1$V3sum[4,]
+                        Dev.p <- ret$chain1$dev.p
+                        InvLH.p <- ret$chain1$invLH.p
+                        
+                        if(nChain > 1){
+                            for(i in 2:nChain){
+                                nam <- paste("chain", i, sep="")
+                                be1.p <- rbind(be1.p, ret[[nam]]$beta1.p)
+                                be2.p <- rbind(be2.p, ret[[nam]]$beta2.p)
+                                be3.p <- rbind(be3.p, ret[[nam]]$beta3.p)
+                                alp1.p <- rbind(alp1.p, ret[[nam]]$alpha1.p)
+                                alp2.p <- rbind(alp2.p, ret[[nam]]$alpha2.p)
+                                alp3.p <- rbind(alp3.p, ret[[nam]]$alpha3.p)
+                                kap1.p <- rbind(kap1.p, ret[[nam]]$kappa1.p)
+                                kap2.p <- rbind(kap2.p, ret[[nam]]$kappa2.p)
+                                kap3.p <- rbind(kap3.p, ret[[nam]]$kappa3.p)
+                                thet.p <- rbind(thet.p, ret[[nam]]$theta.p)
+                                V1me <- rbind(V1me, ret[[nam]]$V1sum[4,])
+                                V2me <- rbind(V2me, ret[[nam]]$V2sum[4,])
+                                V3me <- rbind(V3me, ret[[nam]]$V3sum[4,])
+                                Dev.p <- rbind(Dev.p, ret[[nam]]$dev.p)
+                                InvLH.p <- cbind(InvLH.p, ret[[nam]]$invLH.p)
+                            }
+                        }
+                        if(model_h3 == "Markov")
+                        {
+                            logLH_fin <- .C("BweibDpCorScr_logMLH_DIC",
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            be1 = as.double(apply(be1.p, 2, mean)),
+                            be2 = as.double(apply(be2.p, 2, mean)),
+                            be3 = as.double(apply(be3.p, 2, mean)),
+                            alp1 = as.double(apply(alp1.p, 2, mean)),
+                            alp2 = as.double(apply(alp2.p, 2, mean)),
+                            alp3 = as.double(apply(alp3.p, 2, mean)),
+                            kap1 = as.double(apply(kap1.p, 2, mean)),
+                            kap2 = as.double(apply(kap2.p, 2, mean)),
+                            kap3 = as.double(apply(kap3.p, 2, mean)),
+                            thet = as.double(apply(theta.p, 2, mean)),
+                            V_1 = as.double(apply(V1me, 2, mean)),
+                            V_2 = as.double(apply(V2me, 2, mean)),
+                            V_3 = as.double(apply(V3me, 2, mean)),
+                            val = as.double(0))$val
+                        }else if(model_h3 == "semi-Markov")
+                        {
+                            logLH_fin <- .C("BweibDpCorScrSM_logMLH_DIC",
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            be1 = as.double(apply(be1.p, 2, mean)),
+                            be2 = as.double(apply(be2.p, 2, mean)),
+                            be3 = as.double(apply(be3.p, 2, mean)),
+                            alp1 = as.double(apply(alp1.p, 2, mean)),
+                            alp2 = as.double(apply(alp2.p, 2, mean)),
+                            alp3 = as.double(apply(alp3.p, 2, mean)),
+                            kap1 = as.double(apply(kap1.p, 2, mean)),
+                            kap2 = as.double(apply(kap2.p, 2, mean)),
+                            kap3 = as.double(apply(kap3.p, 2, mean)),
+                            thet = as.double(apply(theta.p, 2, mean)),
+                            V_1 = as.double(apply(V1me, 2, mean)),
+                            V_2 = as.double(apply(V2me, 2, mean)),
+                            V_3 = as.double(apply(V3me, 2, mean)),
+                            val = as.double(0))$val
+                        }
+                        
+                        DIC = 2*mean(Dev.p) + 2 * logLH_fin
+                        LPML = sum(log(1/apply(InvLH.p, 1, mean)))
                         
                     } ## end: if Weibull-DPM
                     
                 } ## end: if Weibull
                 
                 
-                
                 # hz.type = "PEM"
                 
                 if(hz.type == "PEM"){
-                    
-                    
+
                     C1 <- mcmc[1]
                     C2 <- mcmc[2]
                     C3 <- mcmc[3]
@@ -1873,9 +2176,9 @@ path = NULL)
                     
                     mcmcParams <- c(C1, C2, C3, delPert1, delPert2, delPert3, num_s_propBI1, num_s_propBI2, num_s_propBI3, K1_max, K2_max, K3_max, s1_max, s2_max, s3_max, nTime_lambda1, nTime_lambda2, nTime_lambda3, s_propBI1, s_propBI2, s_propBI3, time_lambda1, time_lambda2, time_lambda3, mhProp_theta_var, mhProp_V1_var, mhProp_V2_var, mhProp_V3_var)
                     
-                    s1  		<- temp$PEM$PEM.s1
-                    s2			<- temp$PEM$PEM.s2
-                    s3			<- temp$PEM$PEM.s3
+                    s1          <- temp$PEM$PEM.s1
+                    s2            <- temp$PEM$PEM.s2
+                    s3            <- temp$PEM$PEM.s3
                     
                     lambda1 <- temp$PEM$PEM.lambda1
                     lambda2 <- temp$PEM$PEM.lambda1
@@ -1890,11 +2193,6 @@ path = NULL)
                     sigSq_lam1=temp$PEM$PEM.sigSq_lam[1]
                     sigSq_lam2=temp$PEM$PEM.sigSq_lam[2]
                     sigSq_lam3=temp$PEM$PEM.sigSq_lam[3]
-                    
-                    
-                    
-                    
-                    
                     
                     
                     # re.type = "MVN"
@@ -1944,140 +2242,134 @@ path = NULL)
                             mcmcParams2 <- mcmcParams[(18+num_s_propBI1+num_s_propBI2+num_s_propBI3+nTime_lambda1+nTime_lambda2+nTime_lambda3+2):(length(mcmcParams)-1)]
                             
                             mcmcParams <- c(mcmcParams1, 1, mcmcParams2, n)
-                            
-                            
-                            
+                        
                             mcmcRet <- .C("BpeMvnCorScrmcmc",
-                            survData 		= as.double(as.matrix(survData)),
-                            n				= as.integer(n),
-                            p1				= as.integer(p1),
-                            p2				= as.integer(p2),
-                            p3				= as.integer(p3),
-                            J				= as.integer(J),
-                            nj				= as.double(nj),
-                            hyperParams 	= as.double(hyperParams),
-                            startValues 	= as.double(startV),
-                            mcmcParams		= as.double(mcmcParams),
-                            numReps			= as.integer(numReps),
-                            thin			= as.integer(thin),
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            nj                = as.double(nj),
+                            hyperParams     = as.double(hyperParams),
+                            startValues     = as.double(startV),
+                            mcmcParams        = as.double(mcmcParams),
+                            numReps            = as.integer(numReps),
+                            thin            = as.integer(thin),
                             burninPerc      = as.double(burninPerc),
-                            nGam_save		= as.integer(nGam_save),
-                            samples_beta1 	= as.double(rep(0, nStore*p1)),
-                            samples_beta2 	= as.double(rep(0, nStore*p2)),
-                            samples_beta3 	= as.double(rep(0, nStore*p3)),
+                            nGam_save        = as.integer(nGam_save),
+                            samples_beta1     = as.double(rep(0, nStore*p1)),
+                            samples_beta2     = as.double(rep(0, nStore*p2)),
+                            samples_beta3     = as.double(rep(0, nStore*p3)),
                             samples_mu_lam1     = as.double(rep(0, nStore*1)),
                             samples_mu_lam2     = as.double(rep(0, nStore*1)),
                             samples_mu_lam3     = as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam1	= as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam2	= as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam3	= as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam1    = as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam2    = as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam3    = as.double(rep(0, nStore*1)),
                             samples_K1          = as.double(rep(0, nStore*1)),
                             samples_K2          = as.double(rep(0, nStore*1)),
                             samples_K3          = as.double(rep(0, nStore*1)),
                             samples_s1          = as.double(rep(0, nStore*(K1_max + 1))),
                             samples_s2          = as.double(rep(0, nStore*(K2_max + 1))),
                             samples_s3          = as.double(rep(0, nStore*(K3_max + 1))),
-                            samples_nu2 	= as.double(rep(0, nStore*1)),
-                            samples_nu3 	= as.double(rep(0, nStore*1)),
-                            samples_theta 	= as.double(rep(0, nStore*1)),
-                            samples_V1		= as.double(rep(0, nStore*J)),
-                            samples_V2		= as.double(rep(0, nStore*J)),
-                            samples_V3		= as.double(rep(0, nStore*J)),
-                            samples_Sigma_V	= as.double(rep(0, nStore*3*3)),
-                            samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
+                            samples_nu2     = as.double(rep(0, nStore*1)),
+                            samples_nu3     = as.double(rep(0, nStore*1)),
+                            samples_theta     = as.double(rep(0, nStore*1)),
+                            samples_V1        = as.double(rep(0, nStore*J)),
+                            samples_V2        = as.double(rep(0, nStore*J)),
+                            samples_V3        = as.double(rep(0, nStore*J)),
+                            samples_Sigma_V    = as.double(rep(0, nStore*3*3)),
+                            samples_gamma     = as.double(rep(0, nStore*nGam_save)),
                             samples_gamma_last = as.double(rep(0, n)),
-                            samples_misc	= as.double(rep(0, (p1+p2+p3+9+n+1+n+J+J+J))),
-                            lambda1_fin			= as.double(rep(0, nStore*nTime_lambda1)),
-                            lambda2_fin			= as.double(rep(0, nStore*nTime_lambda2)),
-                            lambda3_fin			= as.double(rep(0, nStore*nTime_lambda3)),
-                            gammaP			= as.double(rep(0, n)),
-                            dev     			= as.double(rep(0, nStore*1)),
+                            samples_misc    = as.double(rep(0, (p1+p2+p3+9+n+1+n+J+J+J))),
+                            lambda1_fin            = as.double(rep(0, nStore*nTime_lambda1)),
+                            lambda2_fin            = as.double(rep(0, nStore*nTime_lambda2)),
+                            lambda3_fin            = as.double(rep(0, nStore*nTime_lambda3)),
+                            gammaP            = as.double(rep(0, n)),
+                            dev                 = as.double(rep(0, nStore*1)),
                             invLH = as.double(rep(0, n)),
                             logLH_fin = as.double(0),
-                            lpml     			= as.double(rep(0, nStore*1)),
-                            lpml2     			= as.double(rep(0, nStore*1)),
+                            lpml                 = as.double(rep(0, nStore*1)),
+                            lpml2                 = as.double(rep(0, nStore*1)),
                             moveVec             = as.double(rep(0, numReps)))
-                            
-                            
-                            
+
                             if(p1 > 0){
-                                beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                                beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                             }
                             if(p1 == 0){
-                                beta1.p 		<- NULL
+                                beta1.p         <- NULL
                             }
                             if(p2 > 0){
-                                beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                                beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                             }
                             if(p2 == 0){
-                                beta2.p 		<- NULL
+                                beta2.p         <- NULL
                             }
                             if(p3 > 0){
-                                beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                                beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                             }
                             if(p3 == 0){
-                                beta3.p 		<- NULL
+                                beta3.p         <- NULL
                             }
                             
-                            lambda1.fin 	<- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
-                            lambda2.fin 	<- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
-                            lambda3.fin 	<- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
+                            lambda1.fin     <- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
+                            lambda2.fin     <- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
+                            lambda3.fin     <- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
                             
-                            mu_lam1.p 		<- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
-                            mu_lam2.p 		<- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
-                            mu_lam3.p 		<- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
-                            sigSq_lam1.p 	<- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
-                            sigSq_lam2.p 	<- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
-                            sigSq_lam3.p 	<- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
+                            mu_lam1.p         <- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
+                            mu_lam2.p         <- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
+                            mu_lam3.p         <- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
+                            sigSq_lam1.p     <- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
+                            sigSq_lam2.p     <- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
+                            sigSq_lam3.p     <- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
                             
-                            K1.p 			<- matrix(mcmcRet$samples_K1, nrow = nStore, byrow = TRUE)
-                            K2.p 			<- matrix(mcmcRet$samples_K2, nrow = nStore, byrow = TRUE)
-                            K3.p 			<- matrix(mcmcRet$samples_K3, nrow = nStore, byrow = TRUE)
-                            s1.p 			<- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
-                            s2.p 			<- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
-                            s3.p 			<- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
+                            K1.p             <- matrix(mcmcRet$samples_K1, nrow = nStore, byrow = TRUE)
+                            K2.p             <- matrix(mcmcRet$samples_K2, nrow = nStore, byrow = TRUE)
+                            K3.p             <- matrix(mcmcRet$samples_K3, nrow = nStore, byrow = TRUE)
+                            s1.p             <- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
+                            s2.p             <- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
+                            s3.p             <- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
                             
-                            theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                            gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                            theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                            gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                             
                             V1.p            <- matrix(mcmcRet$samples_V1, nrow = nStore, byrow = TRUE)
                             V2.p            <- matrix(mcmcRet$samples_V2, nrow = nStore, byrow = TRUE)
                             V3.p            <- matrix(mcmcRet$samples_V3, nrow = nStore, byrow = TRUE)
-                            Sigma_V.p		<- array(as.vector(mcmcRet$samples_Sigma_V), c(3, 3, nStore))
+                            Sigma_V.p        <- array(as.vector(mcmcRet$samples_Sigma_V), c(3, 3, nStore))
                             
                             if(p1 > 0){
-                                accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                                accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                             }
                             if(p1 == 0){
-                                accept.beta1 	<- NULL
+                                accept.beta1     <- NULL
                             }
                             if(p2 > 0){
-                                accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                                accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                             }
                             if(p2 == 0){
-                                accept.beta2 	<- NULL
+                                accept.beta2     <- NULL
                             }
                             if(p3 > 0){
-                                accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                                accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                             }
                             if(p3 == 0){
-                                accept.beta3 	<- NULL
+                                accept.beta3     <- NULL
                             }
                             
-                            accept.BI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
-                            accept.DI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
-                            accept.BI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
-                            accept.DI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
-                            accept.BI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
-                            accept.DI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
-                            accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7)])/sum(as.vector(mcmcRet$moveVec)==11)
+                            accept.BI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
+                            accept.DI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
+                            accept.BI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
+                            accept.DI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
+                            accept.BI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
+                            accept.DI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
+                            accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7)])/sum(as.vector(mcmcRet$moveVec)==11)
                             accept.V1       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+1):(p1+p2+p3+10+n+n+J)])/sum(as.vector(mcmcRet$moveVec)==18)
                             accept.V2       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+J+1):(p1+p2+p3+10+n+n+J+J)])/sum(as.vector(mcmcRet$moveVec)==19)
                             accept.V3       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+J+J+1):(p1+p2+p3+10+n+n+J+J+J)])/sum(as.vector(mcmcRet$moveVec)==20)
                             
-                            
-                            
-                            
+
                             V1summary <- as.matrix(apply(V1.p, 2, summary))
                             V1summary <- rbind(V1summary, apply(V1.p, 2, quantile, prob = 0.975))
                             V1summary <- rbind(V1summary, apply(V1.p, 2, quantile, prob = 0.025))
@@ -2141,27 +2433,12 @@ path = NULL)
                             
                             invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
                             
-                            cpo     <- 1/invLH.p
-                            
-                            LPML <- sum(log(cpo))
-                            
-                            # or
-                            
-                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)
-                            
-                            lpml2.p <- matrix(mcmcRet$lpml2, nrow = nStore, byrow = TRUE)
-                            
                             ## 2. deviance information criterion
                             
                             gamma_mean <- matrix(mcmcRet$gammaP, nrow = n, byrow = TRUE)
-                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
-                            Dbar        <- mean(dev.p)
-                            pD          <- Dbar - (-2*mcmcRet$logLH_fin)
-                            
-                            DIC <- pD + Dbar
-                            
-                            
-                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
+                            dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
+       
+                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, invLH.p=invLH.p)
                             
                             
                         }   ## end: if PEM-MVN-M
@@ -2216,128 +2493,128 @@ path = NULL)
                             
                             
                             mcmcRet <- .C("BpeMvnCorScrSMmcmc",
-                            survData 		= as.double(as.matrix(survData)),
-                            n				= as.integer(n),
-                            p1				= as.integer(p1),
-                            p2				= as.integer(p2),
-                            p3				= as.integer(p3),
-                            J				= as.integer(J),
-                            nj				= as.double(nj),
-                            hyperParams 	= as.double(hyperParams),
-                            startValues 	= as.double(startV),
-                            mcmcParams		= as.double(mcmcParams),
-                            numReps			= as.integer(numReps),
-                            thin			= as.integer(thin),
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            nj                = as.double(nj),
+                            hyperParams     = as.double(hyperParams),
+                            startValues     = as.double(startV),
+                            mcmcParams        = as.double(mcmcParams),
+                            numReps            = as.integer(numReps),
+                            thin            = as.integer(thin),
                             burninPerc      = as.double(burninPerc),
-                            nGam_save		= as.integer(nGam_save),
-                            samples_beta1 	= as.double(rep(0, nStore*p1)),
-                            samples_beta2 	= as.double(rep(0, nStore*p2)),
-                            samples_beta3 	= as.double(rep(0, nStore*p3)),
+                            nGam_save        = as.integer(nGam_save),
+                            samples_beta1     = as.double(rep(0, nStore*p1)),
+                            samples_beta2     = as.double(rep(0, nStore*p2)),
+                            samples_beta3     = as.double(rep(0, nStore*p3)),
                             samples_mu_lam1     = as.double(rep(0, nStore*1)),
                             samples_mu_lam2     = as.double(rep(0, nStore*1)),
                             samples_mu_lam3     = as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam1	= as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam2	= as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam3	= as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam1    = as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam2    = as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam3    = as.double(rep(0, nStore*1)),
                             samples_K1          = as.double(rep(0, nStore*1)),
                             samples_K2          = as.double(rep(0, nStore*1)),
                             samples_K3          = as.double(rep(0, nStore*1)),
                             samples_s1          = as.double(rep(0, nStore*(K1_max + 1))),
                             samples_s2          = as.double(rep(0, nStore*(K2_max + 1))),
                             samples_s3          = as.double(rep(0, nStore*(K3_max + 1))),
-                            samples_nu2 	= as.double(rep(0, nStore*1)),
-                            samples_nu3 	= as.double(rep(0, nStore*1)),
-                            samples_theta 	= as.double(rep(0, nStore*1)),
-                            samples_V1		= as.double(rep(0, nStore*J)),
-                            samples_V2		= as.double(rep(0, nStore*J)),
-                            samples_V3		= as.double(rep(0, nStore*J)),
-                            samples_Sigma_V	= as.double(rep(0, nStore*3*3)),
-                            samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
+                            samples_nu2     = as.double(rep(0, nStore*1)),
+                            samples_nu3     = as.double(rep(0, nStore*1)),
+                            samples_theta     = as.double(rep(0, nStore*1)),
+                            samples_V1        = as.double(rep(0, nStore*J)),
+                            samples_V2        = as.double(rep(0, nStore*J)),
+                            samples_V3        = as.double(rep(0, nStore*J)),
+                            samples_Sigma_V    = as.double(rep(0, nStore*3*3)),
+                            samples_gamma     = as.double(rep(0, nStore*nGam_save)),
                             samples_gamma_last = as.double(rep(0, n)),
-                            samples_misc	= as.double(rep(0, (p1+p2+p3+9+n+1+n+J+J+J))),
-                            lambda1_fin			= as.double(rep(0, nStore*nTime_lambda1)),
-                            lambda2_fin			= as.double(rep(0, nStore*nTime_lambda2)),
-                            lambda3_fin			= as.double(rep(0, nStore*nTime_lambda3)),
-                            gammaP			= as.double(rep(0, n)),
-                            dev     			= as.double(rep(0, nStore*1)),
+                            samples_misc    = as.double(rep(0, (p1+p2+p3+9+n+1+n+J+J+J))),
+                            lambda1_fin            = as.double(rep(0, nStore*nTime_lambda1)),
+                            lambda2_fin            = as.double(rep(0, nStore*nTime_lambda2)),
+                            lambda3_fin            = as.double(rep(0, nStore*nTime_lambda3)),
+                            gammaP            = as.double(rep(0, n)),
+                            dev                 = as.double(rep(0, nStore*1)),
                             invLH = as.double(rep(0, n)),
                             logLH_fin = as.double(0),
-                            lpml     			= as.double(rep(0, nStore*1)),
+                            lpml                 = as.double(rep(0, nStore*1)),
                             moveVec             = as.double(rep(0, numReps)))
                             
                             
                             
                             if(p1 > 0){
-                                beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                                beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                             }
                             if(p1 == 0){
-                                beta1.p 		<- NULL
+                                beta1.p         <- NULL
                             }
                             if(p2 > 0){
-                                beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                                beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                             }
                             if(p2 == 0){
-                                beta2.p 		<- NULL
+                                beta2.p         <- NULL
                             }
                             if(p3 > 0){
-                                beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                                beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                             }
                             if(p3 == 0){
-                                beta3.p 		<- NULL
+                                beta3.p         <- NULL
                             }
                             
-                            lambda1.fin 	<- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
-                            lambda2.fin 	<- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
-                            lambda3.fin 	<- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
+                            lambda1.fin     <- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
+                            lambda2.fin     <- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
+                            lambda3.fin     <- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
                             
-                            mu_lam1.p 		<- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
-                            mu_lam2.p 		<- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
-                            mu_lam3.p 		<- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
-                            sigSq_lam1.p 	<- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
-                            sigSq_lam2.p 	<- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
-                            sigSq_lam3.p 	<- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
+                            mu_lam1.p         <- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
+                            mu_lam2.p         <- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
+                            mu_lam3.p         <- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
+                            sigSq_lam1.p     <- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
+                            sigSq_lam2.p     <- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
+                            sigSq_lam3.p     <- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
                             
-                            K1.p 			<- matrix(mcmcRet$samples_K1, nrow = nStore, byrow = TRUE)
-                            K2.p 			<- matrix(mcmcRet$samples_K2, nrow = nStore, byrow = TRUE)
-                            K3.p 			<- matrix(mcmcRet$samples_K3, nrow = nStore, byrow = TRUE)
-                            s1.p 			<- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
-                            s2.p 			<- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
-                            s3.p 			<- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
+                            K1.p             <- matrix(mcmcRet$samples_K1, nrow = nStore, byrow = TRUE)
+                            K2.p             <- matrix(mcmcRet$samples_K2, nrow = nStore, byrow = TRUE)
+                            K3.p             <- matrix(mcmcRet$samples_K3, nrow = nStore, byrow = TRUE)
+                            s1.p             <- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
+                            s2.p             <- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
+                            s3.p             <- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
                             
-                            theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                            gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                            theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                            gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                             
                             V1.p            <- matrix(mcmcRet$samples_V1, nrow = nStore, byrow = TRUE)
                             V2.p            <- matrix(mcmcRet$samples_V2, nrow = nStore, byrow = TRUE)
                             V3.p            <- matrix(mcmcRet$samples_V3, nrow = nStore, byrow = TRUE)
-                            Sigma_V.p		<- array(as.vector(mcmcRet$samples_Sigma_V), c(3, 3, nStore))
+                            Sigma_V.p        <- array(as.vector(mcmcRet$samples_Sigma_V), c(3, 3, nStore))
                             
                             if(p1 > 0){
-                                accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                                accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                             }
                             if(p1 == 0){
-                                accept.beta1 	<- NULL
+                                accept.beta1     <- NULL
                             }
                             if(p2 > 0){
-                                accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                                accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                             }
                             if(p2 == 0){
-                                accept.beta2 	<- NULL
+                                accept.beta2     <- NULL
                             }
                             if(p3 > 0){
-                                accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                                accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                             }
                             if(p3 == 0){
-                                accept.beta3 	<- NULL
+                                accept.beta3     <- NULL
                             }
                             
-                            accept.BI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
-                            accept.DI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
-                            accept.BI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
-                            accept.DI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
-                            accept.BI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
-                            accept.DI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
-                            accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7)])/sum(as.vector(mcmcRet$moveVec)==11)
+                            accept.BI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
+                            accept.DI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
+                            accept.BI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
+                            accept.DI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
+                            accept.BI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
+                            accept.DI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
+                            accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7)])/sum(as.vector(mcmcRet$moveVec)==11)
                             accept.V1       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+1):(p1+p2+p3+10+n+n+J)])/sum(as.vector(mcmcRet$moveVec)==18)
                             accept.V2       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+J+1):(p1+p2+p3+10+n+n+J+J)])/sum(as.vector(mcmcRet$moveVec)==19)
                             accept.V3       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+J+J+1):(p1+p2+p3+10+n+n+J+J+J)])/sum(as.vector(mcmcRet$moveVec)==20)
@@ -2406,28 +2683,104 @@ path = NULL)
                             
                             invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
                             
-                            cpo     <- 1/invLH.p
-                            
-                            LPML <- sum(log(cpo))
-                            
-                            # or
-                            
-                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)
-                            
-                            
                             ## 2. deviance information criterion
                             
                             gamma_mean <- matrix(mcmcRet$gammaP, nrow = n, byrow = TRUE)
-                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
-                            Dbar        <- mean(dev.p)
-                            pD          <- Dbar - (-2*mcmcRet$logLH_fin)
+                            dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
                             
-                            DIC <- pD + Dbar
-                            
-                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
+                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, theta.p = theta.p, Sigma_V.p = Sigma_V.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, accept.V1 = accept.V1, accept.V2 = accept.V2, accept.V3 = accept.V3, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, invLH.p=invLH.p)
                             
                             
                         }   ## end: if PEM-MVN-SM
+                        
+                        ## DIC and LPML
+                        
+                        be1.p <- ret$chain1$beta1.p
+                        be2.p <- ret$chain1$beta2.p
+                        be3.p <- ret$chain1$beta3.p
+                        thet.p <- ret$chain1$theta.p
+                        lam1.p <- ret$chain1$lambda1.fin
+                        lam2.p <- ret$chain1$lambda2.fin
+                        lam3.p <- ret$chain1$lambda3.fin
+                        V1me <- ret$chain1$V1sum[4,]
+                        V2me <- ret$chain1$V2sum[4,]
+                        V3me <- ret$chain1$V3sum[4,]
+                        Dev.p <- ret$chain1$dev.p
+                        InvLH.p <- ret$chain1$invLH.p
+                        
+                        if(nChain > 1){
+                            for(i in 2:nChain){
+                                nam <- paste("chain", i, sep="")
+                                be1.p <- rbind(be1.p, ret[[nam]]$beta1.p)
+                                be2.p <- rbind(be2.p, ret[[nam]]$beta2.p)
+                                be3.p <- rbind(be3.p, ret[[nam]]$beta3.p)
+                                thet.p <- rbind(thet.p, ret[[nam]]$theta.p)
+                                lam1.p <- rbind(lam1.p, ret[[nam]]$lambda1.fin)
+                                lam2.p <- rbind(lam2.p, ret[[nam]]$lambda2.fin)
+                                lam3.p <- rbind(lam3.p, ret[[nam]]$lambda3.fin)
+                                V1me <- rbind(V1me, ret[[nam]]$V1sum[4,])
+                                V2me <- rbind(V2me, ret[[nam]]$V2sum[4,])
+                                V3me <- rbind(V3me, ret[[nam]]$V3sum[4,])
+                                Dev.p <- rbind(Dev.p, ret[[nam]]$dev.p)
+                                InvLH.p <- cbind(InvLH.p, ret[[nam]]$invLH.p)
+                            }
+                        }
+                        if(model_h3 == "Markov")
+                        {
+                            logLH_fin <- .C("BpeMvnCorScr_logMLH_DIC",
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            be1 = as.double(apply(be1.p, 2, mean)),
+                            be2 = as.double(apply(be2.p, 2, mean)),
+                            be3 = as.double(apply(be3.p, 2, mean)),
+                            thet = as.double(apply(theta.p, 2, mean)),
+                            lam1 = as.double(apply(lam1.p, 2, mean)),
+                            lam2 = as.double(apply(lam2.p, 2, mean)),
+                            lam3 = as.double(apply(lam3.p, 2, mean)),
+                            s_1 = as.double(time_lambda1),
+                            s_2 = as.double(time_lambda2),
+                            s_3 = as.double(time_lambda3),
+                            V_1 = as.double(apply(V1me, 2, mean)),
+                            V_2 = as.double(apply(V2me, 2, mean)),
+                            V_3 = as.double(apply(V3me, 2, mean)),
+                            K_1                = as.integer(nTime_lambda1),
+                            K_2                = as.integer(nTime_lambda2),
+                            K_3                = as.integer(nTime_lambda3),
+                            val = as.double(0))$val
+                        }else if(model_h3 == "semi-Markov")
+                        {
+                            logLH_fin <- .C("BpeMvnCorScrSM_logMLH_DIC",
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            be1 = as.double(apply(be1.p, 2, mean)),
+                            be2 = as.double(apply(be2.p, 2, mean)),
+                            be3 = as.double(apply(be3.p, 2, mean)),
+                            thet = as.double(apply(theta.p, 2, mean)),
+                            lam1 = as.double(apply(lam1.p, 2, mean)),
+                            lam2 = as.double(apply(lam2.p, 2, mean)),
+                            lam3 = as.double(apply(lam3.p, 2, mean)),
+                            s_1 = as.double(time_lambda1),
+                            s_2 = as.double(time_lambda2),
+                            s_3 = as.double(time_lambda3),
+                            V_1 = as.double(apply(V1me, 2, mean)),
+                            V_2 = as.double(apply(V2me, 2, mean)),
+                            V_3 = as.double(apply(V3me, 2, mean)),
+                            K_1                = as.integer(nTime_lambda1),
+                            K_2                = as.integer(nTime_lambda2),
+                            K_3                = as.integer(nTime_lambda3),
+                            val = as.double(0))$val
+                        }
+                        
+                        DIC = 2*mean(Dev.p) + 2 * logLH_fin
+                        LPML = sum(log(1/apply(InvLH.p, 1, mean)))
                         
                     }   ## end: if PEM-MVN
                     
@@ -2452,7 +2805,7 @@ path = NULL)
                             
                             theta <- startV[(p1+p2+p3+1)]
                             gamma <- startV[(p1+p2+p3+2):(p1+p2+p3+n+1)]
-
+                            
                             if(p1+p2+p3 > 0)
                             {
                                 startV <- as.vector(c(startV[1:(p1+p2+p3)],
@@ -2484,99 +2837,99 @@ path = NULL)
                             
                             
                             mcmcRet <- .C("BpeDpCorScrmcmc",
-                            survData 		= as.double(as.matrix(survData)),
-                            n				= as.integer(n),
-                            p1				= as.integer(p1),
-                            p2				= as.integer(p2),
-                            p3				= as.integer(p3),
-                            J				= as.integer(J),
-                            nj				= as.double(nj),
-                            hyperParams 	= as.double(hyperParams),
-                            startValues 	= as.double(startV),
-                            mcmcParams		= as.double(mcmcParams),
-                            numReps			= as.integer(numReps),
-                            thin			= as.integer(thin),
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            nj                = as.double(nj),
+                            hyperParams     = as.double(hyperParams),
+                            startValues     = as.double(startV),
+                            mcmcParams        = as.double(mcmcParams),
+                            numReps            = as.integer(numReps),
+                            thin            = as.integer(thin),
                             burninPerc      = as.double(burninPerc),
-                            nGam_save		= as.integer(nGam_save),
-                            samples_beta1 	= as.double(rep(0, nStore*p1)),
-                            samples_beta2 	= as.double(rep(0, nStore*p2)),
-                            samples_beta3 	= as.double(rep(0, nStore*p3)),
+                            nGam_save        = as.integer(nGam_save),
+                            samples_beta1     = as.double(rep(0, nStore*p1)),
+                            samples_beta2     = as.double(rep(0, nStore*p2)),
+                            samples_beta3     = as.double(rep(0, nStore*p3)),
                             samples_mu_lam1     = as.double(rep(0, nStore*1)),
                             samples_mu_lam2     = as.double(rep(0, nStore*1)),
                             samples_mu_lam3     = as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam1	= as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam2	= as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam3	= as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam1    = as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam2    = as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam3    = as.double(rep(0, nStore*1)),
                             samples_K1          = as.double(rep(0, nStore*1)),
                             samples_K2          = as.double(rep(0, nStore*1)),
                             samples_K3          = as.double(rep(0, nStore*1)),
                             samples_s1          = as.double(rep(0, nStore*(K1_max + 1))),
                             samples_s2          = as.double(rep(0, nStore*(K2_max + 1))),
                             samples_s3          = as.double(rep(0, nStore*(K3_max + 1))),
-                            samples_nu2 	= as.double(rep(0, nStore*1)),
-                            samples_nu3 	= as.double(rep(0, nStore*1)),
-                            samples_theta 	= as.double(rep(0, nStore*1)),
-                            samples_V1		= as.double(rep(0, nStore*J)),
-                            samples_V2		= as.double(rep(0, nStore*J)),
-                            samples_V3		= as.double(rep(0, nStore*J)),
-                            samples_c		= as.double(rep(0, nStore*J)),
-                            samples_mu		= as.double(rep(0, nStore*3*J)),
-                            samples_Sigma	= as.double(rep(0, nStore*3*3*J)),
+                            samples_nu2     = as.double(rep(0, nStore*1)),
+                            samples_nu3     = as.double(rep(0, nStore*1)),
+                            samples_theta     = as.double(rep(0, nStore*1)),
+                            samples_V1        = as.double(rep(0, nStore*J)),
+                            samples_V2        = as.double(rep(0, nStore*J)),
+                            samples_V3        = as.double(rep(0, nStore*J)),
+                            samples_c        = as.double(rep(0, nStore*J)),
+                            samples_mu        = as.double(rep(0, nStore*3*J)),
+                            samples_Sigma    = as.double(rep(0, nStore*3*3*J)),
                             samples_tau     = as.double(rep(0, nStore*1)),
-                            samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
+                            samples_gamma     = as.double(rep(0, nStore*nGam_save)),
                             samples_gamma_last = as.double(rep(0, n)),
-                            samples_misc	= as.double(rep(0, (p1+p2+p3+9+n+1+n+J))),
-                            lambda1_fin			= as.double(rep(0, nStore*nTime_lambda1)),
-                            lambda2_fin			= as.double(rep(0, nStore*nTime_lambda2)),
-                            lambda3_fin			= as.double(rep(0, nStore*nTime_lambda3)),
-                            gammaP			= as.double(rep(0, n)),
-                            dev     			= as.double(rep(0, nStore*1)),
+                            samples_misc    = as.double(rep(0, (p1+p2+p3+9+n+1+n+J))),
+                            lambda1_fin            = as.double(rep(0, nStore*nTime_lambda1)),
+                            lambda2_fin            = as.double(rep(0, nStore*nTime_lambda2)),
+                            lambda3_fin            = as.double(rep(0, nStore*nTime_lambda3)),
+                            gammaP            = as.double(rep(0, n)),
+                            dev                 = as.double(rep(0, nStore*1)),
                             invLH = as.double(rep(0, n)),
                             logLH_fin = as.double(0),
-                            lpml     			= as.double(rep(0, nStore*1)),
+                            lpml                 = as.double(rep(0, nStore*1)),
                             moveVec             = as.double(rep(0, numReps)))
                             
                             
                             
                             if(p1 > 0){
-                                beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                                beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                             }
                             if(p1 == 0){
-                                beta1.p 		<- NULL
+                                beta1.p         <- NULL
                             }
                             if(p2 > 0){
-                                beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                                beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                             }
                             if(p2 == 0){
-                                beta2.p 		<- NULL
+                                beta2.p         <- NULL
                             }
                             if(p3 > 0){
-                                beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                                beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                             }
                             if(p3 == 0){
-                                beta3.p 		<- NULL
+                                beta3.p         <- NULL
                             }
                             
-                            lambda1.fin 	<- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
-                            lambda2.fin 	<- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
-                            lambda3.fin 	<- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
+                            lambda1.fin     <- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
+                            lambda2.fin     <- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
+                            lambda3.fin     <- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
                             
-                            mu_lam1.p 		<- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
-                            mu_lam2.p 		<- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
-                            mu_lam3.p 		<- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
-                            sigSq_lam1.p 	<- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
-                            sigSq_lam2.p 	<- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
-                            sigSq_lam3.p 	<- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
+                            mu_lam1.p         <- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
+                            mu_lam2.p         <- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
+                            mu_lam3.p         <- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
+                            sigSq_lam1.p     <- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
+                            sigSq_lam2.p     <- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
+                            sigSq_lam3.p     <- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
                             
-                            K1.p 			<- matrix(mcmcRet$samples_K1, nrow = nStore, byrow = TRUE)
-                            K2.p 			<- matrix(mcmcRet$samples_K2, nrow = nStore, byrow = TRUE)
-                            K3.p 			<- matrix(mcmcRet$samples_K3, nrow = nStore, byrow = TRUE)
-                            s1.p 			<- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
-                            s2.p 			<- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
-                            s3.p 			<- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
+                            K1.p             <- matrix(mcmcRet$samples_K1, nrow = nStore, byrow = TRUE)
+                            K2.p             <- matrix(mcmcRet$samples_K2, nrow = nStore, byrow = TRUE)
+                            K3.p             <- matrix(mcmcRet$samples_K3, nrow = nStore, byrow = TRUE)
+                            s1.p             <- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
+                            s2.p             <- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
+                            s3.p             <- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
                             
-                            theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                            gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                            theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                            gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                             
                             V1.p            <- matrix(mcmcRet$samples_V1, nrow = nStore, byrow = TRUE)
                             V2.p            <- matrix(mcmcRet$samples_V2, nrow = nStore, byrow = TRUE)
@@ -2587,31 +2940,31 @@ path = NULL)
                             tau.p           <- matrix(mcmcRet$samples_tau, nrow = nStore, byrow = TRUE)
                             
                             if(p1 > 0){
-                                accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                                accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                             }
                             if(p1 == 0){
-                                accept.beta1 	<- NULL
+                                accept.beta1     <- NULL
                             }
                             if(p2 > 0){
-                                accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                                accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                             }
                             if(p2 == 0){
-                                accept.beta2 	<- NULL
+                                accept.beta2     <- NULL
                             }
                             if(p3 > 0){
-                                accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                                accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                             }
                             if(p3 == 0){
-                                accept.beta3 	<- NULL
+                                accept.beta3     <- NULL
                             }
                             
-                            accept.BI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
-                            accept.DI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
-                            accept.BI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
-                            accept.DI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
-                            accept.BI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
-                            accept.DI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
-                            accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7)])/sum(as.vector(mcmcRet$moveVec)==11)
+                            accept.BI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
+                            accept.DI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
+                            accept.BI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
+                            accept.DI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
+                            accept.BI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
+                            accept.DI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
+                            accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7)])/sum(as.vector(mcmcRet$moveVec)==11)
                             accept.V       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+1):(p1+p2+p3+10+n+n+J)])/sum(as.vector(mcmcRet$moveVec)==18)/3
                             
                             
@@ -2679,27 +3032,13 @@ path = NULL)
                             
                             invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
                             
-                            cpo     <- 1/invLH.p
-                            
-                            LPML <- sum(log(cpo))
-                            
-                            # or
-                            
-                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)
-                            
-                            
                             ## 2. deviance information criterion
                             
                             gamma_mean <- matrix(mcmcRet$gammaP, nrow = n, byrow = TRUE)
-                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
-                            Dbar        <- mean(dev.p)
-                            pD          <- Dbar - (-2*mcmcRet$logLH_fin)
+                            dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
+
                             
-                            DIC <- pD + Dbar
-                            
-                            
-                            
-                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, theta.p = theta.p, class.p = c.p, mu.p = mu.p, Sigma.p = Sigma.p, tau.p = tau.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, accept.V = accept.V, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
+                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, theta.p = theta.p, class.p = c.p, mu.p = mu.p, Sigma.p = Sigma.p, tau.p = tau.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, accept.V = accept.V, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, invLH.p=invLH.p)
                             
                             
                         }   ## end: if PEM-DPM-M
@@ -2752,98 +3091,98 @@ path = NULL)
                             mcmcParams <- c(mcmcParams1, 1, mcmcParams2, n)
                             
                             mcmcRet <- .C("BpeDpCorScrSMmcmc",
-                            survData 		= as.double(as.matrix(survData)),
-                            n				= as.integer(n),
-                            p1				= as.integer(p1),
-                            p2				= as.integer(p2),
-                            p3				= as.integer(p3),
-                            J				= as.integer(J),
-                            nj				= as.double(nj),
-                            hyperParams 	= as.double(hyperParams),
-                            startValues 	= as.double(startV),
-                            mcmcParams		= as.double(mcmcParams),
-                            numReps			= as.integer(numReps),
-                            thin			= as.integer(thin),
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            nj                = as.double(nj),
+                            hyperParams     = as.double(hyperParams),
+                            startValues     = as.double(startV),
+                            mcmcParams        = as.double(mcmcParams),
+                            numReps            = as.integer(numReps),
+                            thin            = as.integer(thin),
                             burninPerc      = as.double(burninPerc),
-                            nGam_save		= as.integer(nGam_save),
-                            samples_beta1 	= as.double(rep(0, nStore*p1)),
-                            samples_beta2 	= as.double(rep(0, nStore*p2)),
-                            samples_beta3 	= as.double(rep(0, nStore*p3)),
+                            nGam_save        = as.integer(nGam_save),
+                            samples_beta1     = as.double(rep(0, nStore*p1)),
+                            samples_beta2     = as.double(rep(0, nStore*p2)),
+                            samples_beta3     = as.double(rep(0, nStore*p3)),
                             samples_mu_lam1     = as.double(rep(0, nStore*1)),
                             samples_mu_lam2     = as.double(rep(0, nStore*1)),
                             samples_mu_lam3     = as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam1	= as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam2	= as.double(rep(0, nStore*1)),
-                            samples_sigSq_lam3	= as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam1    = as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam2    = as.double(rep(0, nStore*1)),
+                            samples_sigSq_lam3    = as.double(rep(0, nStore*1)),
                             samples_K1          = as.double(rep(0, nStore*1)),
                             samples_K2          = as.double(rep(0, nStore*1)),
                             samples_K3          = as.double(rep(0, nStore*1)),
                             samples_s1          = as.double(rep(0, nStore*(K1_max + 1))),
                             samples_s2          = as.double(rep(0, nStore*(K2_max + 1))),
                             samples_s3          = as.double(rep(0, nStore*(K3_max + 1))),
-                            samples_nu2 	= as.double(rep(0, nStore*1)),
-                            samples_nu3 	= as.double(rep(0, nStore*1)),
-                            samples_theta 	= as.double(rep(0, nStore*1)),
-                            samples_V1		= as.double(rep(0, nStore*J)),
-                            samples_V2		= as.double(rep(0, nStore*J)),
-                            samples_V3		= as.double(rep(0, nStore*J)),
-                            samples_c		= as.double(rep(0, nStore*J)),
-                            samples_mu		= as.double(rep(0, nStore*3*J)),
-                            samples_Sigma	= as.double(rep(0, nStore*3*3*J)),
+                            samples_nu2     = as.double(rep(0, nStore*1)),
+                            samples_nu3     = as.double(rep(0, nStore*1)),
+                            samples_theta     = as.double(rep(0, nStore*1)),
+                            samples_V1        = as.double(rep(0, nStore*J)),
+                            samples_V2        = as.double(rep(0, nStore*J)),
+                            samples_V3        = as.double(rep(0, nStore*J)),
+                            samples_c        = as.double(rep(0, nStore*J)),
+                            samples_mu        = as.double(rep(0, nStore*3*J)),
+                            samples_Sigma    = as.double(rep(0, nStore*3*3*J)),
                             samples_tau     = as.double(rep(0, nStore*1)),
-                            samples_gamma 	= as.double(rep(0, nStore*nGam_save)),
+                            samples_gamma     = as.double(rep(0, nStore*nGam_save)),
                             samples_gamma_last = as.double(rep(0, n)),
-                            samples_misc	= as.double(rep(0, (p1+p2+p3+9+n+1+n+J))),
-                            lambda1_fin			= as.double(rep(0, nStore*nTime_lambda1)),
-                            lambda2_fin			= as.double(rep(0, nStore*nTime_lambda2)),
-                            lambda3_fin			= as.double(rep(0, nStore*nTime_lambda3)),
-                            gammaP			= as.double(rep(0, n)),
-                            dev     			= as.double(rep(0, nStore*1)),
+                            samples_misc    = as.double(rep(0, (p1+p2+p3+9+n+1+n+J))),
+                            lambda1_fin            = as.double(rep(0, nStore*nTime_lambda1)),
+                            lambda2_fin            = as.double(rep(0, nStore*nTime_lambda2)),
+                            lambda3_fin            = as.double(rep(0, nStore*nTime_lambda3)),
+                            gammaP            = as.double(rep(0, n)),
+                            dev                 = as.double(rep(0, nStore*1)),
                             invLH = as.double(rep(0, n)),
                             logLH_fin = as.double(0),
-                            lpml     			= as.double(rep(0, nStore*1)),
+                            lpml                 = as.double(rep(0, nStore*1)),
                             moveVec             = as.double(rep(0, numReps)))
                             
                             
                             if(p1 > 0){
-                                beta1.p 		<- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
+                                beta1.p         <- matrix(mcmcRet$samples_beta1, nrow = nStore, byrow = TRUE)
                             }
                             if(p1 == 0){
-                                beta1.p 		<- NULL
+                                beta1.p         <- NULL
                             }
                             if(p2 > 0){
-                                beta2.p 		<- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
+                                beta2.p         <- matrix(mcmcRet$samples_beta2, nrow = nStore, byrow = TRUE)
                             }
                             if(p2 == 0){
-                                beta2.p 		<- NULL
+                                beta2.p         <- NULL
                             }
                             if(p3 > 0){
-                                beta3.p 		<- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
+                                beta3.p         <- matrix(mcmcRet$samples_beta3, nrow = nStore, byrow = TRUE)
                             }
                             if(p3 == 0){
-                                beta3.p 		<- NULL
+                                beta3.p         <- NULL
                             }
                             
-                            lambda1.fin 	<- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
-                            lambda2.fin 	<- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
-                            lambda3.fin 	<- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
+                            lambda1.fin     <- matrix(mcmcRet$lambda1_fin, nrow = nStore, byrow = TRUE)
+                            lambda2.fin     <- matrix(mcmcRet$lambda2_fin, nrow = nStore, byrow = TRUE)
+                            lambda3.fin     <- matrix(mcmcRet$lambda3_fin, nrow = nStore, byrow = TRUE)
                             
-                            mu_lam1.p 		<- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
-                            mu_lam2.p 		<- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
-                            mu_lam3.p 		<- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
-                            sigSq_lam1.p 	<- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
-                            sigSq_lam2.p 	<- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
-                            sigSq_lam3.p 	<- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
+                            mu_lam1.p         <- matrix(mcmcRet$samples_mu_lam1, nrow = nStore, byrow = TRUE)
+                            mu_lam2.p         <- matrix(mcmcRet$samples_mu_lam2, nrow = nStore, byrow = TRUE)
+                            mu_lam3.p         <- matrix(mcmcRet$samples_mu_lam3, nrow = nStore, byrow = TRUE)
+                            sigSq_lam1.p     <- matrix(mcmcRet$samples_sigSq_lam1, nrow = nStore, byrow = TRUE)
+                            sigSq_lam2.p     <- matrix(mcmcRet$samples_sigSq_lam2, nrow = nStore, byrow = TRUE)
+                            sigSq_lam3.p     <- matrix(mcmcRet$samples_sigSq_lam3, nrow = nStore, byrow = TRUE)
                             
-                            K1.p 			<- matrix(mcmcRet$samples_K1, nrow = nStore, byrow = TRUE)
-                            K2.p 			<- matrix(mcmcRet$samples_K2, nrow = nStore, byrow = TRUE)
-                            K3.p 			<- matrix(mcmcRet$samples_K3, nrow = nStore, byrow = TRUE)
-                            s1.p 			<- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
-                            s2.p 			<- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
-                            s3.p 			<- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
+                            K1.p             <- matrix(mcmcRet$samples_K1, nrow = nStore, byrow = TRUE)
+                            K2.p             <- matrix(mcmcRet$samples_K2, nrow = nStore, byrow = TRUE)
+                            K3.p             <- matrix(mcmcRet$samples_K3, nrow = nStore, byrow = TRUE)
+                            s1.p             <- matrix(mcmcRet$samples_s1, nrow = nStore, byrow = TRUE)
+                            s2.p             <- matrix(mcmcRet$samples_s2, nrow = nStore, byrow = TRUE)
+                            s3.p             <- matrix(mcmcRet$samples_s3, nrow = nStore, byrow = TRUE)
                             
-                            theta.p 		<- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
-                            gamma.p 		<- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
+                            theta.p         <- matrix(mcmcRet$samples_theta, nrow = nStore, byrow = TRUE)
+                            gamma.p         <- matrix(mcmcRet$samples_gamma, nrow = nStore, byrow = TRUE)
                             
                             V1.p            <- matrix(mcmcRet$samples_V1, nrow = nStore, byrow = TRUE)
                             V2.p            <- matrix(mcmcRet$samples_V2, nrow = nStore, byrow = TRUE)
@@ -2854,31 +3193,31 @@ path = NULL)
                             tau.p           <- matrix(mcmcRet$samples_tau, nrow = nStore, byrow = TRUE)
                             
                             if(p1 > 0){
-                                accept.beta1 	<- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
+                                accept.beta1     <- as.vector(mcmcRet$samples_misc[1:(p1)])/sum(as.vector(mcmcRet$moveVec)==1)*p1
                             }
                             if(p1 == 0){
-                                accept.beta1 	<- NULL
+                                accept.beta1     <- NULL
                             }
                             if(p2 > 0){
-                                accept.beta2 	<- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
+                                accept.beta2     <- as.vector(mcmcRet$samples_misc[(p1+1):(p1+p2)])/sum(as.vector(mcmcRet$moveVec)==2)*p2
                             }
                             if(p2 == 0){
-                                accept.beta2 	<- NULL
+                                accept.beta2     <- NULL
                             }
                             if(p3 > 0){
-                                accept.beta3 	<- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
+                                accept.beta3     <- as.vector(mcmcRet$samples_misc[(p1+p2+1):(p1+p2+p3)])/sum(as.vector(mcmcRet$moveVec)==3)*p3
                             }
                             if(p3 == 0){
-                                accept.beta3 	<- NULL
+                                accept.beta3     <- NULL
                             }
                             
-                            accept.BI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
-                            accept.DI1		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
-                            accept.BI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
-                            accept.DI2		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
-                            accept.BI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
-                            accept.DI3		<- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
-                            accept.theta	<- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7)])/sum(as.vector(mcmcRet$moveVec)==11)
+                            accept.BI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+1])/sum(as.vector(mcmcRet$moveVec)==12)
+                            accept.DI1        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+2])/sum(as.vector(mcmcRet$moveVec)==15)
+                            accept.BI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+3])/sum(as.vector(mcmcRet$moveVec)==13)
+                            accept.DI2        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+4])/sum(as.vector(mcmcRet$moveVec)==16)
+                            accept.BI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+5])/sum(as.vector(mcmcRet$moveVec)==14)
+                            accept.DI3        <- as.vector(mcmcRet$samples_misc[(p1+p2+p3)+6])/sum(as.vector(mcmcRet$moveVec)==17)
+                            accept.theta    <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+7)])/sum(as.vector(mcmcRet$moveVec)==11)
                             accept.V       <- as.vector(mcmcRet$samples_misc[(p1+p2+p3+10+n+n+1):(p1+p2+p3+10+n+n+J)])/sum(as.vector(mcmcRet$moveVec)==18)/3
                             
                             
@@ -2946,32 +3285,104 @@ path = NULL)
                             
                             invLH.p <- matrix(mcmcRet$invLH, nrow = n, byrow = TRUE)
                             
-                            cpo     <- 1/invLH.p
-                            
-                            LPML <- sum(log(cpo))
-                            
-                            # or
-                            
-                            lpml.p <- matrix(mcmcRet$lpml, nrow = nStore, byrow = TRUE)
-                            
-                            
-                            
                             ## 2. deviance information criterion
                             
                             gamma_mean <- matrix(mcmcRet$gammaP, nrow = n, byrow = TRUE)
-                            dev.p 	   <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
-                            Dbar        <- mean(dev.p)
-                            pD          <- Dbar - (-2*mcmcRet$logLH_fin)
+                            dev.p        <- matrix(mcmcRet$dev, nrow = nStore, byrow = TRUE)
                             
-                            DIC <- pD + Dbar
-                            
-                            
-                            
-                            
-                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, theta.p = theta.p, class.p = c.p, mu.p = mu.p, Sigma.p = Sigma.p, tau.p = tau.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, accept.V = accept.V, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean)
+                            ret[[nam]] <- list(beta1.p = beta1.p, beta2.p = beta2.p, beta3.p = beta3.p, lambda1.fin = lambda1.fin, lambda2.fin = lambda2.fin, lambda3.fin = lambda3.fin, mu_lam1.p = mu_lam1.p, mu_lam2.p = mu_lam2.p, mu_lam3.p = mu_lam3.p, sigSq_lam1.p = sigSq_lam1.p, sigSq_lam2.p = sigSq_lam2.p, sigSq_lam3.p = sigSq_lam3.p, K1.p = K1.p, K2.p = K2.p, K3.p = K3.p, s1.p = s1.p, s2.p = s2.p, s3.p = s3.p, theta.p = theta.p, class.p = c.p, mu.p = mu.p, Sigma.p = Sigma.p, tau.p = tau.p, accept.beta1 = accept.beta1, accept.beta2 = accept.beta2, accept.beta3 = accept.beta3, accept.BI1 = accept.BI1, accept.BI2 = accept.BI2, accept.BI3 = accept.BI3, accept.DI1 = accept.DI1, accept.DI2 = accept.DI2, accept.DI3 = accept.DI3, accept.theta = accept.theta, time_lambda1 = time_lambda1, time_lambda2 = time_lambda2, time_lambda3 = time_lambda3, accept.V = accept.V, covNames1 = covNames1, covNames2 = covNames2, covNames3 = covNames3, V1sum = V1summary, V2sum = V2summary, V3sum = V3summary, gamma_mean = gamma_mean, dev.p=dev.p, invLH.p=invLH.p)
                             
                             
                         }   ## end: if PEM-DPM-SM
+                        
+                        ## DIC and LPML
+                        
+                        be1.p <- ret$chain1$beta1.p
+                        be2.p <- ret$chain1$beta2.p
+                        be3.p <- ret$chain1$beta3.p
+                        thet.p <- ret$chain1$theta.p
+                        lam1.p <- ret$chain1$lambda1.fin
+                        lam2.p <- ret$chain1$lambda2.fin
+                        lam3.p <- ret$chain1$lambda3.fin
+                        V1me <- ret$chain1$V1sum[4,]
+                        V2me <- ret$chain1$V2sum[4,]
+                        V3me <- ret$chain1$V3sum[4,]
+                        Dev.p <- ret$chain1$dev.p
+                        InvLH.p <- ret$chain1$invLH.p
+                        
+                        if(nChain > 1){
+                            for(i in 2:nChain){
+                                nam <- paste("chain", i, sep="")
+                                be1.p <- rbind(be1.p, ret[[nam]]$beta1.p)
+                                be2.p <- rbind(be2.p, ret[[nam]]$beta2.p)
+                                be3.p <- rbind(be3.p, ret[[nam]]$beta3.p)
+                                thet.p <- rbind(thet.p, ret[[nam]]$theta.p)
+                                lam1.p <- rbind(lam1.p, ret[[nam]]$lambda1.fin)
+                                lam2.p <- rbind(lam2.p, ret[[nam]]$lambda2.fin)
+                                lam3.p <- rbind(lam3.p, ret[[nam]]$lambda3.fin)
+                                V1me <- rbind(V1me, ret[[nam]]$V1sum[4,])
+                                V2me <- rbind(V2me, ret[[nam]]$V2sum[4,])
+                                V3me <- rbind(V3me, ret[[nam]]$V3sum[4,])
+                                Dev.p <- rbind(Dev.p, ret[[nam]]$dev.p)
+                                InvLH.p <- cbind(InvLH.p, ret[[nam]]$invLH.p)
+                            }
+                        }
+                        if(model_h3 == "Markov")
+                        {
+                            logLH_fin <- .C("BpeDpCorScr_logMLH_DIC",
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            be1 = as.double(apply(be1.p, 2, mean)),
+                            be2 = as.double(apply(be2.p, 2, mean)),
+                            be3 = as.double(apply(be3.p, 2, mean)),
+                            thet = as.double(apply(theta.p, 2, mean)),
+                            lam1 = as.double(apply(lam1.p, 2, mean)),
+                            lam2 = as.double(apply(lam2.p, 2, mean)),
+                            lam3 = as.double(apply(lam3.p, 2, mean)),
+                            s_1 = as.double(time_lambda1),
+                            s_2 = as.double(time_lambda2),
+                            s_3 = as.double(time_lambda3),
+                            V_1 = as.double(apply(V1me, 2, mean)),
+                            V_2 = as.double(apply(V2me, 2, mean)),
+                            V_3 = as.double(apply(V3me, 2, mean)),
+                            K_1                = as.integer(nTime_lambda1),
+                            K_2                = as.integer(nTime_lambda2),
+                            K_3                = as.integer(nTime_lambda3),
+                            val = as.double(0))$val
+                        }else if(model_h3 == "semi-Markov")
+                        {
+                            logLH_fin <- .C("BpeDpCorScrSM_logMLH_DIC",
+                            survData         = as.double(as.matrix(survData)),
+                            n                = as.integer(n),
+                            p1                = as.integer(p1),
+                            p2                = as.integer(p2),
+                            p3                = as.integer(p3),
+                            J                = as.integer(J),
+                            be1 = as.double(apply(be1.p, 2, mean)),
+                            be2 = as.double(apply(be2.p, 2, mean)),
+                            be3 = as.double(apply(be3.p, 2, mean)),
+                            thet = as.double(apply(theta.p, 2, mean)),
+                            lam1 = as.double(apply(lam1.p, 2, mean)),
+                            lam2 = as.double(apply(lam2.p, 2, mean)),
+                            lam3 = as.double(apply(lam3.p, 2, mean)),
+                            s_1 = as.double(time_lambda1),
+                            s_2 = as.double(time_lambda2),
+                            s_3 = as.double(time_lambda3),
+                            V_1 = as.double(apply(V1me, 2, mean)),
+                            V_2 = as.double(apply(V2me, 2, mean)),
+                            V_3 = as.double(apply(V3me, 2, mean)),
+                            K_1                = as.integer(nTime_lambda1),
+                            K_2                = as.integer(nTime_lambda2),
+                            K_3                = as.integer(nTime_lambda3),
+                            val = as.double(0))$val
+                        }
+                        
+                        DIC = 2*mean(Dev.p) + 2 * logLH_fin
+                        LPML = sum(log(1/apply(InvLH.p, 1, mean)))
                         
                         
                     }   ## end: if PEM-DPM
@@ -2983,10 +3394,12 @@ path = NULL)
                 chain = chain + 1
                 
                 
-            }	## end: while(chain <= nChain)
+            }    ## end: while(chain <= nChain)
             
             
-            ret[["setup"]]	<- list(Formula=Formula, nCov = nCov, hyperParams = hyperParams, startValues = startValues, mcmc = mcmc, nGam_save = nGam_save, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, re.type = re.type, model = model_h3, nChain = nChain)
+            ret[["setup"]]    <- list(Formula=Formula, nCov = nCov, hyperParams = hyperParams, startValues = startValues, mcmc = mcmc, nGam_save = nGam_save, numReps = numReps, thin = thin, path = path, burninPerc = burninPerc, hz.type = hz.type, re.type = re.type, model = model_h3, nChain = nChain, survData=survData, p1=p1, p2=p2, p3=p3, J=J)
+            ret[["DIC"]] <- DIC
+            ret[["LPML"]] <- LPML
             
             if(hz.type == "Weibull")
             {
@@ -3026,6 +3439,7 @@ path = NULL)
     
     
 }# end of function "BayesID"
+
 
 
 

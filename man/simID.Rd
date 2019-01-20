@@ -80,7 +80,7 @@ It is of dimension \eqn{n\times 4}: the columns correspond to \eqn{y_1}, \eqn{\d
 }
 \author{
 Kyu Ha Lee and Sebastien Haneuse \cr
-Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
+Maintainer: Kyu Ha Lee <klee15239@gmail.com>
 }
 
 \examples{

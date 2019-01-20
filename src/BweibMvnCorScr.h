@@ -1,3 +1,5 @@
+
+
 extern void BweibMvnCorScr_logMLH(gsl_vector *beta1,
                                   gsl_vector *beta2,
                                   gsl_vector *beta3,
@@ -634,6 +636,4 @@ extern void BweibMvnCorScr_updateVP(gsl_vector *V1,
                                     gsl_matrix *Sigma_V,
                                     double rho_v,
                                     gsl_matrix *Psi_v);
-
-
 

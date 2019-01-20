@@ -8,6 +8,7 @@ export(FreqID_HReg)
 export(FreqSurv_HReg)
 export(simID)
 export(simSurv)
+export(PPD)
 export(initiate.startValues_HReg)
 export(initiate.startValues_AFT)
 

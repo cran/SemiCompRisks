@@ -14,7 +14,7 @@ mcmcParams, na.action = "na.fail", subset=NULL, path=NULL)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 \item{Formula}{
-a \code{Formula} object of the form \eqn{L} | \eqn{y_{1L}}+\eqn{y_{1U}} | \eqn{y_{2L}}+\eqn{y_{2U}} ~ \eqn{x_1} | \eqn{x_2} | \eqn{x_3}. See Details and Examples below.
+a \code{Formula} object, with the outcomes on the left of a \eqn{\sim}, and covariates on the right. It is of the form, left truncation time | interval- (or right-) censored time for non-terminal event | interval-(or right-) censored time for terminal event \eqn{\sim} covariates for \eqn{h_1} | covariates for \eqn{h_2} | covariates for \eqn{h_3}: i.e., \eqn{L} | \eqn{y_{1L}}+\eqn{y_{1U}} | \eqn{y_{2L}}+\eqn{y_{2U}} ~ \eqn{x_1} | \eqn{x_2} | \eqn{x_3}. 
 }
 \item{data}{
 a data.frame in which to interpret the variables named in \code{Formula}.
@@ -82,7 +82,7 @@ SemiCompRisks: an R package for independent and cluster-correlated analyses of s
 }
 \author{
 Kyu Ha Lee and Sebastien Haneuse\cr
-Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
+Maintainer: Kyu Ha Lee <klee15239@gmail.com>
 }
 \note{
 The posterior samples of \eqn{\gamma} are saved separately in \code{working directory/path}.

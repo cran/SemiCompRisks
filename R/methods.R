@@ -4,13 +4,14 @@
 ## PRINT METHOD
 ####
 ##
-print.Freq_HReg <- function(x, digits=3, ...)
+print.Freq_HReg <- function(x, digits=3, alpha=0.05, ...)
 {
+    conf.level = alpha
     obj <- x
     ##
     logEst <- obj$estimate
     logSE  <- sqrt(diag(obj$Finv))
-    value  <- cbind(logEst, logSE, logEst - 1.96*logSE, logEst + 1.96*logSE)
+    value  <- cbind(logEst, logSE, logEst - abs(qnorm(alpha/2, 0, 1))*logSE, logEst + abs(qnorm(alpha/2, 0, 1))*logSE)
     ##
     dimnames(value) <- list(obj$myLabels, c( "Estimate", "SE", "LL", "UL"))
     
@@ -25,6 +26,7 @@ print.Freq_HReg <- function(x, digits=3, ...)
         ##
         if(length(obj$myLabels) >= 3)
         {
+            cat("Confidence level: ", conf.level, "\n", sep = "")
             cat("\nRegression coefficients:\n")
             cat(round(value[-c(1:2),], digits=digits))
         }
@@ -44,6 +46,7 @@ print.Freq_HReg <- function(x, digits=3, ...)
         dimnames(value_theta) <- list("", c( "Estimate", "SE", "LL", "UL"))
         value_theta[1,2] <- value[7,2] * exp(value[7,1])
         
+        cat("Confidence level: ", conf.level, "\n", sep = "")
         cat("\nVariance of frailties, theta:\n")
         if(obj$frailty == TRUE) print(round(value_theta, digits=digits))
         if(obj$frailty == FALSE) cat("NA")
@@ -54,14 +57,16 @@ print.Freq_HReg <- function(x, digits=3, ...)
             if(obj$frailty == TRUE) print(round(value[-c(1:7),], digits=digits))
             if(obj$frailty == FALSE) print(round(value[-c(1:6),], digits=digits))
         }
+        cat("\nNote: Covariates are arranged in order of transition number, 1->3.\n")
     }
     
     ##
     invisible()
 }
 
-print.Bayes_HReg <- function(x, digits=3, ...)
+print.Bayes_HReg <- function(x, digits=3, alpha=0.05, ...)
 {
+    conf.level = alpha
     nChain = x$setup$nChain
     
     if(x$class[2] == "ID")
@@ -542,6 +547,7 @@ print.Bayes_HReg <- function(x, digits=3, ...)
     
     cat("\n######\n")
     cat("Estimates\n")
+    cat("Credibility level: ", conf.level, "\n", sep = "")
     
     if(x$class[2] == "ID")
     {
@@ -559,8 +565,8 @@ print.Bayes_HReg <- function(x, digits=3, ...)
         
         theta.pMed <- apply(theta.p, 2, median)
         theta.pSd <- apply(theta.p, 2, sd)
-        theta.pUb <- apply(theta.p, 2, quantile, prob = 0.975)
-        theta.pLb <- apply(theta.p, 2, quantile, prob = 0.025)
+        theta.pUb <- apply(theta.p, 2, quantile, prob = (1-conf.level/2))
+        theta.pLb <- apply(theta.p, 2, quantile, prob = conf.level/2)
         
         tbl <- matrix(NA, 1, 4)
         dimnames(tbl) <- list("", c( "Estimate", "SD", "LL", "UL"))
@@ -593,8 +599,8 @@ print.Bayes_HReg <- function(x, digits=3, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl1 <- matrix(NA, p1, 4)
             rownames(tbl1) <- x$chain1$covNames1
@@ -623,8 +629,8 @@ print.Bayes_HReg <- function(x, digits=3, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl2 <- matrix(NA, p2, 4)
             rownames(tbl2) <- x$chain1$covNames2
@@ -651,8 +657,8 @@ print.Bayes_HReg <- function(x, digits=3, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl3 <- matrix(NA, p3, 4)
             rownames(tbl3) <- x$chain1$covNames3
@@ -686,8 +692,8 @@ print.Bayes_HReg <- function(x, digits=3, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl_beta <- matrix(NA, p, 4)
             rownames(tbl_beta) <- x$chain1$covNames
@@ -704,13 +710,17 @@ print.Bayes_HReg <- function(x, digits=3, ...)
         cat("\nRegression coefficients:\n")
         colnames(tbl_beta) <- c( "Estimate", "SD", "LL", "UL")
         print(round(tbl_beta, digits=digits))
+        if(x$class[2] == "ID")
+        {
+            cat("\nNote: Covariates are arranged in order of transition number, 1->3.\n")
+        }
     }
-    
     invisible()
 }
 
-print.Bayes_AFT <- function(x, digits=3, ...)
+print.Bayes_AFT <- function(x, digits=3, alpha=0.05, ...)
 {
+    conf.level = alpha
     nChain = x$setup$nChain
     
     if(x$class[2] == "ID")
@@ -1031,6 +1041,7 @@ print.Bayes_AFT <- function(x, digits=3, ...)
     
     cat("\n######\n")
     cat("Estimates\n")
+    cat("Credibility level: ", conf.level, "\n", sep = "")
     
     if(x$class[2] == "ID")
     {
@@ -1048,8 +1059,8 @@ print.Bayes_AFT <- function(x, digits=3, ...)
         
         theta.pMed <- apply(theta.p, 2, median)
         theta.pSd <- apply(theta.p, 2, sd)
-        theta.pUb <- apply(theta.p, 2, quantile, prob = 0.975)
-        theta.pLb <- apply(theta.p, 2, quantile, prob = 0.025)
+        theta.pUb <- apply(theta.p, 2, quantile, prob = (1-conf.level/2))
+        theta.pLb <- apply(theta.p, 2, quantile, prob = conf.level/2)
         
         tbl <- matrix(NA, 1, 4)
         dimnames(tbl) <- list("", c( "Estimate", "SD", "LL", "UL"))
@@ -1078,8 +1089,8 @@ print.Bayes_AFT <- function(x, digits=3, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl1 <- matrix(NA, p1, 4)
             rownames(tbl1) <- x$chain1$covNames1
@@ -1105,8 +1116,8 @@ print.Bayes_AFT <- function(x, digits=3, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl2 <- matrix(NA, p2, 4)
             rownames(tbl2) <- x$chain1$covNames2
@@ -1132,8 +1143,8 @@ print.Bayes_AFT <- function(x, digits=3, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl3 <- matrix(NA, p3, 4)
             rownames(tbl3) <- x$chain1$covNames3
@@ -1163,8 +1174,8 @@ print.Bayes_AFT <- function(x, digits=3, ...)
             }
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl_beta <- matrix(NA, p, 4)
             rownames(tbl_beta) <- x$chain1$covNames
@@ -1181,6 +1192,10 @@ print.Bayes_AFT <- function(x, digits=3, ...)
         cat("\nRegression coefficients:\n")
         colnames(tbl_beta) <- c( "Estimate", "SD", "LL", "UL")
         print(round(tbl_beta, digits=digits))
+        if(x$class[2] == "ID")
+        {
+            cat("\nNote: Covariates are arranged in order of transition number, 1->3.\n")
+        }
     }
     
     invisible()
@@ -1193,13 +1208,14 @@ print.Bayes_AFT <- function(x, digits=3, ...)
 ## SUMMARY METHOD
 ####
 ##
-summary.Freq_HReg <- function(object, digits=3, ...)
+summary.Freq_HReg <- function(object, digits=3, alpha=0.05, ...)
 {
+    conf.level = alpha
     obj <- object
     ##
     logEst  <- obj$estimate
     logSE   <- sqrt(diag(obj$Finv))
-    results <- cbind(logEst, logEst - 1.96*logSE, logEst + 1.96*logSE)
+    results <- cbind(logEst, logEst - abs(qnorm(alpha/2, 0, 1))*logSE, logEst + abs(qnorm(alpha/2, 0, 1))*logSE)
     
     ##
     if(obj$class[2] == "Surv")
@@ -1273,7 +1289,7 @@ summary.Freq_HReg <- function(object, digits=3, ...)
         output[2,7:9] <- results[6,]
         output.h0 <- output
         ##
-        value <- list(coef=output.coef, theta=output.theta, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results), class=obj$class)
+        value <- list(coef=output.coef, theta=output.theta, h0=output.h0, code=obj$code, logLike=obj$logLike, nP=nrow(results), class=obj$class, conf.level=conf.level)
     }
     
     class(value) <- "summ.Freq_HReg"
@@ -1282,8 +1298,9 @@ summary.Freq_HReg <- function(object, digits=3, ...)
     return(value)
 }
 
-summary.Bayes_HReg <- function(object, digits=3, ...)
+summary.Bayes_HReg <- function(object, digits=3, alpha=0.05, ...)
 {
+    conf.level = alpha
     x <- object
     nChain = x$setup$nChain
     
@@ -1714,8 +1731,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
         }
         
         theta.pMed <- apply(theta.p, 2, median)
-        theta.pUb <- apply(theta.p, 2, quantile, prob = 0.975)
-        theta.pLb <- apply(theta.p, 2, quantile, prob = 0.025)
+        theta.pUb <- apply(theta.p, 2, quantile, prob = (1-conf.level/2))
+        theta.pLb <- apply(theta.p, 2, quantile, prob = conf.level/2)
         
         tbl_theta <- matrix(NA, 1, 3)
         dimnames(tbl_theta) <- list("", c( "theta", "LL", "UL"))
@@ -1745,8 +1762,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             
             beta.pMed <- apply(exp(beta.p), 2, median)
             beta.pSd <- apply(exp(beta.p), 2, sd)
-            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
-            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = conf.level/2)
             
             tbl1 <- matrix(NA, p1, 3)
             rownames(tbl1) <- x$chain1$covNames1
@@ -1776,8 +1793,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             
             beta.pMed <- apply(exp(beta.p), 2, median)
             beta.pSd <- apply(exp(beta.p), 2, sd)
-            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
-            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = conf.level/2)
             
             tbl2 <- matrix(NA, p2, 3)
             rownames(tbl2) <- x$chain1$covNames2
@@ -1807,8 +1824,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             
             beta.pMed <- apply(exp(beta.p), 2, median)
             beta.pSd <- apply(exp(beta.p), 2, sd)
-            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
-            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = conf.level/2)
             
             tbl3 <- matrix(NA, p3, 3)
             rownames(tbl3) <- x$chain1$covNames3
@@ -1844,8 +1861,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             alpha.pMed <- apply(log(alpha.p), 2, median)
-            alpha.pUb <- apply(log(alpha.p), 2, quantile, prob = 0.975)
-            alpha.pLb <- apply(log(alpha.p), 2, quantile, prob = 0.025)
+            alpha.pUb <- apply(log(alpha.p), 2, quantile, prob = (1-conf.level/2))
+            alpha.pLb <- apply(log(alpha.p), 2, quantile, prob = conf.level/2)
             
             tbl_a1 <- c(alpha.pMed,alpha.pLb, alpha.pUb)
             
@@ -1860,8 +1877,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             alpha.pMed <- apply(log(alpha.p), 2, median)
-            alpha.pUb <- apply(log(alpha.p), 2, quantile, prob = 0.975)
-            alpha.pLb <- apply(log(alpha.p), 2, quantile, prob = 0.025)
+            alpha.pUb <- apply(log(alpha.p), 2, quantile, prob = (1-conf.level/2))
+            alpha.pLb <- apply(log(alpha.p), 2, quantile, prob = conf.level/2)
             
             tbl_a2 <- c(alpha.pMed,alpha.pLb, alpha.pUb)
             
@@ -1877,8 +1894,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             alpha.pMed <- apply(log(alpha.p), 2, median)
-            alpha.pUb <- apply(log(alpha.p), 2, quantile, prob = 0.975)
-            alpha.pLb <- apply(log(alpha.p), 2, quantile, prob = 0.025)
+            alpha.pUb <- apply(log(alpha.p), 2, quantile, prob = (1-conf.level/2))
+            alpha.pLb <- apply(log(alpha.p), 2, quantile, prob = conf.level/2)
             
             tbl_a3 <- c(alpha.pMed,alpha.pLb, alpha.pUb)
             
@@ -1893,8 +1910,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             kappa.pMed <- apply(log(kappa.p), 2, median)
-            kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = 0.975)
-            kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = 0.025)
+            kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = (1-conf.level/2))
+            kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = conf.level/2)
             
             tbl_k1 <- c(kappa.pMed, kappa.pLb, kappa.pUb)
             
@@ -1909,8 +1926,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             kappa.pMed <- apply(log(kappa.p), 2, median)
-            kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = 0.975)
-            kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = 0.025)
+            kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = (1-conf.level/2))
+            kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = conf.level/2)
             
             tbl_k2 <- c(kappa.pMed, kappa.pLb, kappa.pUb)
             
@@ -1925,8 +1942,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             kappa.pMed <- apply(log(kappa.p), 2, median)
-            kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = 0.975)
-            kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = 0.025)
+            kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = (1-conf.level/2))
+            kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = conf.level/2)
             
             tbl_k3 <- c(kappa.pMed, kappa.pLb, kappa.pUb)
             
@@ -1949,8 +1966,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             mu_lam.pMed <- apply(mu_lam.p, 2, median)
-            mu_lam.pUb <- apply(mu_lam.p, 2, quantile, prob = 0.975)
-            mu_lam.pLb <- apply(mu_lam.p, 2, quantile, prob = 0.025)
+            mu_lam.pUb <- apply(mu_lam.p, 2, quantile, prob = (1-conf.level/2))
+            mu_lam.pLb <- apply(mu_lam.p, 2, quantile, prob = conf.level/2)
             
             tbl_m1 <- c(mu_lam.pMed, mu_lam.pLb, mu_lam.pUb)
             
@@ -1965,8 +1982,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             mu_lam.pMed <- apply(mu_lam.p, 2, median)
-            mu_lam.pUb <- apply(mu_lam.p, 2, quantile, prob = 0.975)
-            mu_lam.pLb <- apply(mu_lam.p, 2, quantile, prob = 0.025)
+            mu_lam.pUb <- apply(mu_lam.p, 2, quantile, prob = (1-conf.level/2))
+            mu_lam.pLb <- apply(mu_lam.p, 2, quantile, prob = conf.level/2)
             
             tbl_m2 <- c(mu_lam.pMed, mu_lam.pLb, mu_lam.pUb)
             
@@ -1981,8 +1998,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             mu_lam.pMed <- apply(mu_lam.p, 2, median)
-            mu_lam.pUb <- apply(mu_lam.p, 2, quantile, prob = 0.975)
-            mu_lam.pLb <- apply(mu_lam.p, 2, quantile, prob = 0.025)
+            mu_lam.pUb <- apply(mu_lam.p, 2, quantile, prob = (1-conf.level/2))
+            mu_lam.pLb <- apply(mu_lam.p, 2, quantile, prob = conf.level/2)
             
             tbl_m3 <- c(mu_lam.pMed, mu_lam.pLb, mu_lam.pUb)
             
@@ -1998,8 +2015,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             sigSq_lam.pMed <- apply(sigSq_lam.p, 2, median)
-            sigSq_lam.pUb <- apply(sigSq_lam.p, 2, quantile, prob = 0.975)
-            sigSq_lam.pLb <- apply(sigSq_lam.p, 2, quantile, prob = 0.025)
+            sigSq_lam.pUb <- apply(sigSq_lam.p, 2, quantile, prob = (1-conf.level/2))
+            sigSq_lam.pLb <- apply(sigSq_lam.p, 2, quantile, prob = conf.level/2)
             
             tbl_s1 <- c(sigSq_lam.pMed, sigSq_lam.pLb, sigSq_lam.pUb)
             
@@ -2014,8 +2031,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             sigSq_lam.pMed <- apply(sigSq_lam.p, 2, median)
-            sigSq_lam.pUb <- apply(sigSq_lam.p, 2, quantile, prob = 0.975)
-            sigSq_lam.pLb <- apply(sigSq_lam.p, 2, quantile, prob = 0.025)
+            sigSq_lam.pUb <- apply(sigSq_lam.p, 2, quantile, prob = (1-conf.level/2))
+            sigSq_lam.pLb <- apply(sigSq_lam.p, 2, quantile, prob = conf.level/2)
             
             tbl_s2 <- c(sigSq_lam.pMed, sigSq_lam.pLb, sigSq_lam.pUb)
             
@@ -2030,8 +2047,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             sigSq_lam.pMed <- apply(sigSq_lam.p, 2, median)
-            sigSq_lam.pUb <- apply(sigSq_lam.p, 2, quantile, prob = 0.975)
-            sigSq_lam.pLb <- apply(sigSq_lam.p, 2, quantile, prob = 0.025)
+            sigSq_lam.pUb <- apply(sigSq_lam.p, 2, quantile, prob = (1-conf.level/2))
+            sigSq_lam.pLb <- apply(sigSq_lam.p, 2, quantile, prob = conf.level/2)
             
             tbl_s3 <- c(sigSq_lam.pMed, sigSq_lam.pLb, sigSq_lam.pUb)
             
@@ -2046,8 +2063,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             J.pMed <- apply(J.p, 2, median)
-            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)
-            J.pLb <- apply(J.p, 2, quantile, prob = 0.025)
+            J.pUb <- apply(J.p, 2, quantile, prob = (1-conf.level/2))
+            J.pLb <- apply(J.p, 2, quantile, prob = conf.level/2)
             
             tbl_j1 <- c(J.pMed, J.pLb, J.pUb)
             
@@ -2062,8 +2079,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             J.pMed <- apply(J.p, 2, median)
-            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)
-            J.pLb <- apply(J.p, 2, quantile, prob = 0.025)
+            J.pUb <- apply(J.p, 2, quantile, prob = (1-conf.level/2))
+            J.pLb <- apply(J.p, 2, quantile, prob = conf.level/2)
             
             tbl_j2 <- c(J.pMed, J.pLb, J.pUb)
             
@@ -2078,8 +2095,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             J.pMed <- apply(J.p, 2, median)
-            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)
-            J.pLb <- apply(J.p, 2, quantile, prob = 0.025)
+            J.pUb <- apply(J.p, 2, quantile, prob = (1-conf.level/2))
+            J.pLb <- apply(J.p, 2, quantile, prob = conf.level/2)
             
             tbl_j3 <- c(J.pMed, J.pLb, J.pUb)
             
@@ -2098,8 +2115,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             lambda.pMed <- apply(lambda.p, 2, median)
-            lambda.pUb <- apply(lambda.p, 2, quantile, prob = 0.975)
-            lambda.pLb <- apply(lambda.p, 2, quantile, prob = 0.025)
+            lambda.pUb <- apply(lambda.p, 2, quantile, prob = (1-conf.level/2))
+            lambda.pLb <- apply(lambda.p, 2, quantile, prob = conf.level/2)
             
             lambda1 <- cbind(x$chain1$time_lambda1, lambda.pMed, lambda.pLb, lambda.pUb)
             
@@ -2116,8 +2133,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             lambda.pMed <- apply(lambda.p, 2, median)
-            lambda.pUb <- apply(lambda.p, 2, quantile, prob = 0.975)
-            lambda.pLb <- apply(lambda.p, 2, quantile, prob = 0.025)
+            lambda.pUb <- apply(lambda.p, 2, quantile, prob = (1-conf.level/2))
+            lambda.pLb <- apply(lambda.p, 2, quantile, prob = conf.level/2)
             
             lambda2 <- cbind(x$chain1$time_lambda2, lambda.pMed, lambda.pLb, lambda.pUb)
             
@@ -2134,8 +2151,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             lambda.pMed <- apply(lambda.p, 2, median)
-            lambda.pUb <- apply(lambda.p, 2, quantile, prob = 0.975)
-            lambda.pLb <- apply(lambda.p, 2, quantile, prob = 0.025)
+            lambda.pUb <- apply(lambda.p, 2, quantile, prob = (1-conf.level/2))
+            lambda.pLb <- apply(lambda.p, 2, quantile, prob = conf.level/2)
             
             lambda3 <- cbind(x$chain1$time_lambda3, lambda.pMed, lambda.pLb, lambda.pUb)
             
@@ -2175,8 +2192,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
                 }
                 
                 tau.pMed <- apply(tau.p, 2, median)
-                tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
-                tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+                tau.pUb <- apply(tau.p, 2, quantile, prob = (1-conf.level/2))
+                tau.pLb <- apply(tau.p, 2, quantile, prob = conf.level/2)
                 
                 tbl_tau <- matrix(NA, 1, 3)
                 dimnames(tbl_tau) <- list("", c( "tau", "LL", "UL"))
@@ -2200,8 +2217,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             Sigma.Med <- apply(Sigma, c(1,2), median)
             Sigma.Sd <- apply(Sigma, c(1,2), sd)
-            Sigma.Ub <- apply(Sigma, c(1,2), quantile, prob = 0.975)
-            Sigma.Lb <- apply(Sigma, c(1,2), quantile, prob = 0.025)
+            Sigma.Ub <- apply(Sigma, c(1,2), quantile, prob = (1-conf.level/2))
+            Sigma.Lb <- apply(Sigma, c(1,2), quantile, prob = conf.level/2)
             
             dimnames(Sigma.Med) <- list(c("", "", ""), c("Sigma_V-PM", "", ""))
             dimnames(Sigma.Sd) <- list(c("", "", ""), c("Sigma_V-SD", "", ""))
@@ -2213,6 +2230,12 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             value$Sigma.UL <- Sigma.Ub
             value$Sigma.LL <- Sigma.Lb
         }
+        
+        ## DIC and LPML
+        
+        value$DIC = x$DIC
+        value$LPML = x$LPML
+        
     }
     
     if(x$class[2] == "Surv")
@@ -2239,8 +2262,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             
             beta.pMed <- apply(exp(beta.p), 2, median)
             beta.pSd <- apply(exp(beta.p), 2, sd)
-            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
-            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = conf.level/2)
             
             tbl <- matrix(NA, p, 3)
             rownames(tbl) <- x$chain1$covNames
@@ -2275,8 +2298,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             alpha.pMed <- apply(log(alpha.p), 2, median)
-            alpha.pUb <- apply(log(alpha.p), 2, quantile, prob = 0.975)
-            alpha.pLb <- apply(log(alpha.p), 2, quantile, prob = 0.025)
+            alpha.pUb <- apply(log(alpha.p), 2, quantile, prob = (1-conf.level/2))
+            alpha.pLb <- apply(log(alpha.p), 2, quantile, prob = conf.level/2)
             
             tbl_a <- c(alpha.pMed,alpha.pLb, alpha.pUb)
             
@@ -2292,8 +2315,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             kappa.pMed <- apply(log(kappa.p), 2, median)
-            kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = 0.975)
-            kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = 0.025)
+            kappa.pUb <- apply(log(kappa.p), 2, quantile, prob = (1-conf.level/2))
+            kappa.pLb <- apply(log(kappa.p), 2, quantile, prob = conf.level/2)
             
             tbl_k <- c(kappa.pMed, kappa.pLb, kappa.pUb)
             
@@ -2316,8 +2339,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             mu_lam.pMed <- apply(mu_lam.p, 2, median)
-            mu_lam.pUb <- apply(mu_lam.p, 2, quantile, prob = 0.975)
-            mu_lam.pLb <- apply(mu_lam.p, 2, quantile, prob = 0.025)
+            mu_lam.pUb <- apply(mu_lam.p, 2, quantile, prob = (1-conf.level/2))
+            mu_lam.pLb <- apply(mu_lam.p, 2, quantile, prob = conf.level/2)
             
             tbl_m <- c(mu_lam.pMed, mu_lam.pLb, mu_lam.pUb)
             
@@ -2332,8 +2355,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             sigSq_lam.pMed <- apply(sigSq_lam.p, 2, median)
-            sigSq_lam.pUb <- apply(sigSq_lam.p, 2, quantile, prob = 0.975)
-            sigSq_lam.pLb <- apply(sigSq_lam.p, 2, quantile, prob = 0.025)
+            sigSq_lam.pUb <- apply(sigSq_lam.p, 2, quantile, prob = (1-conf.level/2))
+            sigSq_lam.pLb <- apply(sigSq_lam.p, 2, quantile, prob = conf.level/2)
             
             tbl_s <- c(sigSq_lam.pMed, sigSq_lam.pLb, sigSq_lam.pUb)
             
@@ -2348,8 +2371,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             J.pMed <- apply(J.p, 2, median)
-            J.pUb <- apply(J.p, 2, quantile, prob = 0.975)
-            J.pLb <- apply(J.p, 2, quantile, prob = 0.025)
+            J.pUb <- apply(J.p, 2, quantile, prob = (1-conf.level/2))
+            J.pLb <- apply(J.p, 2, quantile, prob = conf.level/2)
             
             tbl_j <- c(J.pMed, J.pLb, J.pUb)
             
@@ -2368,8 +2391,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             }
             
             lambda.pMed <- apply(lambda.p, 2, median)
-            lambda.pUb <- apply(lambda.p, 2, quantile, prob = 0.975)
-            lambda.pLb <- apply(lambda.p, 2, quantile, prob = 0.025)
+            lambda.pUb <- apply(lambda.p, 2, quantile, prob = (1-conf.level/2))
+            lambda.pLb <- apply(lambda.p, 2, quantile, prob = conf.level/2)
             
             lambda <- cbind(x$chain1$time_lambda, lambda.pMed, lambda.pLb, lambda.pUb)
             
@@ -2407,8 +2430,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
                 }
                 
                 tau.pMed <- apply(tau.p, 2, median)
-                tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
-                tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+                tau.pUb <- apply(tau.p, 2, quantile, prob = (1-conf.level/2))
+                tau.pLb <- apply(tau.p, 2, quantile, prob = conf.level/2)
                 
                 tbl_tau <- matrix(NA, 1, 3)
                 dimnames(tbl_tau) <- list("", c( "tau", "LL", "UL"))
@@ -2434,8 +2457,8 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
             
             sigVMed <- median(sigV)
             sigVSd <- sd(sigV)
-            sigVUb <- quantile(sigV, prob = 0.975)
-            sigVLb <- quantile(sigV, prob = 0.025)
+            sigVUb <- quantile(sigV, prob = (1-conf.level/2))
+            sigVLb <- quantile(sigV, prob = conf.level/2)
             
             tbl_sigV <- matrix(NA, nrow=1, ncol=3)
             tbl_sigV[,1]	<- sigVMed
@@ -2450,15 +2473,7 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
     }
     
     value$setup <- x$setup
-    
-    # if(x$class[3] == "Cor")
-    # {
-    #     class(value) <- c("summ.Bayes", as.vector(x$class[2]), "Cor", as.vector(x$class[4]), as.vector(x$class[5]))
-    # }
-    # if(x$class[3] == "Ind")
-    # {
-    #     class(value) <- c("summ.Bayes", as.vector(x$class[2]), "Ind", as.vector(x$class[4]))
-    # }
+    value$conf.level <- conf.level
     
     class(value) <- "summ.Bayes_HReg"
     
@@ -2466,8 +2481,9 @@ summary.Bayes_HReg <- function(object, digits=3, ...)
     
 }
 
-summary.Bayes_AFT <- function(object, digits=3, ...)
+summary.Bayes_AFT <- function(object, digits=3, alpha=0.05, ...)
 {
+    conf.level = alpha
     x <- object
     nChain = x$setup$nChain
     
@@ -2742,6 +2758,29 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
         }
     }
     
+    # model comparison
+    
+    if(nChain > 1){
+        if(x$class[2] == "ID")
+        {
+            # DIC and LPML
+            logLH_mean <- x$chain1$logLH_mean
+            LH_i_mean <- x$chain1$LH_i_mean
+            invLH_i_mean <- x$chain1$invLH_i_mean
+            for(i in 2:nChain){
+                nam <- paste("chain", i, sep = "")
+                logLH_mean <- cbind(logLH_mean, x[[nam]]$logLH_mean)
+                LH_i_mean <- rbind(LH_i_mean, x[[nam]]$LH_i_mean)
+                invLH_i_mean <- rbind(invLH_i_mean, x[[nam]]$invLH_i_mean)
+            }
+            dev <- -2*mean(logLH_mean)
+            DIC = 2*dev + 2*sum(log(apply(LH_i_mean, 2, mean)))
+            LPML = -sum(log(apply(invLH_i_mean, 2, mean)))
+        }
+    }
+    
+    
+    
     # estimates
     
     if(x$class[2] == "ID")
@@ -2757,8 +2796,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
         }
         
         theta.pMed <- apply(theta.p, 2, median)
-        theta.pUb <- apply(theta.p, 2, quantile, prob = 0.975)
-        theta.pLb <- apply(theta.p, 2, quantile, prob = 0.025)
+        theta.pUb <- apply(theta.p, 2, quantile, prob = (1-conf.level/2))
+        theta.pLb <- apply(theta.p, 2, quantile, prob = conf.level/2)
         
         tbl_theta <- matrix(NA, 1, 3)
         dimnames(tbl_theta) <- list("", c( "theta", "LL", "UL"))
@@ -2788,8 +2827,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             
             beta.pMed <- apply(exp(beta.p), 2, median)
             beta.pSd <- apply(exp(beta.p), 2, sd)
-            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
-            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = conf.level/2)
             
             tbl1 <- matrix(NA, p1, 3)
             rownames(tbl1) <- x$chain1$covNames1
@@ -2819,8 +2858,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             
             beta.pMed <- apply(exp(beta.p), 2, median)
             beta.pSd <- apply(exp(beta.p), 2, sd)
-            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
-            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = conf.level/2)
             
             tbl2 <- matrix(NA, p2, 3)
             rownames(tbl2) <- x$chain1$covNames2
@@ -2850,8 +2889,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             
             beta.pMed <- apply(exp(beta.p), 2, median)
             beta.pSd <- apply(exp(beta.p), 2, sd)
-            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
-            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = conf.level/2)
             
             tbl3 <- matrix(NA, p3, 3)
             rownames(tbl3) <- x$chain1$covNames3
@@ -2885,8 +2924,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             sigSq.pMed <- apply(sigSq.p, 2, median)
-            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = 0.975)
-            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = 0.025)
+            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = (1-conf.level/2))
+            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = conf.level/2)
             
             tbl_s1 <- c(sigSq.pMed,sigSq.pLb, sigSq.pUb)
             
@@ -2901,8 +2940,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             sigSq.pMed <- apply(sigSq.p, 2, median)
-            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = 0.975)
-            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = 0.025)
+            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = (1-conf.level/2))
+            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = conf.level/2)
             
             tbl_s2 <- c(sigSq.pMed,sigSq.pLb, sigSq.pUb)
             
@@ -2918,8 +2957,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             sigSq.pMed <- apply(sigSq.p, 2, median)
-            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = 0.975)
-            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = 0.025)
+            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = (1-conf.level/2))
+            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = conf.level/2)
             
             tbl_s3 <- c(sigSq.pMed,sigSq.pLb, sigSq.pUb)
             
@@ -2934,8 +2973,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             mu.pMed <- apply(mu.p, 2, median)
-            mu.pUb <- apply(mu.p, 2, quantile, prob = 0.975)
-            mu.pLb <- apply(mu.p, 2, quantile, prob = 0.025)
+            mu.pUb <- apply(mu.p, 2, quantile, prob = (1-conf.level/2))
+            mu.pLb <- apply(mu.p, 2, quantile, prob = conf.level/2)
             
             tbl_b1 <- c(mu.pMed,mu.pLb, mu.pUb)
             
@@ -2950,8 +2989,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             mu.pMed <- apply(mu.p, 2, median)
-            mu.pUb <- apply(mu.p, 2, quantile, prob = 0.975)
-            mu.pLb <- apply(mu.p, 2, quantile, prob = 0.025)
+            mu.pUb <- apply(mu.p, 2, quantile, prob = (1-conf.level/2))
+            mu.pLb <- apply(mu.p, 2, quantile, prob = conf.level/2)
             
             tbl_b2 <- c(mu.pMed,mu.pLb, mu.pUb)
             
@@ -2967,15 +3006,15 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             mu.pMed <- apply(mu.p, 2, median)
-            mu.pUb <- apply(mu.p, 2, quantile, prob = 0.975)
-            mu.pLb <- apply(mu.p, 2, quantile, prob = 0.025)
+            mu.pUb <- apply(mu.p, 2, quantile, prob = (1-conf.level/2))
+            mu.pLb <- apply(mu.p, 2, quantile, prob = conf.level/2)
             
             tbl_b3 <- c(mu.pMed,mu.pLb, mu.pUb)
             
             bh  <- matrix(c(tbl_b1, tbl_b2, tbl_b3, tbl_s1, tbl_s2, tbl_s3), 2, 9, byrow = T)
             dimnames(bh) <- list(c("log-Normal: mu", "log-Normal: sigmaSq"), c("g=1: PM", "LL", "UL", "g=2: PM", "LL", "UL", "g=3: PM", "LL", "UL"))
             
-            value <- list(classFit=x$class, psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
+            value <- list(classFit=x$class, psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh, DIC=DIC, LPML=LPML)
             
         }
         if(x$class[4] == "DPM")
@@ -2991,8 +3030,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             tau.pMed <- apply(tau.p, 2, median)
-            tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
-            tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+            tau.pUb <- apply(tau.p, 2, quantile, prob = (1-conf.level/2))
+            tau.pLb <- apply(tau.p, 2, quantile, prob = conf.level/2)
             
             tbl_t1 <- c(tau.pMed, tau.pLb, tau.pUb)
             
@@ -3007,8 +3046,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             tau.pMed <- apply(tau.p, 2, median)
-            tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
-            tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+            tau.pUb <- apply(tau.p, 2, quantile, prob = (1-conf.level/2))
+            tau.pLb <- apply(tau.p, 2, quantile, prob = conf.level/2)
             
             tbl_t2 <- c(tau.pMed, tau.pLb, tau.pUb)
             
@@ -3023,8 +3062,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             tau.pMed <- apply(tau.p, 2, median)
-            tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
-            tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+            tau.pUb <- apply(tau.p, 2, quantile, prob = (1-conf.level/2))
+            tau.pLb <- apply(tau.p, 2, quantile, prob = conf.level/2)
             
             tbl_t3 <- c(tau.pMed, tau.pLb, tau.pUb)
             
@@ -3032,7 +3071,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             bh <- matrix(c(tbl_t1, tbl_t2, tbl_t3), 1, 9, byrow = T)
             dimnames(bh) <- list(c("tau"), c("g=1: PM", "LL", "UL", "g=2: PM", "LL", "UL", "g=3: PM", "LL", "UL"))
             
-            value <- list(classFit=x$class, psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh)
+            value <- list(classFit=x$class, psrf=psrf, theta=tbl_theta, coef=output.coef, h0=bh, DIC=DIC, LPML=LPML)
         }
         
     }
@@ -3061,8 +3100,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             
             beta.pMed <- apply(exp(beta.p), 2, median)
             beta.pSd <- apply(exp(beta.p), 2, sd)
-            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = 0.975)
-            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = 0.025)
+            beta.pUb <- apply(exp(beta.p), 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(exp(beta.p), 2, quantile, prob = conf.level/2)
             
             tbl <- matrix(NA, p, 3)
             rownames(tbl) <- x$chain1$covNames
@@ -3096,8 +3135,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             sigSq.pMed <- apply(sigSq.p, 2, median)
-            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = 0.975)
-            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = 0.025)
+            sigSq.pUb <- apply(sigSq.p, 2, quantile, prob = (1-conf.level/2))
+            sigSq.pLb <- apply(sigSq.p, 2, quantile, prob = conf.level/2)
             
             tbl_s <- c(sigSq.pMed,sigSq.pLb, sigSq.pUb)
             
@@ -3112,8 +3151,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             mu.pMed <- apply(mu.p, 2, median)
-            mu.pUb <- apply(mu.p, 2, quantile, prob = 0.975)
-            mu.pLb <- apply(mu.p, 2, quantile, prob = 0.025)
+            mu.pUb <- apply(mu.p, 2, quantile, prob = (1-conf.level/2))
+            mu.pLb <- apply(mu.p, 2, quantile, prob = conf.level/2)
             
             tbl_b <- c(mu.pMed,mu.pLb, mu.pUb)
             
@@ -3136,8 +3175,8 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
             }
             
             tau.pMed <- apply(tau.p, 2, median)
-            tau.pUb <- apply(tau.p, 2, quantile, prob = 0.975)
-            tau.pLb <- apply(tau.p, 2, quantile, prob = 0.025)
+            tau.pUb <- apply(tau.p, 2, quantile, prob = (1-conf.level/2))
+            tau.pLb <- apply(tau.p, 2, quantile, prob = conf.level/2)
             
             tbl_t <- c(tau.pMed, tau.pLb, tau.pUb)
             
@@ -3151,15 +3190,7 @@ summary.Bayes_AFT <- function(object, digits=3, ...)
     }
     
     value$setup <- x$setup
-    
-    # if(x$class[3] == "Cor")
-    # {
-    #     class(value) <- c("summ.Bayes", as.vector(x$class[2]), "Cor", as.vector(x$class[4]), as.vector(x$class[5]))
-    # }
-    # if(x$class[3] == "Ind")
-    # {
-    #     class(value) <- c("summ.Bayes", as.vector(x$class[2]), "Ind", as.vector(x$class[4]))
-    # }
+    value$conf.level <- conf.level
     
     class(value) <- "summ.Bayes_AFT"
     
@@ -3188,9 +3219,8 @@ print.summ.Freq_HReg <- function(x, digits=3, ...)
         cat("\nAnalysis of independent semi-competing risks data \n")
         cat(obj$class[5], "assumption for h3\n")
     }
+        cat("Confidence level: ", x$conf.level, "\n", sep = "")
     ##
-    #cat("\nRegression coefficients:\n")
-    #cat(round(obj$coef, digits=digits))    
     if(!is.null(obj$coef))
     {
         ##
@@ -3227,6 +3257,12 @@ print.summ.Bayes_HReg <- function(x, digits=3, ...)
         }
         ##
         cat(x$setup$model, "assumption for h3\n")
+
+        ##
+        cat("\n#####\n")
+        
+        cat("\nDIC: ", round(x$DIC))
+        cat("\nLPML: ", round(x$LPML), "\n")
     }
     if(x$classFit[2] == "Surv")
     {
@@ -3241,6 +3277,7 @@ print.summ.Bayes_HReg <- function(x, digits=3, ...)
             cat("\nAnalysis of independent univariate time-to-event data \n")
         }
     }
+    cat("Credibility level: ", x$conf.level, "\n", sep = "")
     
     cat("\n#####\n")
     
@@ -3308,6 +3345,11 @@ print.summ.Bayes_AFT <- function(x, digits=3, ...)
             ##
             cat("\nAnalysis of independent semi-competing risks data \n")
         }
+        ##
+        cat("\n#####\n")
+        
+        cat("\nDIC: ", round(x$DIC))
+        cat("\nLPML: ", round(x$LPML), "\n")
     }
     if(x$classFit[2] == "Surv")
     {
@@ -3322,6 +3364,7 @@ print.summ.Bayes_AFT <- function(x, digits=3, ...)
             cat("\nAnalysis of independent univariate time-to-event data \n")
         }
     }
+    cat("Credibility level: ", x$conf.level, "\n", sep = "")
     
     cat("\n#####\n")
     
@@ -3358,8 +3401,9 @@ print.summ.Bayes_AFT <- function(x, digits=3, ...)
 ## COEF METHOD
 ####
 ##
-coef.Bayes_HReg <- function(object, ...)
+coef.Bayes_HReg <- function(object, alpha=0.05, ...)
 {
+    conf.level = alpha
     x <- object
     nChain = x$setup$nChain
 
@@ -3388,8 +3432,8 @@ coef.Bayes_HReg <- function(object, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl1 <- matrix(NA, p1, 3)
             rownames(tbl1) <- x$chain1$covNames1
@@ -3419,8 +3463,8 @@ coef.Bayes_HReg <- function(object, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl2 <- matrix(NA, p2, 3)
             rownames(tbl2) <- x$chain1$covNames2
@@ -3450,8 +3494,8 @@ coef.Bayes_HReg <- function(object, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl3 <- matrix(NA, p3, 3)
             rownames(tbl3) <- x$chain1$covNames3
@@ -3496,8 +3540,8 @@ coef.Bayes_HReg <- function(object, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl <- matrix(NA, p, 3)
             rownames(tbl) <- x$chain1$covNames
@@ -3531,8 +3575,9 @@ coef.Bayes_HReg <- function(object, ...)
 
 
 
-coef.Bayes_AFT <- function(object, ...)
+coef.Bayes_AFT <- function(object, alpha=0.05, ...)
 {
+    conf.level = alpha
     x <- object
     nChain = x$setup$nChain
 
@@ -3561,8 +3606,8 @@ coef.Bayes_AFT <- function(object, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl1 <- matrix(NA, p1, 3)
             rownames(tbl1) <- x$chain1$covNames1
@@ -3592,8 +3637,8 @@ coef.Bayes_AFT <- function(object, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl2 <- matrix(NA, p2, 3)
             rownames(tbl2) <- x$chain1$covNames2
@@ -3623,8 +3668,8 @@ coef.Bayes_AFT <- function(object, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl3 <- matrix(NA, p3, 3)
             rownames(tbl3) <- x$chain1$covNames3
@@ -3669,8 +3714,8 @@ coef.Bayes_AFT <- function(object, ...)
             
             beta.pMed <- apply(beta.p, 2, median)
             beta.pSd <- apply(beta.p, 2, sd)
-            beta.pUb <- apply(beta.p, 2, quantile, prob = 0.975)
-            beta.pLb <- apply(beta.p, 2, quantile, prob = 0.025)
+            beta.pUb <- apply(beta.p, 2, quantile, prob = (1-conf.level/2))
+            beta.pLb <- apply(beta.p, 2, quantile, prob = conf.level/2)
             
             tbl <- matrix(NA, p, 3)
             rownames(tbl) <- x$chain1$covNames
@@ -3699,13 +3744,14 @@ coef.Bayes_AFT <- function(object, ...)
 }
 
 
-coef.Freq_HReg <- function(object, ...)
+coef.Freq_HReg <- function(object, alpha=0.05, ...)
 {
+    conf.level = alpha
     obj <- object
     ##
     logEst  <- obj$estimate
     logSE   <- sqrt(diag(obj$Finv))
-    results <- cbind(logEst, logEst - 1.96*logSE, logEst + 1.96*logSE)
+    results <- cbind(logEst, logEst - abs(qnorm(alpha/2, 0, 1))*logSE, logEst + abs(qnorm(alpha/2, 0, 1))*logSE)
     
     ##
     if(obj$class[2] == "Surv")
@@ -3767,41 +3813,13 @@ coef.Freq_HReg <- function(object, ...)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ####
 ## predict METHOD
 ####
 ##
-predict.Bayes_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=NULL, tseq=c(0, 5, 10), ...)
+predict.Bayes_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=NULL, tseq=c(0, 5, 10), alpha = 0.05, ...)
 {
+    conf.level = alpha
     x <- object
     nChain = x$setup$nChain
     
@@ -3923,16 +3941,16 @@ predict.Bayes_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=
             }
             
             BH1Med  <-  apply(exp(lambda1.fin)*exp(matrix(LP1, nrow=dim(lambda1.fin)[1], ncol=dim(lambda1.fin)[2], byrow=F)), 2, median)
-            BH1Ub   <-  apply(exp(lambda1.fin)*exp(matrix(LP1, nrow=dim(lambda1.fin)[1], ncol=dim(lambda1.fin)[2], byrow=F)), 2, quantile, prob = 0.975)
-            BH1Lb   <-  apply(exp(lambda1.fin)*exp(matrix(LP1, nrow=dim(lambda1.fin)[1], ncol=dim(lambda1.fin)[2], byrow=F)), 2, quantile, prob = 0.025)
+            BH1Ub   <-  apply(exp(lambda1.fin)*exp(matrix(LP1, nrow=dim(lambda1.fin)[1], ncol=dim(lambda1.fin)[2], byrow=F)), 2, quantile, prob = (1-conf.level/2))
+            BH1Lb   <-  apply(exp(lambda1.fin)*exp(matrix(LP1, nrow=dim(lambda1.fin)[1], ncol=dim(lambda1.fin)[2], byrow=F)), 2, quantile, prob = conf.level/2)
             
             BH2Med  <-  apply(exp(lambda2.fin)*exp(matrix(LP2, nrow=dim(lambda2.fin)[1], ncol=dim(lambda2.fin)[2], byrow=F)), 2, median)
-            BH2Ub   <-  apply(exp(lambda2.fin)*exp(matrix(LP2, nrow=dim(lambda2.fin)[1], ncol=dim(lambda2.fin)[2], byrow=F)), 2, quantile, prob = 0.975)
-            BH2Lb   <-  apply(exp(lambda2.fin)*exp(matrix(LP2, nrow=dim(lambda2.fin)[1], ncol=dim(lambda2.fin)[2], byrow=F)), 2, quantile, prob = 0.025)
+            BH2Ub   <-  apply(exp(lambda2.fin)*exp(matrix(LP2, nrow=dim(lambda2.fin)[1], ncol=dim(lambda2.fin)[2], byrow=F)), 2, quantile, prob = (1-conf.level/2))
+            BH2Lb   <-  apply(exp(lambda2.fin)*exp(matrix(LP2, nrow=dim(lambda2.fin)[1], ncol=dim(lambda2.fin)[2], byrow=F)), 2, quantile, prob = conf.level/2)
             
             BH3Med  <-  apply(exp(lambda3.fin)*exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)), 2, median)
-            BH3Ub   <-  apply(exp(lambda3.fin)*exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)), 2, quantile, prob = 0.975)
-            BH3Lb   <-  apply(exp(lambda3.fin)*exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)), 2, quantile, prob = 0.025)
+            BH3Ub   <-  apply(exp(lambda3.fin)*exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)), 2, quantile, prob = (1-conf.level/2))
+            BH3Lb   <-  apply(exp(lambda3.fin)*exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)), 2, quantile, prob = conf.level/2)
             
             dif1    <- diff(c(0, time1hz))
             dif2    <- diff(c(0, time2hz))
@@ -3958,16 +3976,16 @@ predict.Bayes_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=
             BS3 <- exp(-BS3 * exp(matrix(LP3, nrow=dim(lambda3.fin)[1], ncol=dim(lambda3.fin)[2], byrow=F)))
             
             BS1Med  <-  apply(BS1, 2, median)
-            BS1Ub   <-  apply(BS1, 2, quantile, prob = 0.975)
-            BS1Lb   <-  apply(BS1, 2, quantile, prob = 0.025)
+            BS1Ub   <-  apply(BS1, 2, quantile, prob = (1-conf.level/2))
+            BS1Lb   <-  apply(BS1, 2, quantile, prob = conf.level/2)
             
             BS2Med  <-  apply(BS2, 2, median)
-            BS2Ub   <-  apply(BS2, 2, quantile, prob = 0.975)
-            BS2Lb   <-  apply(BS2, 2, quantile, prob = 0.025)
+            BS2Ub   <-  apply(BS2, 2, quantile, prob = (1-conf.level/2))
+            BS2Lb   <-  apply(BS2, 2, quantile, prob = conf.level/2)
             
             BS3Med  <-  apply(BS3, 2, median)
-            BS3Ub   <-  apply(BS3, 2, quantile, prob = 0.975)
-            BS3Lb   <-  apply(BS3, 2, quantile, prob = 0.025)
+            BS3Ub   <-  apply(BS3, 2, quantile, prob = (1-conf.level/2))
+            BS3Lb   <-  apply(BS3, 2, quantile, prob = conf.level/2)
         }
         
         if(x$class[4] == "WB")
@@ -4036,24 +4054,24 @@ predict.Bayes_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=
             }
             
             BH1Med <- apply(basehaz1, 2, median)
-            BH1Ub <- apply(basehaz1, 2, quantile, prob = 0.975)
-            BH1Lb <- apply(basehaz1, 2, quantile, prob = 0.025)
+            BH1Ub <- apply(basehaz1, 2, quantile, prob = (1-conf.level/2))
+            BH1Lb <- apply(basehaz1, 2, quantile, prob = conf.level/2)
             BH2Med <- apply(basehaz2, 2, median)
-            BH2Ub <- apply(basehaz2, 2, quantile, prob = 0.975)
-            BH2Lb <- apply(basehaz2, 2, quantile, prob = 0.025)
+            BH2Ub <- apply(basehaz2, 2, quantile, prob = (1-conf.level/2))
+            BH2Lb <- apply(basehaz2, 2, quantile, prob = conf.level/2)
             BH3Med <- apply(basehaz3, 2, median)
-            BH3Ub <- apply(basehaz3, 2, quantile, prob = 0.975)
-            BH3Lb <- apply(basehaz3, 2, quantile, prob = 0.025)
+            BH3Ub <- apply(basehaz3, 2, quantile, prob = (1-conf.level/2))
+            BH3Lb <- apply(basehaz3, 2, quantile, prob = conf.level/2)
             
             BS1Med <- apply(basesurv1, 2, median)
-            BS1Ub <- apply(basesurv1, 2, quantile, prob = 0.975)
-            BS1Lb <- apply(basesurv1, 2, quantile, prob = 0.025)
+            BS1Ub <- apply(basesurv1, 2, quantile, prob = (1-conf.level/2))
+            BS1Lb <- apply(basesurv1, 2, quantile, prob = conf.level/2)
             BS2Med <- apply(basesurv2, 2, median)
-            BS2Ub <- apply(basesurv2, 2, quantile, prob = 0.975)
-            BS2Lb <- apply(basesurv2, 2, quantile, prob = 0.025)
+            BS2Ub <- apply(basesurv2, 2, quantile, prob = (1-conf.level/2))
+            BS2Lb <- apply(basesurv2, 2, quantile, prob = conf.level/2)
             BS3Med <- apply(basesurv3, 2, median)
-            BS3Ub <- apply(basesurv3, 2, quantile, prob = 0.975)
-            BS3Lb <- apply(basesurv3, 2, quantile, prob = 0.025)
+            BS3Ub <- apply(basesurv3, 2, quantile, prob = (1-conf.level/2))
+            BS3Lb <- apply(basesurv3, 2, quantile, prob = conf.level/2)
         }
         
         BH1_tbl <- data.frame(time1=time1hz, h.1=BH1Med, LL.1=BH1Lb, UL.1=BH1Ub)
@@ -4127,8 +4145,8 @@ predict.Bayes_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=
             }
             
             BHMed  <-  apply(exp(lambda.fin)*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)), 2, median)
-            BHUb   <-  apply(exp(lambda.fin)*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)), 2, quantile, prob = 0.975)
-            BHLb   <-  apply(exp(lambda.fin)*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)), 2, quantile, prob = 0.025)
+            BHUb   <-  apply(exp(lambda.fin)*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)), 2, quantile, prob = (1-conf.level/2))
+            BHLb   <-  apply(exp(lambda.fin)*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)), 2, quantile, prob = conf.level/2)
             
             dif <- diff(c(0, timehz))
             
@@ -4140,8 +4158,8 @@ predict.Bayes_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=
             BS <- exp(-BS*exp(matrix(LP, nrow=dim(lambda.fin)[1], ncol=dim(lambda.fin)[2], byrow=F)))
             
             BSMed  <-  apply(BS, 2, median)
-            BSUb   <-  apply(BS, 2, quantile, prob = 0.975)
-            BSLb   <-  apply(BS, 2, quantile, prob = 0.025)
+            BSUb   <-  apply(BS, 2, quantile, prob = (1-conf.level/2))
+            BSLb   <-  apply(BS, 2, quantile, prob = conf.level/2)
         }
         
         if(x$class[4] == "WB")
@@ -4180,12 +4198,12 @@ predict.Bayes_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=
             }
             
             BHMed <- apply(basehaz, 2, median)
-            BHUb <- apply(basehaz, 2, quantile, prob = 0.975)
-            BHLb <- apply(basehaz, 2, quantile, prob = 0.025)
+            BHUb <- apply(basehaz, 2, quantile, prob = (1-conf.level/2))
+            BHLb <- apply(basehaz, 2, quantile, prob = conf.level/2)
             
             BSMed <- apply(basesurv, 2, median)
-            BSUb <- apply(basesurv, 2, quantile, prob = 0.975)
-            BSLb <- apply(basesurv, 2, quantile, prob = 0.025)
+            BSUb <- apply(basesurv, 2, quantile, prob = (1-conf.level/2))
+            BSLb <- apply(basesurv, 2, quantile, prob = conf.level/2)
         }
         
         BH_tbl <- data.frame(time=timehz, h=BHMed, LL=BHLb, UL=BHUb)
@@ -4447,15 +4465,9 @@ plot.pred.Bayes_HReg <- function(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
 
 
 
-
-
-
-
-
-
-
-predict.Bayes_AFT <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=NULL, time, tseq=c(0, 5, 10), ...)
+predict.Bayes_AFT <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=NULL, time, tseq=c(0, 5, 10), alpha=0.05, ...)
 {
+    conf.level = alpha
     x <- object
     nChain = x$setup$nChain
     
@@ -4600,24 +4612,24 @@ predict.Bayes_AFT <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         
         BH1Med <- apply(basehaz1, 2, median)
-        BH1Ub <- apply(basehaz1, 2, quantile, prob = 0.975)
-        BH1Lb <- apply(basehaz1, 2, quantile, prob = 0.025)
+        BH1Ub <- apply(basehaz1, 2, quantile, prob = (1-conf.level/2))
+        BH1Lb <- apply(basehaz1, 2, quantile, prob = conf.level/2)
         BH2Med <- apply(basehaz2, 2, median)
-        BH2Ub <- apply(basehaz2, 2, quantile, prob = 0.975)
-        BH2Lb <- apply(basehaz2, 2, quantile, prob = 0.025)
+        BH2Ub <- apply(basehaz2, 2, quantile, prob = (1-conf.level/2))
+        BH2Lb <- apply(basehaz2, 2, quantile, prob = conf.level/2)
         BH3Med <- apply(basehaz3, 2, median)
-        BH3Ub <- apply(basehaz3, 2, quantile, prob = 0.975)
-        BH3Lb <- apply(basehaz3, 2, quantile, prob = 0.025)
+        BH3Ub <- apply(basehaz3, 2, quantile, prob = (1-conf.level/2))
+        BH3Lb <- apply(basehaz3, 2, quantile, prob = conf.level/2)
         
         BS1Med <- apply(basesurv1, 2, median)
-        BS1Ub <- apply(basesurv1, 2, quantile, prob = 0.975)
-        BS1Lb <- apply(basesurv1, 2, quantile, prob = 0.025)
+        BS1Ub <- apply(basesurv1, 2, quantile, prob = (1-conf.level/2))
+        BS1Lb <- apply(basesurv1, 2, quantile, prob = conf.level/2)
         BS2Med <- apply(basesurv2, 2, median)
-        BS2Ub <- apply(basesurv2, 2, quantile, prob = 0.975)
-        BS2Lb <- apply(basesurv2, 2, quantile, prob = 0.025)
+        BS2Ub <- apply(basesurv2, 2, quantile, prob = (1-conf.level/2))
+        BS2Lb <- apply(basesurv2, 2, quantile, prob = conf.level/2)
         BS3Med <- apply(basesurv3, 2, median)
-        BS3Ub <- apply(basesurv3, 2, quantile, prob = 0.975)
-        BS3Lb <- apply(basesurv3, 2, quantile, prob = 0.025)
+        BS3Ub <- apply(basesurv3, 2, quantile, prob = (1-conf.level/2))
+        BS3Lb <- apply(basesurv3, 2, quantile, prob = conf.level/2)
         
         BH1_tbl <- data.frame(time=time1hz, h.1=BH1Med, LL.1=BH1Lb, UL.1=BH1Ub)
         BH2_tbl <- data.frame(time=time2hz, h.2=BH2Med, LL.2=BH2Lb, UL.2=BH2Ub)
@@ -4702,12 +4714,12 @@ predict.Bayes_AFT <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         
         BHMed <- apply(basehaz, 2, median)
-        BHUb <- apply(basehaz, 2, quantile, prob = 0.975)
-        BHLb <- apply(basehaz, 2, quantile, prob = 0.025)
+        BHUb <- apply(basehaz, 2, quantile, prob = (1-conf.level/2))
+        BHLb <- apply(basehaz, 2, quantile, prob = conf.level/2)
         
         BSMed <- apply(basesurv, 2, median)
-        BSUb <- apply(basesurv, 2, quantile, prob = 0.975)
-        BSLb <- apply(basesurv, 2, quantile, prob = 0.025)
+        BSUb <- apply(basesurv, 2, quantile, prob = (1-conf.level/2))
+        BSLb <- apply(basesurv, 2, quantile, prob = conf.level/2)
         
         
         BH_tbl <- data.frame(time=timehz, h=BHMed, LL=BHLb, UL=BHUb)
@@ -4728,8 +4740,6 @@ predict.Bayes_AFT <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
     class(value) <- "pred.Bayes_AFT"
     return(value)
 }
-
-
 
 
 
@@ -4909,45 +4919,9 @@ plot.pred.Bayes_AFT <- function(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=NULL, tseq=c(0, 5, 10), ...)
+predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=NULL, tseq=c(0, 5, 10), alpha=0.05, ...)
 {
+    conf.level = alpha
     obj <- object
     T2seq <- tseq
     yLim <- NULL
@@ -4990,8 +4964,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         se.loglogS0  <- sqrt(diag(Var.loglogS0))
         se.loglogS0[is.na(se.loglogS0)] <- 0
-        LL <- S0^exp(-qnorm(0.025)*se.loglogS0)
-        UL <- S0^exp(qnorm(0.025)*se.loglogS0)
+        LL <- S0^exp(-qnorm(alpha/2)*se.loglogS0)
+        UL <- S0^exp(qnorm(alpha/2)*se.loglogS0)
         ##
         BS_tbl <- data.frame(time=T2, S=S0, LL=LL, UL=UL)
         
@@ -5009,8 +4983,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         
         se.h0  <- sqrt(diag(Var.h0))
         se.h0[is.nan(se.h0)] <- 0
-        LLh0 <- h0 - qnorm(0.025)*se.h0
-        ULh0 <- h0 + qnorm(0.025)*se.h0
+        LLh0 <- h0 - qnorm(alpha/2)*se.h0
+        ULh0 <- h0 + qnorm(alpha/2)*se.h0
         LLh0[LLh0 < 0] <- 0
         
         T2h <- T2
@@ -5060,8 +5034,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
             Var.loglogS0 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
         }
         se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        LL.1         <- S0.1^exp(-qnorm(0.025)*se.loglogS0)
-        UL.1         <- S0.1^exp(qnorm(0.025)*se.loglogS0)
+        LL.1         <- S0.1^exp(-qnorm(alpha/2)*se.loglogS0)
+        UL.1         <- S0.1^exp(qnorm(alpha/2)*se.loglogS0)
         ##
         h0.1  <- alpha*kappa*(T2)^(alpha-1)
         if(!is.null(x1new) & nP[1] > 0)
@@ -5081,8 +5055,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         se.h0.1  <- sqrt(diag(Var.h0.1))
         se.h0.1[is.nan(se.h0.1)] <- 0
-        LLh0.1 <- h0.1 - qnorm(0.025)*se.h0.1
-        ULh0.1 <- h0.1 + qnorm(0.025)*se.h0.1
+        LLh0.1 <- h0.1 - qnorm(alpha/2)*se.h0.1
+        ULh0.1 <- h0.1 + qnorm(alpha/2)*se.h0.1
         LLh0.1[LLh0.1 < 0] <- 0
         
         ##
@@ -5106,8 +5080,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
             Var.loglogS0 <- J %*% obj$Finv[3:4,3:4] %*% t(J)
         }
         se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        LL.2         <- S0.2^exp(-qnorm(0.025)*se.loglogS0)
-        UL.2         <- S0.2^exp(qnorm(0.025)*se.loglogS0)
+        LL.2         <- S0.2^exp(-qnorm(alpha/2)*se.loglogS0)
+        UL.2         <- S0.2^exp(qnorm(alpha/2)*se.loglogS0)
         ##
         h0.2  <- alpha*kappa*(T2)^(alpha-1)
         if(!is.null(x2new) & nP[2] > 0)
@@ -5127,8 +5101,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         se.h0.2  <- sqrt(diag(Var.h0.2))
         se.h0.2[is.nan(se.h0.2)] <- 0
-        LLh0.2 <- h0.2 - qnorm(0.025)*se.h0.2
-        ULh0.2 <- h0.2 + qnorm(0.025)*se.h0.2
+        LLh0.2 <- h0.2 - qnorm(alpha/2)*se.h0.2
+        ULh0.2 <- h0.2 + qnorm(alpha/2)*se.h0.2
         LLh0.2[LLh0.2 < 0] <- 0
         
         ##
@@ -5152,8 +5126,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
             Var.loglogS0 <- J %*% obj$Finv[5:6,5:6] %*% t(J)
         }
         se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        LL.3         <- S0.3^exp(-qnorm(0.025)*se.loglogS0)
-        UL.3         <- S0.3^exp(qnorm(0.025)*se.loglogS0)
+        LL.3         <- S0.3^exp(-qnorm(alpha/2)*se.loglogS0)
+        UL.3         <- S0.3^exp(qnorm(alpha/2)*se.loglogS0)
         ##
         h0.3  <- alpha*kappa*(T2)^(alpha-1)
         if(!is.null(x3new) & nP[3] > 0)
@@ -5173,8 +5147,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         se.h0.3  <- sqrt(diag(Var.h0.3))
         se.h0.3[is.nan(se.h0.3)] <- 0
-        LLh0.3 <- h0.3 - qnorm(0.025)*se.h0.3
-        ULh0.3 <- h0.3 + qnorm(0.025)*se.h0.3
+        LLh0.3 <- h0.3 - qnorm(alpha/2)*se.h0.3
+        ULh0.3 <- h0.3 + qnorm(alpha/2)*se.h0.3
         LLh0.3[LLh0.3 < 0] <- 0
         
         T2h <- T2
@@ -5216,9 +5190,6 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
     class(value) <- "pred.Freq_HReg"
     return(value)
 }
-
-
-
 
 
 
@@ -5390,10 +5361,6 @@ plot.pred.Freq_HReg <- function(x, plot.est="Haz", xlab=NULL, ylab=NULL, ...)
 
 
 
-
-
-
-
 ####
 ## VCOV METHOD
 ####
@@ -5406,6 +5373,10 @@ vcov.Freq_HReg <- function(object, ...)
     value <- obj$Finv
     dimnames(value) <- list(obj$myLabels, obj$myLabels)
 
+    if(obj$class[2] == "ID")
+    {
+        cat("\nNote: Covariates are arranged in order of transition number, 1->3.\n")
+    }
     return(value)
 }
 

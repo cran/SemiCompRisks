@@ -13,7 +13,7 @@ FreqSurv_HReg(Formula, data, na.action = "na.fail", subset=NULL)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 \item{Formula}{
-    a \code{Formula} object of the form \eqn{y}+\eqn{\delta} ~ \eqn{x}. See Details and Examples below.
+      a \code{Formula} object, with the outcome on the left of a \eqn{\sim}, and covariates on the right. It is of the form, time to event + censoring indicator \eqn{\sim} covariates: i.e., \eqn{y}+\eqn{\delta} ~ \eqn{x}.
 }
 \item{data}{
     a data.frame in which to interpret the variables named in \code{Formula}.
@@ -40,7 +40,7 @@ SemiCompRisks: an R package for independent and cluster-correlated analyses of s
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr
-Maintainer: Kyu Ha Lee <klee@hsph.harvard.edu>
+Maintainer: Kyu Ha Lee <klee15239@gmail.com>
 }
 %\note{
 %further notes
