@@ -1,4 +1,4 @@
-71de297596370ad49bf58ef2f4dac9db *DESCRIPTION
+6569b3a7f79817d19cff57ecdab6fd31 *DESCRIPTION
 e3d8d08fc09f49a1c8078df5496bd070 *NAMESPACE
 f98b7f9b767de323f2edef775f62399e *R/BayesID_AFT.R
 132e8d81af75cd3ca28957298184f895 *R/BayesID_HReg.R
@@ -11,7 +11,7 @@ e40df07ae25b90801d8cac5f2dc1c8b3 *R/BayesSurv_HReg.R
 e0dfe59362f69efd1c73141162ed8557 *R/initiate.startValues_AFT.R
 4864421c3180169517bdbb47c0de191f *R/initiate.startValues_HReg.R
 95b2dfb3b65b6288cce0e2834ed7b6de *R/internalFunc.R
-1263d459103c647f4f22db29c83c06ad *R/methods.R
+b1338edc91fb7b1e6163e6d3586c08eb *R/methods.R
 f33feab4c6e5a219fc6f707e1ce99ed9 *R/old.functions.R
 565d03c547aceca13580663ff8a146a1 *R/simID.R
 02b6953e9fdb4b15843e043900ea5ab5 *R/simSurv.R
@@ -22,7 +22,7 @@ f33feab4c6e5a219fc6f707e1ce99ed9 *R/old.functions.R
 6702ce86e3e205d0c014681aee0972ad *data/scrData.rda
 287628178055bf0a3b15fba75b8df2cd *data/survData.rda
 8017d3ad38340c6eae84cd18130c4db4 *inst/doc/SemiCompRisks.ltx
-94d1faba428124964ee6b71848066cad *inst/doc/SemiCompRisks.pdf
+383e73079d2a1109cb5d65f5c325fa4b *inst/doc/SemiCompRisks.pdf
 27a50b087844420dbe0c5507739dda35 *man/BMT.Rd
 69df12cae173262477749bb64ed68480 *man/BayesID_AFT.Rd
 0787f560d85f0bf6e36378d7d83d49bd *man/BayesID_HReg.Rd
@@ -33,7 +33,7 @@ fbc8dc6b223d57b4009cf09ccc67f88a *man/CIBMTR.Rd
 a1bbd634dd8f9ce6380877fa3df42a3a *man/FreqID_HReg.Rd
 e1f9c65858b06ec38096923beb6842d7 *man/FreqSurv_HReg.Rd
 1015c6874c37b9ecd41d1e9870ee9bcf *man/PPD.Rd
-9b23204b2e91a3d49fa2f00a3fa9fa61 *man/SemiCompRisks-package.Rd
+adc7c7f63b384ec8377bec54c23b3ff6 *man/SemiCompRisks-package.Rd
 7b5f8c6f0c4a15bbe397c4a82eaa0f58 *man/initiate.startValues_AFT.Rd
 063cef23a47c79f54d048f55715edd06 *man/initiate.startValues_HReg.Rd
 345d2ae11e3c62337e89893c3303ad06 *man/methods.Rd

@@ -11,7 +11,7 @@ print.Freq_HReg <- function(x, digits=3, alpha=0.05, ...)
     ##
     logEst <- obj$estimate
     logSE  <- sqrt(diag(obj$Finv))
-    value  <- cbind(logEst, logSE, logEst - abs(qnorm(alpha/2, 0, 1))*logSE, logEst + abs(qnorm(alpha/2, 0, 1))*logSE)
+    value  <- cbind(logEst, logSE, logEst - abs(qnorm(conf.level/2, 0, 1))*logSE, logEst + abs(qnorm(conf.level/2, 0, 1))*logSE)
     ##
     dimnames(value) <- list(obj$myLabels, c( "Estimate", "SE", "LL", "UL"))
     
@@ -1215,7 +1215,7 @@ summary.Freq_HReg <- function(object, digits=3, alpha=0.05, ...)
     ##
     logEst  <- obj$estimate
     logSE   <- sqrt(diag(obj$Finv))
-    results <- cbind(logEst, logEst - abs(qnorm(alpha/2, 0, 1))*logSE, logEst + abs(qnorm(alpha/2, 0, 1))*logSE)
+    results <- cbind(logEst, logEst - abs(qnorm(conf.level/2, 0, 1))*logSE, logEst + abs(qnorm(conf.level/2, 0, 1))*logSE)
     
     ##
     if(obj$class[2] == "Surv")
@@ -3751,7 +3751,7 @@ coef.Freq_HReg <- function(object, alpha=0.05, ...)
     ##
     logEst  <- obj$estimate
     logSE   <- sqrt(diag(obj$Finv))
-    results <- cbind(logEst, logEst - abs(qnorm(alpha/2, 0, 1))*logSE, logEst + abs(qnorm(alpha/2, 0, 1))*logSE)
+    results <- cbind(logEst, logEst - abs(qnorm(conf.level/2, 0, 1))*logSE, logEst + abs(qnorm(conf.level/2, 0, 1))*logSE)
     
     ##
     if(obj$class[2] == "Surv")
@@ -4964,8 +4964,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         se.loglogS0  <- sqrt(diag(Var.loglogS0))
         se.loglogS0[is.na(se.loglogS0)] <- 0
-        LL <- S0^exp(-qnorm(alpha/2)*se.loglogS0)
-        UL <- S0^exp(qnorm(alpha/2)*se.loglogS0)
+        LL <- S0^exp(-qnorm(conf.level/2)*se.loglogS0)
+        UL <- S0^exp(qnorm(conf.level/2)*se.loglogS0)
         ##
         BS_tbl <- data.frame(time=T2, S=S0, LL=LL, UL=UL)
         
@@ -4983,8 +4983,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         
         se.h0  <- sqrt(diag(Var.h0))
         se.h0[is.nan(se.h0)] <- 0
-        LLh0 <- h0 - qnorm(alpha/2)*se.h0
-        ULh0 <- h0 + qnorm(alpha/2)*se.h0
+        LLh0 <- h0 - qnorm(conf.level/2)*se.h0
+        ULh0 <- h0 + qnorm(conf.level/2)*se.h0
         LLh0[LLh0 < 0] <- 0
         
         T2h <- T2
@@ -5034,8 +5034,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
             Var.loglogS0 <- J %*% obj$Finv[1:2,1:2] %*% t(J)
         }
         se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        LL.1         <- S0.1^exp(-qnorm(alpha/2)*se.loglogS0)
-        UL.1         <- S0.1^exp(qnorm(alpha/2)*se.loglogS0)
+        LL.1         <- S0.1^exp(-qnorm(conf.level/2)*se.loglogS0)
+        UL.1         <- S0.1^exp(qnorm(conf.level/2)*se.loglogS0)
         ##
         h0.1  <- alpha*kappa*(T2)^(alpha-1)
         if(!is.null(x1new) & nP[1] > 0)
@@ -5055,8 +5055,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         se.h0.1  <- sqrt(diag(Var.h0.1))
         se.h0.1[is.nan(se.h0.1)] <- 0
-        LLh0.1 <- h0.1 - qnorm(alpha/2)*se.h0.1
-        ULh0.1 <- h0.1 + qnorm(alpha/2)*se.h0.1
+        LLh0.1 <- h0.1 - qnorm(conf.level/2)*se.h0.1
+        ULh0.1 <- h0.1 + qnorm(conf.level/2)*se.h0.1
         LLh0.1[LLh0.1 < 0] <- 0
         
         ##
@@ -5080,8 +5080,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
             Var.loglogS0 <- J %*% obj$Finv[3:4,3:4] %*% t(J)
         }
         se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        LL.2         <- S0.2^exp(-qnorm(alpha/2)*se.loglogS0)
-        UL.2         <- S0.2^exp(qnorm(alpha/2)*se.loglogS0)
+        LL.2         <- S0.2^exp(-qnorm(conf.level/2)*se.loglogS0)
+        UL.2         <- S0.2^exp(qnorm(conf.level/2)*se.loglogS0)
         ##
         h0.2  <- alpha*kappa*(T2)^(alpha-1)
         if(!is.null(x2new) & nP[2] > 0)
@@ -5101,8 +5101,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         se.h0.2  <- sqrt(diag(Var.h0.2))
         se.h0.2[is.nan(se.h0.2)] <- 0
-        LLh0.2 <- h0.2 - qnorm(alpha/2)*se.h0.2
-        ULh0.2 <- h0.2 + qnorm(alpha/2)*se.h0.2
+        LLh0.2 <- h0.2 - qnorm(conf.level/2)*se.h0.2
+        ULh0.2 <- h0.2 + qnorm(conf.level/2)*se.h0.2
         LLh0.2[LLh0.2 < 0] <- 0
         
         ##
@@ -5126,8 +5126,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
             Var.loglogS0 <- J %*% obj$Finv[5:6,5:6] %*% t(J)
         }
         se.loglogS0  <- sqrt(diag(Var.loglogS0))
-        LL.3         <- S0.3^exp(-qnorm(alpha/2)*se.loglogS0)
-        UL.3         <- S0.3^exp(qnorm(alpha/2)*se.loglogS0)
+        LL.3         <- S0.3^exp(-qnorm(conf.level/2)*se.loglogS0)
+        UL.3         <- S0.3^exp(qnorm(conf.level/2)*se.loglogS0)
         ##
         h0.3  <- alpha*kappa*(T2)^(alpha-1)
         if(!is.null(x3new) & nP[3] > 0)
@@ -5147,8 +5147,8 @@ predict.Freq_HReg <- function(object, xnew=NULL, x1new=NULL, x2new=NULL, x3new=N
         }
         se.h0.3  <- sqrt(diag(Var.h0.3))
         se.h0.3[is.nan(se.h0.3)] <- 0
-        LLh0.3 <- h0.3 - qnorm(alpha/2)*se.h0.3
-        ULh0.3 <- h0.3 + qnorm(alpha/2)*se.h0.3
+        LLh0.3 <- h0.3 - qnorm(conf.level/2)*se.h0.3
+        ULh0.3 <- h0.3 + qnorm(conf.level/2)*se.h0.3
         LLh0.3[LLh0.3 < 0] <- 0
         
         T2h <- T2
