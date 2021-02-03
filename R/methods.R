@@ -1220,11 +1220,12 @@ summary.Freq_HReg <- function(object, digits=3, alpha=0.05, ...)
     ##
     if(obj$class[2] == "Surv")
     {
+        nP <- length(obj$estimate)-2
         ##
         #cat("\nRegression coefficients:\n")
-        if(length(obj$myLabels) >= 3)
+        if(nP > 0)
         {
-            output.coef           <- results[-c(1:2),]
+            output.coef           <- matrix(results[-c(1:2),], nrow=nP)
             dimnames(output.coef) <- list(unique(obj$myLabels[-c(1:2)]), c("beta", "LL", "UL"))
         }else
         {

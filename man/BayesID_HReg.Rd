@@ -127,8 +127,8 @@ Bayesian semiparametric analysis of semicompeting risks data:
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
 Lee, K. H., Dominici, F., Schrag, D., and Haneuse, S. (2016),
 Hierarchical models for semicompeting risks data with application to quality of end-of-life care for pancreatic cancer, \emph{Journal of the American Statistical Association}, 111, 515, 1075-1095. \cr \cr
-Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2018+),
-SemiCompRisks: an R package for independent and cluster-correlated analyses of semi-competing risks data, \emph{submitted}, arXiv:1801.03567. \cr
+Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2019),
+SemiCompRisks: An R package for the analysis of independent and cluster-correlated semi-competing risks data, \emph{The R Journal}, 11, 1, 376-400. \cr
 }
 \author{
 Kyu Ha Lee and Sebastien Haneuse\cr

@@ -118,8 +118,8 @@ The number of chains.
 \references{
 Lee, K. H., Rondeau, V., and Haneuse, S. (2017),
 Accelerated failure time models for semicompeting risks data in the presence of complex censoring, \emph{Biometrics}, 73, 4, 1401-1412. \cr \cr
-Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2018+),
-SemiCompRisks: an R package for independent and cluster-correlated analyses of semi-competing risks data, \emph{submitted}, arXiv:1801.03567. \cr
+Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2019),
+SemiCompRisks: An R package for the analysis of independent and cluster-correlated semi-competing risks data, \emph{The R Journal}, 11, 1, 376-400. \cr
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr

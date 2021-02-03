@@ -35,8 +35,8 @@ a specification of the rows to be used: defaults to all rows. See \code{model.fr
 Lee, K. H., Haneuse, S., Schrag, D., and Dominici, F. (2015), 
 Bayesian semiparametric analysis of semicompeting risks data: 
 investigating hospital readmission after a pancreatic cancer diagnosis, \emph{Journal of the Royal Statistical Society: Series C}, 64, 2, 253-273.\cr \cr
-Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2018+),
-SemiCompRisks: an R package for independent and cluster-correlated analyses of semi-competing risks data, \emph{submitted}, arXiv:1801.03567. \cr
+Alvares, D., Haneuse, S., Lee, C., Lee, K. H. (2019),
+SemiCompRisks: An R package for the analysis of independent and cluster-correlated semi-competing risks data, \emph{The R Journal}, 11, 1, 376-400. \cr
 }
 \author{
 Sebastien Haneuse and Kyu Ha Lee\cr
